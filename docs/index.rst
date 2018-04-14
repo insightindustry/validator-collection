@@ -101,16 +101,73 @@ Available Validators and Checkers
         - :func:`decimal <validator_collection.validators.decimal>`
         - :func:`file_exists <validator_collection.validators.file_exists>`
         - :func:`mac_address <validator_collection.validators.mac_address>`
-      * - :func:`uuid`
+      * - :func:`uuid <validator_collection.validators.uuid>`
         -
         -
         - :func:`directory_exists <validator_collection.validators.directory_exists>`
         -
 
-
   .. tab:: Checkers
 
-    * Checkers go here
+    .. list-table::
+      :widths: 30 30 30 30 30
+      :header-rows: 1
+
+      * - Core
+        - Date/Time
+        - Numbers
+        - File-related
+        - Internet-related
+      * - :func:`is_type <validator_collection.checkers.is_type>`
+        - :func:`is_date <validator_collection.checkers.is_date>`
+        - :func:`is_numeric <validator_collection.checkers.is_numeric>`
+        - :func:`is_bytesIO <validator_collection.checkers.is_bytesIO>`
+        - :func:`is_email <validator_collection.checkers.is_email>`
+      * - :func:`are_equivalent <validator_collection.checkers.are_equivalent>`
+        - :func:`is_datetime <validator_collection.checkers.is_datetime>`
+        - :func:`is_integer <validator_collection.checkers.is_integer>`
+        - :func:`is_stringIO <validator_collection.checkers.is_stringIO>`
+        - :func:`is_url <validator_collection.checkers.is_url>`
+      * - :func:`are_dicts_equivalent <validator_collection.checkers.are_dicts_equivalent>`
+        - :func:`is_time <validator_collection.checkers.is_time>`
+        - :func:`is_float <validator_collection.checkers.is_float>`
+        - :func:`is_pathlike <validator_collection.checkers.is_pathlike>`
+        - :func:`is_ip <validator_collection.checkers.is_ip>`
+      * - :func:`is_dict <validator_collection.checkers.is_dict>`
+        - :func:`is_timezone <validator_collection.checkers.is_timezone>`
+        - :func:`is_on_filesystem <validator_collection.checkers.is_on_filesystem>`
+        - :func:`is_fraction <validator_collection.checkers.is_fraction>`
+        - :func:`is_ipv4 <validator_collection.checkers.is_ipv4>`
+      * - :func:`is_string <validator_collection.checkers.is_string>`
+        -
+        - :func:`is_decimal <validator_collection.checkers.is_decimal>`
+        - :func:`is_file <validator_collection.checkers.is_file>`
+        - :func:`is_ipv6 <validator_collection.checkers.is_ipv6>`
+      * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
+        -
+        -
+        - :func:`is_directory <validator_collection.checkers.is_directory>`
+        - :func:`is_mac_address <validator_collection.checkers.is_mac_address>`
+      * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
+        -
+        -
+        -
+        -
+      * - :func:`is_none <validator_collection.checkers.is_none>`
+        -
+        -
+        -
+        -
+      * - :func:`is_valid_variable_name <validator_collection.checkers.is_valid_variable_name>`
+        -
+        -
+        -
+        -
+      * - :func:`is_uuid <validator_collection.checkers.is_uuid>`
+        -
+        -
+        -
+        -
 
 ************************************
 Hello, World and Standard Usage
@@ -159,7 +216,7 @@ A validator does what it says on the tin: It validates that an input value is
 what you think it should be, and returns its valid form.
 
 Each validator is expressed as the name of the thing being validated, for example
-``email()``.
+:func:`email() <validator_collection.validators.email>`.
 
 Each validator accepts a value as its first argument, and an optional ``allow_empty``
 boolean as its second argument. For example:
@@ -210,8 +267,9 @@ Likewise, a :term:`checker` is what it sounds like: It checks that an input valu
 is what you expect it to be, and tells you ``True``/``False`` whether it is or not.
 
 Each checker is expressed as the name of the thing being validated, prefixed by
-``is_``. So the checker for an email address is ``is_email()`` and the checker
-for an integer is ``is_integer()``.
+``is_``. So the checker for an email address is
+:func:`is_email() <validator_collection.checkers.is_email>` and the checker
+for an integer is :func:`is_integer() <validator_collection.checkers.is_integer>`.
 
 Checkers take the input value you want to check as their first (and often only)
 positional argumet. If the input value validates, they will return ``True``. Unlike
@@ -225,10 +283,11 @@ validation fails. They will instead return ``False``.
 
 .. hint::
 
-  Some checkers (particularly numeric ones like :ref:`is_integer <_checkers.is_integer>`)
-  have additional options which are used to make sure the value meets criteria that
-  you set for it. These options are always *optional* and are included as keyword
-  arguments *after* the input value argument. They are documented for each checker below.
+  Some checkers (particularly numeric ones like
+  :ref:`is_integer <validator_collection.checkers.is_integer>`) have additional
+  options which are used to make sure the value meets criteria that you set for
+  it. These options are always *optional* and are included as keyword arguments
+  *after* the input value argument. They are documented for each checker below.
 
 
 Indices and tables
