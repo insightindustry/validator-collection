@@ -1,0 +1,30 @@
+language: python
+sudo: false
+dist: trusty
+cache: pip
+
+env:
+  global:
+    - PYTHONFAULTHANDLER=x
+
+matrix:
+  include:
+    - python: '2.7'
+      env:
+        - TOXENV=py27
+        - PYTEST_ADDOPTS="--cov ./ --cov-append --cov-config setup.cfg"
+    - python: '3.6'
+      env:
+        - TOXENV=py36
+        - PYTEST_ADDOPTS="--cov ./ --cov-append --cov-config setup.cfg"
+    - python: '3.6'
+      env: TOXENV=docs
+
+install:
+  - pip install -U tox codecov
+
+script:
+  - tox -- -v
+
+after_success:
+  - if [[ -e .coverage ]]; then codecov -e $TOXENV; fi

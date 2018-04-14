@@ -1,0 +1,8 @@
+# Include the README
+include *.md
+
+# Include the LICENSE file
+include LICENSE
+
+# Include the VERSION file
+include VERSION
