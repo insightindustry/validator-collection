@@ -166,7 +166,11 @@ def url(value, allow_empty = False):
     return value
 
 
-def string(value, allow_empty = False):
+def string(value,
+           allow_empty = False,
+           minimum_length = None,
+           maximum_length = None,
+           whitespace_padding = False):
     """Validate that ``value`` is a valid string.
 
     :param value: The value to validate.
@@ -177,23 +181,56 @@ def string(value, allow_empty = False):
       Defaults to ``False``.
     :type allow_empty: :ref:`bool <python:bool>`
 
+    :param minimum_length: If supplied, indicates the minimum number of characters
+      needed to be valid.
+    :type minimum_length: :ref:`int <python:int>`
+
+    :param maximum_length: If supplied, indicates the minimum number of characters
+      needed to be valid.
+    :type maximum_length: :ref:`int <python:int>`
+
+    :param whitespace_padding: If ``True`` and the value is below the
+      ``minimum_length``, pad the value with spaces. Defaults to ``False``.
+    :type whitespace_padding: :ref:`bool <python:bool>`
+
     :returns: ``value`` / ``None``
     :rtype: :ref:`str <python:str>` / ``None``
 
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises TypeError: if ``value`` is not a valid string or ``None``
+    :raises ValueError: if ``minimum_length`` is supplied and the length of
+      ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
+      ``False``
+    :raises ValueError: if ``maximum_length`` is supplied and the length of
+      ``value`` is more than the ``maximum_length``
     """
     if not value and not allow_empty:
         raise ValueError('value cannot be empty')
     elif not value:
         return None
 
-    return str(value)
+    minimum_length = integer(minimum_length, allow_empty = True)
+    maximum_length = integer(maximum_length, allow_empty = True)
+
+    value = str(value)
+
+    if value and maximum_length and len(value) > maximum_length:
+        raise ValueError('value (%s) exceeds maximum length')
+
+    if value and minimum_length and len(value) < minimum_length:
+        if whitespace_padding:
+            value = value.ljust(minimum_length, ' ')
+        else:
+            raise ValueError('value (%s) is below the minimum length')
+
+    return value
 
 
 def iterable(value,
              allow_empty = False,
-             forbid_literals = (str, bytes)):
+             forbid_literals = (str, bytes),
+             minimum_length = None,
+             maximum_length = None):
     """Validate that ``value`` is a valid iterable.
 
     :param value: The value to validate.
@@ -208,19 +245,41 @@ def iterable(value,
       :ref:`bytes <python:bytes>`.
     :type forbid_literals: iterable
 
+    :param minimum_length: If supplied, indicates the minimum number of members
+      needed to be valid.
+    :type minimum_length: :ref:`int <python:int>`
+
+    :param maximum_length: If supplied, indicates the minimum number of members
+      needed to be valid.
+    :type maximum_length: :ref:`int <python:int>`
+
     :returns: ``value`` / ``None``
-    :rtype: :ref:`str <python:str>` / ``None``
+    :rtype: iterable / ``None``
 
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises TypeError: if ``value`` is not a valid iterable or ``None``
+    :raises ValueError: if ``minimum_length`` is supplied and the length of
+      ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
+      ``False``
+    :raises ValueError: if ``maximum_length`` is supplied and the length of
+      ``value`` is more than the ``maximum_length``
     """
     if not value and not allow_empty:
         raise ValueError('value cannot be empty')
     elif not value:
         return None
 
+    minimum_length = integer(minimum_length, allow_empty = True)
+    maximum_length = integer(maximum_length, allow_empty = True)
+
     if isinstance(value, forbid_literals) or not hasattr(value, '__iter__'):
         raise TypeError('value must be a valid iterable')
+
+    if value and minimum_length is not None and len(value) < minimum_length:
+        raise ValueError('value has fewer items than the minimum length')
+
+    if value and maximum_length is not None and len(value) > maximum_length:
+        raise ValueError('value has more items than the maximum length')
 
     return value
 
@@ -524,8 +583,12 @@ def timezone(value,
       Defaults to ``False``.
     :type allow_empty: :ref:`bool <python:bool>`
 
+    :param positive: Indicates whether the ``value`` is positive or negative
+      (only has meaning if ``value`` is a string). Defaults to ``True``.
+    :type positive: :ref:`bool <python:bool>`
+
     :returns: ``value`` / ``None``
-    :rtype: :ref:`timezone <python:datetime.timezone>` / ``None``
+    :rtype: :ref:`tzinfo <python:datetime.tzinfo>` / ``None``
 
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises TypeError: if ``value`` is not a valid value type or ``None``
@@ -604,6 +667,14 @@ def none(value,
          allow_empty = False,
          coerce_value = False):
     """Validate that ``value`` is ``None``
+
+    .. note::
+
+      If ``coerce_value`` is ``True``, the function will always return ``None``
+      even if ``value`` is not *strictly* Python's ``NoneType``.
+
+      If ``coerce_value`` is ``False``, the function will raise an error if
+      ``value`` is not strictly Python's ``NoneType``.
 
     :param value: The value to validate.
 
