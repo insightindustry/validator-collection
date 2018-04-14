@@ -85,7 +85,7 @@ pygments_style = 'sphinx'
 # Autodoc configuration settings.
 autoclass_content = 'both'
 autodoc_member_order = 'groupwise'
-
+add_module_names = False
 
 # -- Options for HTML output -------------------------------------------------
 

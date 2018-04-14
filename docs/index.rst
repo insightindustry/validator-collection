@@ -32,6 +32,8 @@ Validator Collection
   :caption: Contents:
 
   Home <self>
+  Validator Reference <validators>
+  Checker Reference <checkers>
   Contributing <contributing>
   Testing Reference <testing>
   Glossary <glossary>
@@ -57,6 +59,59 @@ To install the **Validator Collection**, just execute:
 
   $ pip install validator-collection
 
+***********************************
+Available Validators and Checkers
+***********************************
+
+.. tabs::
+
+  .. tab:: Validators
+
+    .. list-table::
+      :widths: 30 30 30 30 30
+      :header-rows: 1
+
+      * - Core
+        - Date/Time
+        - Numbers
+        - File-related
+        - Internet-related
+      * - :func:`dict <validator_collection.validators.dict>`
+        - :func:`date <validator_collection.validators.date>`
+        - :func:`numeric <validator_collection.validators.numeric>`
+        - :func:`bytesIO <validator_collection.validators.bytesIO>`
+        - :func:`email <validator_collection.validators.email>`
+      * - :func:`string <validator_collection.validators.string>`
+        - :func:`datetime <validator_collection.validators.datetime>`
+        - :func:`integer <validator_collection.validators.integer>`
+        - :func:`stringIO <validator_collection.validators.stringIO>`
+        - :func:`url <validator_collection.validators.url>`
+      * - :func:`iterable <validator_collection.validators.iterable>`
+        - :func:`time <validator_collection.validators.time>`
+        - :func:`float <validator_collection.validators.float>`
+        - :func:`path <validator_collection.validators.path>`
+        - :func:`ipv4 <validator_collection.validators.ipv4>`
+      * - :func:`none <validator_collection.validators.none>`
+        - :func:`timezone <validator_collection.validators.timezone>`
+        - :func:`fraction <validator_collection.validators.fraction>`
+        - :func:`path_exists <validator_collection.validators.path_exists>`
+        - :func:`ipv6 <validator_collection.validators.ipv6>`
+      * - :func:`not_empty <validator_collection.validators.not_empty>`
+        -
+        - :func:`decimal <validator_collection.validators.decimal>`
+        - :func:`file_exists <validator_collection.validators.file_exists>`
+        - :func:`mac_address <validator_collection.validators.mac_address>`
+      * - :func:`uuid`
+        -
+        -
+        - :func:`directory_exists <validator_collection.validators.directory_exists>`
+        -
+
+
+  .. tab:: Checkers
+
+    * Checkers go here
+
 ************************************
 Hello, World and Standard Usage
 ************************************
@@ -66,7 +121,8 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  import validator_collection as validators
+  import validator_collection.validators as validators
+  import validator_collection.checkers as checkers
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
@@ -83,13 +139,13 @@ much identical. Here's how it works:
   email_address = validators.email('', allow_empty = True)
   # The value of email_address will now be None
 
-  is_email_address = validators.is_email('test@domain.dev')
+  is_email_address = checkers.is_email('test@domain.dev')
   # The value of is_email_address will now be True
 
-  is_email_address = validators.is_email('this-is-an-invalid-email')
+  is_email_address = checkers.is_email('this-is-an-invalid-email')
   # The value of is_email_address will now be False
 
-  is_email_address = validators.is_email(None)
+  is_email_address = checkers.is_email(None)
   # The value of is_email_address will now be False
 
 Pretty simple, right? Let's break it down just in case: Each validator comes in
@@ -173,23 +229,6 @@ validation fails. They will instead return ``False``.
   have additional options which are used to make sure the value meets criteria that
   you set for it. These options are always *optional* and are included as keyword
   arguments *after* the input value argument. They are documented for each checker below.
-
-
-*********************
-Validator Reference
-*********************
-
-Validators
-============
-
-.. automodule:: validator_collection._validators
-  :members:
-
-Checkers
-==========
-
-.. automodule:: validator_collection._checkers
-  :members:
 
 
 Indices and tables
