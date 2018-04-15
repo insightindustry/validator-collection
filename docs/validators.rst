@@ -41,6 +41,11 @@ Validator Reference
     -
     - :func:`directory_exists <validator_collection.validators.directory_exists>`
     -
+  * - :func:`valid_variable_name <validator_collection.validators.valid_variable_name>`
+    -
+    -
+    -
+    -
 
 .. module:: validator_collection.validators
 
@@ -76,6 +81,11 @@ uuid
 -------
 
 .. autofunction:: uuid
+
+valid_variable_name
+---------------------
+
+.. autofunction:: valid_variable_name
 
 Date / Time
 ===============
