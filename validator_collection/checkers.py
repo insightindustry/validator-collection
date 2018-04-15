@@ -11,6 +11,104 @@ import validator_collection.validators as validators
 from validator_collection._compat import integer_types
 
 
+
+def is_between(value,
+               minimum = None,
+               maximum = None):
+    """Indicate whether ``value`` is greater than or equal to a supplied ``minimum``
+    and/or less than or equal to ``maximum``.
+
+    .. note::
+
+      This function works on any ``value`` that support comparison operators,
+      whether they are numbers or not. Technically, this means that ``value``,
+      ``minimum``, or ``maximum`` need to implement the Python magic methods
+      :ref:`__lte__ <python:__lte__>` and :ref:`__gte__ <python:__gte__>`.
+
+      If ``value``, ``minimum``, or ``maximum`` do not support comparison
+      operators, they will raise :ref:`NotImplemented <python:NotImplemented>`.
+
+    :param value: The ``value`` to check.
+    :type value: anything that supports comparison operators
+
+    :param minimum: If supplied, will return ``True`` if ``value`` is greater than or
+      equal to this value.
+    :type minimum: anything that supports comparison operators / ``None``
+
+    :param maximum: If supplied, will return ``True`` if ``value`` is less than or
+      equal to this value.
+    :type maximum: anything that supports comparison operators / ``None``
+
+    :returns: ``True`` if ``value`` is greater than or equal to a supplied ``minimum``
+      and less than or equal to a supplied ``maximum``. Otherwise, returns ``False``.
+    :rtype: :ref:`bool <python:bool>`
+
+    :raises NotImplemented: if ``value``, ``minimum``, or ``maximum`` do not
+      support comparison operators
+    :raises ValueError: if both ``minimum`` and ``maximum`` are ``None``
+    """
+    if minimum is None and maximum is None:
+        raise ValueError('minimum and maximum cannot both be None')
+
+    if value is None:
+        return False
+
+    if minimum is not None and maximum is None:
+        return value >= minimum
+    elif minimum is None and maximum is not None:
+        return value <= maximum
+    elif minimum is not None and maximum is not None:
+        return value >= minimum and value <= maximum
+
+
+def has_length(value,
+               minimum = None,
+               maximum = None):
+    """Indicate whether ``value`` has a length greater than or equal to a
+      supplied ``minimum`` and/or less than or equal to ``maximum``.
+
+    .. note::
+
+      This function works on any ``value`` that supports the
+      :ref:`len() <python:len>` operation. This means that ``value`` must implement
+      the :ref:`__len__ <python:__len__>` magic method.
+
+      If ``value`` does not support length evaluation, the checker will raise
+      :ref:`NotImplemented <python:NotImplemented>`.
+
+    :param value: The ``value`` to check.
+    :type value: anything that supports length evaluation
+
+    :param minimum: If supplied, will return ``True`` if ``value`` is greater than or
+      equal to this value.
+    :type minimum: numeric
+
+    :param maximum: If supplied, will return ``True`` if ``value`` is less than or
+      equal to this value.
+    :type maximum: numeric
+
+    :returns: ``True`` if ``value`` has length greater than or equal to a
+      supplied ``minimum`` and less than or equal to a supplied ``maximum``.
+      Otherwise, returns ``False``.
+    :rtype: :ref:`bool <python:bool>`
+
+    :raises TypeError: if ``value`` does not support length evaluation
+    :raises ValueError: if both ``minimum`` and ``maximum`` are ``None``
+    """
+    if minimum is None and maximum is None:
+        raise ValueError('minimum and maximum cannot both be None')
+
+    length = len(value)
+    minimum = validators.numeric(minimum,
+                                 allow_empty = True)
+    maximum = validators.numeric(maximum,
+                                 allow_empty = True)
+
+    return is_between(length,
+                      minimum = minimum,
+                      maximum = maximum)
+
+
 def is_uuid(value):
     """Indicate whether ``value`` is a :ref:`UUID <python:uuid.UUID>`
 

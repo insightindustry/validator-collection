@@ -174,6 +174,49 @@ def test_is_iterable(value, fails, allow_empty, minimum_length, maximum_length):
     assert result == expects
 
 
+@pytest.mark.parametrize('value, fails, minimum, maximum, expects', [
+    (5, False, None, 10, True),
+    (5, False, 1, None, True),
+    (5, False, 1, 10, True),
+    (5, False, 10, None, False),
+    (5, False, None, 3, False),
+    (5, True, None, None, ValueError)
+])
+def test_is_between(value, fails, minimum, maximum, expects):
+    if not fails:
+        result = checkers.is_between(value,
+                                     minimum = minimum,
+                                     maximum = maximum)
+        assert result == expects
+    else:
+        with pytest.raises(expects):
+            result = checkers.is_between(value,
+                                         minimum = minimum,
+                                         maximum = maximum)
+
+
+@pytest.mark.parametrize('value, fails, minimum, maximum, expects', [
+    ('test', False, None, 10, True),
+    ('test', False, 1, None, True),
+    ('test', False, 1, 10, True),
+    ('test', False, 10, None, False),
+    ('test', False, None, 3, False),
+    ('test', True, None, None, ValueError),
+    (None, True, None, 5, TypeError)
+])
+def test_has_length(value, fails, minimum, maximum, expects):
+    if not fails:
+        result = checkers.has_length(value,
+                                     minimum = minimum,
+                                     maximum = maximum)
+        assert result == expects
+    else:
+        with pytest.raises(expects):
+            result = checkers.has_length(value,
+                                         minimum = minimum,
+                                         maximum = maximum)
+
+
 @pytest.mark.parametrize('value, fails, allow_empty', [
     (['test', 123], False, False),
     ([], True, False),

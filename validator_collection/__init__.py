@@ -19,12 +19,12 @@ from validator_collection.validators import bytesIO, date, dict, decimal, \
     ipv4, ipv6, integer, iterable, mac_address, none, numeric, not_empty, path, \
     path_exists, string, stringIO, time, timezone, url, uuid, variable_name
 
-from validator_collection.checkers import is_uuid, is_email, is_url, is_string, \
-    is_iterable, is_datetime, is_date, is_time, is_timezone, is_not_empty, is_none, \
-    is_numeric, is_decimal, is_float, is_integer, is_fraction, is_variable_name, \
-    is_ipv4, is_ipv6, is_ip_address, is_mac_address, is_dict, is_stringIO, is_bytesIO, \
-    is_pathlike, is_on_filesystem, is_file, is_directory, is_type, are_dicts_equivalent,\
-    are_equivalent
+from validator_collection.checkers import is_between, has_length, is_uuid, is_email,\
+    is_url, is_string, is_iterable, is_datetime, is_date, is_time, is_timezone, \
+    is_not_empty, is_none, is_numeric, is_decimal, is_float, is_integer, is_fraction,\
+    is_variable_name, is_ipv4, is_ipv6, is_ip_address, is_mac_address, is_dict, \
+    is_stringIO, is_bytesIO, is_pathlike, is_on_filesystem, is_file, is_directory, \
+    is_type, are_dicts_equivalent, are_equivalent
 
 __all__ = [
     'bytesIO',
@@ -55,6 +55,8 @@ __all__ = [
     'uuid',
     'variable_name',
 
+    'is_between',
+    'has_length',
     'is_uuid',
     'is_email',
     'is_url',
