@@ -24,11 +24,18 @@ is_py2 = (_ver[0] == 2)
 
 #: Python 3.x?
 is_py3 = (_ver[0] == 3)
+is_py36 = (_ver[0] == 3 and _ver[1] >= 6)
+is_py34 = (_ver[0] == 3 and _ver[1] == 4)
+is_py35 = (_ver[0] == 3 and _ver[1] == 5)
 
 try:
     import simplejson as json
 except ImportError:
     import json
+
+if is_py2 or is_py34:
+    POSITIVE_INFINITY = float('+inf')
+    NEGATIVE_INFINITY = float('-inf')
 
 if is_py2:
     import regex
@@ -41,8 +48,6 @@ if is_py2:
     integer_types = (int, long)
     long = long
     xrange = xrange
-    POSITIVE_INFINITY = float('+inf')
-    NEGATIVE_INFINITY = float('-inf')
 
     STDOFFSET = datetime_.timedelta(seconds = -time_.timezone)
     if time_.daylight:
@@ -107,8 +112,9 @@ elif is_py3:
     numeric_types = (int, float, Decimal, Fraction)
     integer_types = (int,)
     long = int
-    POSITIVE_INFINITY = math.inf
-    NEGATIVE_INFINITY = -math.inf
+    if is_py35 or is_py36:
+        POSITIVE_INFINITY = math.inf
+        NEGATIVE_INFINITY = -math.inf
     TimeZone = datetime_.timezone
 else:
     raise NotImplementedError()

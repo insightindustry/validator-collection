@@ -1209,13 +1209,13 @@ def path(value,
     elif not value:
         return None
 
-    if is_py2:
+    if hasattr(os, 'PathLike'):
+        if not isinstance(value, (str, bytes, os.PathLike)):                    # pylint: disable=E1101
+            raise ValueError('value (%s) is not a valid path' % value)
+    else:
         try:
             os.path.exists(value)
         except TypeError:
-            raise ValueError('value (%s) is not a valid path' % value)
-    elif is_py3:
-        if not isinstance(value, (str, bytes, os.PathLike)):                    # pylint: disable=E1101
             raise ValueError('value (%s) is not a valid path' % value)
 
     return value
