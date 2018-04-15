@@ -51,25 +51,30 @@ def test_dict(value, fails, allow_empty):
             value = validators.dict(value, allow_empty = allow_empty)
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, minimum_length, maximum_length, whitespace_padding, expected_length', [
-    ('test', False, False, None, None, False, 4),
-    ('', False, True, None, None, False, 0),
-    ('', True, False, None, None, False, 0),
-    (None, False, True, None, None, False, 0),
-    (None, True, False, None, None, False, 0),
+@pytest.mark.parametrize('value, fails, allow_empty, coerce_value, minimum_length, maximum_length, whitespace_padding, expected_length', [
+    ('test', False, False, False, None, None, False, 4),
+    ('', False, True, False, None, None, False, 0),
+    ('', True, False, False, None, None, False, 0),
+    (None, False, True, False, None, None, False, 0),
+    (None, True, False, False, None, None, False, 0),
 
-    ('test', False, False, 4, None, False, 4),
-    ('test', False, False, 1, None, False, 4),
-    ('test', True, False, 50, None, False, 4),
-    ('test', False, False, 50, None, True, 50),
+    ('test', False, False, False, 4, None, False, 4),
+    ('test', False, False, False, 1, None, False, 4),
+    ('test', True, False, False, 50, None, False, 4),
+    ('test', False, False, False, 50, None, True, 50),
 
-    ('test', False, False, None, 5, False, 4),
-    ('test', False, False, None, 4, False, 4),
-    ('test', True, False, None, 3, False, 4),
+    ('test', False, False, False, None, 5, False, 4),
+    ('test', False, False, False, None, 4, False, 4),
+    ('test', True, False, False, None, 3, False, 4),
+
+    (123, True, False, False, None, None, False, None),
+    (123, False, False, True, None, None, False, 3),
+
 ])
 def test_string(value,
                 fails,
                 allow_empty,
+                coerce_value,
                 minimum_length,
                 maximum_length,
                 whitespace_padding,
@@ -78,6 +83,7 @@ def test_string(value,
     if not fails:
         validated = validators.string(value,
                                       allow_empty = allow_empty,
+                                      coerce_value = coerce_value,
                                       minimum_length = minimum_length,
                                       maximum_length = maximum_length,
                                       whitespace_padding = whitespace_padding)
@@ -87,9 +93,10 @@ def test_string(value,
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             validated = validators.string(value,
                                           allow_empty = allow_empty,
+                                          coerce_value = coerce_value,
                                           minimum_length = minimum_length,
                                           maximum_length = maximum_length,
                                           whitespace_padding = whitespace_padding)

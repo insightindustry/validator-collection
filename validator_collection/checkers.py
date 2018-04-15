@@ -8,7 +8,7 @@
 # pylint: disable=W0703
 
 import validator_collection.validators as validators
-from validator_collection._compat import integer_types
+from validator_collection._compat import integer_types, basestring
 
 
 
@@ -158,12 +158,17 @@ def is_url(value):
 
 
 def is_string(value,
+              coerce_value = False,
               minimum_length = None,
               maximum_length = None,
               whitespace_padding = False):
     """Indicate whether ``value`` is a URL.
 
     :param value: The value to evaluate.
+
+    :param coerce_value: If ``True``, will check whether ``value`` can be coerced
+      to a string if it is not already. Defaults to ``False``.
+    :type coerce_value: :ref:`bool <python:bool>`
 
     :param minimum_length: If supplied, indicates the minimum number of characters
       needed to be valid.
@@ -186,7 +191,7 @@ def is_string(value,
     minimum_length = validators.integer(minimum_length, allow_empty = True)
     maximum_length = validators.integer(maximum_length, allow_empty = True)
 
-    if isinstance(value, str) and not value:
+    if isinstance(value, basestring) and not value:
         if minimum_length and minimum_length > 0 and not whitespace_padding:
             return False
 
@@ -194,6 +199,7 @@ def is_string(value,
 
     try:
         value = validators.string(value,
+                                  coerce_value = coerce_value,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length,
                                   whitespace_padding = whitespace_padding)

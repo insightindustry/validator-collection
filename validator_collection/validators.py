@@ -18,7 +18,7 @@ from ast import parse
 
 from validator_collection._compat import numeric_types, integer_types, datetime_types,\
     date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
-    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_
+    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring
 
 
 URL_REGEX = re.compile(
@@ -66,6 +66,8 @@ IPV6_REGEX = re.compile(
     '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)(?:%25(?:[A-Za-z0-9\\-._~]|%[0-9A-Fa-f]{2})+)?$'
 )
 
+## CORE
+
 def uuid(value, allow_empty = False):
     """Validate that ``value`` is a valid :ref:`UUID <python:uuid.UUID>`.
 
@@ -98,79 +100,9 @@ def uuid(value, allow_empty = False):
 
     return value
 
-
-def email(value, allow_empty = False):
-    """Validate that ``value`` is a valid email address.
-
-    :param value: The value to validate.
-    :type value: :ref:`str <python:str>` / ``None``
-
-    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty. If
-      ``False``, raises a :ref:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
-    :type allow_empty: :ref:`bool <python:bool>`
-
-    :returns: ``value`` / ``None``
-    :rtype: :ref:`str <python:str>` / ``None``
-
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises TypeError: if ``value`` is not a valid email address or ``None``
-    """
-    if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
-    elif not value:
-        return None
-
-    if not isinstance(value, str):
-        raise TypeError('value must be a valid string')
-
-    value = value.lower()
-
-    is_valid = EMAIL_REGEX.match(value)
-
-    if not is_valid:
-        raise TypeError('value must be a valid email address')
-
-    return value
-
-
-def url(value, allow_empty = False):
-    """Validate that ``value`` is a valid URL.
-
-    :param value: The value to validate.
-    :type value: :ref:`str <python:str>` / ``None``
-
-    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty. If
-      ``False``, raises a :ref:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
-    :type allow_empty: :ref:`bool <python:bool>`
-
-    :returns: ``value`` / ``None``
-    :rtype: :ref:`str <python:str>` / ``None``
-
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises TypeError: if ``value`` is not a valid URL or ``None``
-    """
-    if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
-    elif not value:
-        return None
-
-    if not isinstance(value, str):
-        raise TypeError('value must be a valid string')
-
-    value = value.lower()
-
-    is_valid = URL_REGEX.match(value)
-
-    if not is_valid:
-        raise TypeError('value must be a valid URL')
-
-    return value
-
-
 def string(value,
            allow_empty = False,
+           coerce_value = False,
            minimum_length = None,
            maximum_length = None,
            whitespace_padding = False):
@@ -183,6 +115,11 @@ def string(value,
       ``False``, raises a :ref:`ValueError <python:ValueError>` if ``value`` is empty.
       Defaults to ``False``.
     :type allow_empty: :ref:`bool <python:bool>`
+
+    :param coerce_value: If ``True``, will attempt to coerce ``value`` to a string if
+      it is not already. If ``False``, will raise a :class:`ValueError` if ``value``
+      is not a string. Defaults to ``False``.
+    :type coerce_value: :ref:`bool <python:bool>`
 
     :param minimum_length: If supplied, indicates the minimum number of characters
       needed to be valid.
@@ -200,7 +137,8 @@ def string(value,
     :rtype: :ref:`str <python:str>` / ``None``
 
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises TypeError: if ``value`` is not a valid string or ``None``
+    :raises ValueError: if ``value`` is not a valid string and ``coerce_value``
+      is ``False``
     :raises ValueError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
@@ -215,7 +153,10 @@ def string(value,
     minimum_length = integer(minimum_length, allow_empty = True)
     maximum_length = integer(maximum_length, allow_empty = True)
 
-    value = str(value)
+    if coerce_value:
+        value = str(value)
+    elif not isinstance(value, basestring):
+        raise ValueError('value (%s) is not a string' % value)
 
     if value and maximum_length and len(value) > maximum_length:
         raise ValueError('value (%s) exceeds maximum length')
@@ -283,6 +224,80 @@ def iterable(value,
 
     if value and maximum_length is not None and len(value) > maximum_length:
         raise ValueError('value has more items than the maximum length')
+
+    return value
+
+
+## DATE / TIME
+
+## INTERNET-RELATED
+
+def email(value, allow_empty = False):
+    """Validate that ``value`` is a valid email address.
+
+    :param value: The value to validate.
+    :type value: :ref:`str <python:str>` / ``None``
+
+    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty. If
+      ``False``, raises a :ref:`ValueError <python:ValueError>` if ``value`` is empty.
+      Defaults to ``False``.
+    :type allow_empty: :ref:`bool <python:bool>`
+
+    :returns: ``value`` / ``None``
+    :rtype: :ref:`str <python:str>` / ``None``
+
+    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises TypeError: if ``value`` is not a valid email address or ``None``
+    """
+    if not value and not allow_empty:
+        raise ValueError('value cannot be empty')
+    elif not value:
+        return None
+
+    if not isinstance(value, str):
+        raise TypeError('value must be a valid string')
+
+    value = value.lower()
+
+    is_valid = EMAIL_REGEX.match(value)
+
+    if not is_valid:
+        raise TypeError('value must be a valid email address')
+
+    return value
+
+
+def url(value, allow_empty = False):
+    """Validate that ``value`` is a valid URL.
+
+    :param value: The value to validate.
+    :type value: :ref:`str <python:str>` / ``None``
+
+    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty. If
+      ``False``, raises a :ref:`ValueError <python:ValueError>` if ``value`` is empty.
+      Defaults to ``False``.
+    :type allow_empty: :ref:`bool <python:bool>`
+
+    :returns: ``value`` / ``None``
+    :rtype: :ref:`str <python:str>` / ``None``
+
+    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises TypeError: if ``value`` is not a valid URL or ``None``
+    """
+    if not value and not allow_empty:
+        raise ValueError('value cannot be empty')
+    elif not value:
+        return None
+
+    if not isinstance(value, str):
+        raise TypeError('value must be a valid string')
+
+    value = value.lower()
+
+    is_valid = URL_REGEX.match(value)
+
+    if not is_valid:
+        raise TypeError('value must be a valid URL')
 
     return value
 
@@ -1374,8 +1389,8 @@ def dict(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns ``None`` if ``value`` is ``None``.
-      If  ``False``, raises a :ref:`ValueError` if ``value`` is ``None``.
+    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty.
+      If  ``False``, raises a :ref:`ValueError` if ``value`` is empty.
       Defaults to ``False``.
     :type allow_empty: :ref:`bool <python:bool>`
 
@@ -1395,6 +1410,8 @@ def dict(value,
             value = json.loads(value)
         except Exception:
             raise ValueError('value (%s) cannot be coerced to a dict)' % original_value)
+
+        value = dict(value)
 
     if not isinstance(value, dict_):
         raise ValueError('value (%s) is not a dict' % original_value)

@@ -124,23 +124,28 @@ def test_is_dict(value, expects):
     assert result == expects
 
 
-@pytest.mark.parametrize('value, expects, minimum_length, maximum_length, whitespace_padding', [
-    ('test', True, None, None, False),
-    ('', True, None, None, False),
-    (None, False, None, None, False),
+@pytest.mark.parametrize('value, expects, coerce_value, minimum_length, maximum_length, whitespace_padding', [
+    ('test', True, False, None, None, False),
+    ('', True, False, None, None, False),
+    (None, False, False, None, None, False),
 
-    ('test', True, 4, None, False),
-    ('test', True, 1, None, False),
-    ('test', False, 50, None, False),
-    ('test', True, 50, None, True),
+    ('test', True, False, 4, None, False),
+    ('test', True, False, 1, None, False),
+    ('test', False, False, 50, None, False),
+    ('test', True, False, 50, None, True),
 
-    ('test', True, None, 5, False),
-    ('test', True, None, 4, False),
-    ('test', False, None, 3, False),
+    ('test', True, False, None, 5, False),
+    ('test', True, False, None, 4, False),
+    ('test', False, False, None, 3, False),
+
+    (123, False, False, None, None, False),
+    (123, True, True, None, None, False),
+
 
 ])
-def test_is_string(value, expects, minimum_length, maximum_length, whitespace_padding):
+def test_is_string(value, expects, coerce_value, minimum_length, maximum_length, whitespace_padding):
     result = checkers.is_string(value,
+                                coerce_value = coerce_value,
                                 minimum_length = minimum_length,
                                 maximum_length = maximum_length,
                                 whitespace_padding = whitespace_padding)
