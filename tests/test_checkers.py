@@ -170,6 +170,7 @@ def test_is_string(value, expects, coerce_value, minimum_length, maximum_length,
     (['test', 123], True, False, 3, None),
     (['test', 123], True, False, None, 1),
 
+    (str, True, False, None, None),
 ])
 def test_is_iterable(value, fails, allow_empty, minimum_length, maximum_length):
     expects = not fails

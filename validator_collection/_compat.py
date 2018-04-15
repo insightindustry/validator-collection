@@ -61,7 +61,7 @@ if is_py2:
             :type offset: numeric
 
             :param tzname: The name assigned to the timezone.
-            :type tzname: :ref:`str <python:str>` / ``None``
+            :type tzname: :class:`str <python:str>` / :class:`None <python:None>`
 
             """
             if offset and isinstance(offset, numeric_types):

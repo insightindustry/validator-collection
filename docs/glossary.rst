@@ -10,5 +10,5 @@ Glossary
 
   Validator
     A function which takes an input value and ensures that it is what (the type
-    or contents) you expect it to be. Will return the value or ``None`` depending
+    or contents) you expect it to be. Will return the value or :class:`None <python:None>` depending
     on the arguments you pass to it.

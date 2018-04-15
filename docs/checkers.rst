@@ -2,7 +2,7 @@
 Checker Reference
 **********************************
 
-.. include:: checker_list.rst
+.. include:: _checker_list.rst
 
 .. module:: validator_collection.checkers
 

@@ -174,6 +174,7 @@ Given the example above, the third test (``test_modification2``) will fail becau
 .. target-notes::
 
 .. _`pytest`: https://docs.pytest.org/en/latest/
+.. _`tox`: https://tox.readthedocs.io
 .. _`mocks`: https://en.wikipedia.org/wiki/Mock_object
 .. _`stubs`: https://en.wikipedia.org/wiki/Test_stub
 """

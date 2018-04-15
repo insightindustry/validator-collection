@@ -39,8 +39,7 @@ Validator Collection
   Glossary <glossary>
 
 The **Validator Collection** is a Python library that provides more than 60
-validator functions that can be used to validate the type and contents of an
-input value.
+functions that can be used to validate the type and contents of an input value.
 
 Each function has a consistent syntax for easy use, and has been tested on
 Python 2.7, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, and 3.6.
@@ -145,7 +144,7 @@ will both return an ``int`` of ``1``.
 
 If the value you're validating is empty/falsey and ``allow_empty`` is ``False``,
 then the validator will raise a :class:`ValueError` exception. If ``allow_empty``
-is ``True``, then an empty/falsey input value will be convertd to a ``None``
+is ``True``, then an empty/falsey input value will be convertd to a :class:`None <python:None>`
 value.
 
 .. caution::
@@ -156,14 +155,15 @@ If the value you're validating fails its validation for some reason, the validat
 may raise different exceptions depending on the reason. In most cases, this will
 be a :class:`ValueError` though it can sometimes be a :class:`TypeError`, or an
 :class:`AttributeError`, etc. For specifics on each validator's likely exceptions
-and what can cause them, please review the :doc:`Validator Reference`.
+and what can cause them, please review the :doc:`Validator Reference <validators>`.
 
 .. hint::
 
-  Some validators (particularly numeric ones like :ref:`integer <validators.integer>`)
-  have additional options which are used to make sure the value meets criteria that
-  you set for it. These options are always included as keyword arguments *after*
-  the ``allow_empty`` argument, and are documented for each validator below.
+  Some validators (particularly numeric ones like
+  :func:`integer <validator_collection.validators.integer>`) have additional
+  options which are used to make sure the value meets criteria that you set for
+  it. These options are always included as keyword arguments *after* the
+  ``allow_empty`` argument, and are documented for each validator below.
 
 .. _checkers-explained:
 
@@ -176,7 +176,7 @@ is what you expect it to be, and tells you ``True``/``False`` whether it is or n
 .. important::
 
   Checkers do *not* verify or convert object types. You can think of a checker as
-  a tool that tells you whether its corresponding :ref:`validator <validators-exlained>`
+  a tool that tells you whether its corresponding :ref:`validator <validators-explained>`
   would fail. See :ref:`Best Practices <best-practices>` for tips and tricks on
   using the two together.
 
@@ -198,16 +198,17 @@ validation fails. They will instead return ``False``.
 .. hint::
 
   Some checkers (particularly numeric ones like
-  :ref:`is_integer <validator_collection.checkers.is_integer>`) have additional
+  :func:`is_integer <validator_collection.checkers.is_integer>`) have additional
   options which are used to make sure the value meets criteria that you set for
   it. These options are always *optional* and are included as keyword arguments
   *after* the input value argument. For details, please see the
-  :doc:`Checker Reference`.
+  :doc:`Checker Reference <checkers>`.
 
 .. _best-practices:
 
+*****************
 Best Practices
-=================
+*****************
 
 :ref:`Checkers <checkers-explained>` and :ref:`Validators <validators-explained>`
 are designed to be used together. You can think of them as a way to quickly and
@@ -326,8 +327,9 @@ will *typically* be an email address, and not something weird (like a number or
 something). So we just try the validator - and if validation fails, we handle
 the error appropriately.
 
+********************
 Indices and tables
-==================
+********************
 
 * :ref:`genindex`
 * :ref:`modindex`
