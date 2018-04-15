@@ -32,10 +32,16 @@ Validator Collection
       -
         .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=latest
           :target: https://travis-ci.org/insightindustry/validator-collection
+
+        .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/master/graph/badge.svg
+          :target: https://codecov.io/gh/insightindustry/validator-collection
     * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
       -
         .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=develop
           :target: https://travis-ci.org/insightindustry/validator-collection
+
+        .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/develop/graph/badge.svg
+          :target: https://codecov.io/gh/insightindustry/validator-collection
 
 .. toctree::
   :hidden:
@@ -342,21 +348,13 @@ the error appropriately.
 Dependencies
 ********************
 
-.. tabs::
+.. include:: _dependencies.rst
 
-  .. tab:: Python 3.x
+******************************
+Unit Tests and Code Coverage
+******************************
 
-    None. Uses the standard library.
-
-  .. tab:: Python 2.x
-
-    The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
-    Python's (buggy) standard :class:`re <python:re>` module.
-
-    .. note::
-
-      This conditional dependency will be automatically installed if you are
-      installing to Python 2.x.
+.. include:: _unit_tests_code_coverage.rst
 
 ********************
 Indices and tables

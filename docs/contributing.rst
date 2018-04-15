@@ -7,6 +7,8 @@ Contributing to the Validator Collection
   As a general rule of thumb, the **Validator Collection** applies
   :pep:`PEP 8 <8>` styling, with some important differences.
 
+.. include:: _unit_tests_code_coverage.rst
+
 .. sidebar:: What makes an API idiomatic?
 
   One of my favorite ways of thinking about idiomatic design comes from a `talk
@@ -25,6 +27,7 @@ Contributing to the Validator Collection
 
 
 .. contents:: Contents:
+  :local:
   :depth: 3
 
 Design Philosophy
@@ -172,6 +175,13 @@ Docstrings
 ^^^^^^^^^^^
 * Docstrings are used to document the actual source code itself. When
   writing docstrings we adhere to the conventions outlined in :pep:`257`.
+
+.. _dependencies:
+
+Dependencies
+==============
+
+.. include:: _dependencies.rst
 
 .. _preparing-development-environment:
 
