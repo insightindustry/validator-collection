@@ -1210,13 +1210,10 @@ def path(value,
         return None
 
     if hasattr(os, 'PathLike'):
-        if not isinstance(value, (str, bytes, os.PathLike)):                    # pylint: disable=E1101
+        if not isinstance(value, (str, bytes, int, os.PathLike)):                    # pylint: disable=E1101
             raise ValueError('value (%s) is not a valid path' % value)
     else:
-        if not is_py2:
-            if not isinstance(value, (int, str, bytes)):
-                raise ValueError('value (%s) is not a valid path' % value)
-        else:
+        if not isinstance(value, int):
             try:
                 os.path.exists(value)
             except TypeError:

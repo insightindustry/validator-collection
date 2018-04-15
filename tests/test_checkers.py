@@ -641,7 +641,8 @@ def test_is_stringIO(value, fails, allow_empty):
     ('.', False, False),
     ('./', False, False),
     (os.path.abspath('.'), False, False),
-    (123, True, False),
+    (123, False, False),
+    (1.5, True, False),
     ("", True, False),
     (None, True, False),
 ])
