@@ -240,15 +240,17 @@ def test_is_not_empty(value, fails, allow_empty):
     assert result == expects
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, coerce_value', [
-    (['test', 123], True, False, True),
-    ([], True, False, False),
-    (None, False, False, False),
-    ('', True, False, False),
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    (['test', 123], True, False),
+    ([], True, False),
+    ([], False, True),
+    (None, False, False),
+    ('', True, False),
+    ('', False, True),
 ])
-def test_is_none(value, fails, allow_empty, coerce_value):
+def test_is_none(value, fails, allow_empty):
     expects = not fails
-    result = checkers.is_none(value)
+    result = checkers.is_none(value, allow_empty = allow_empty)
     assert result == expects
 
 

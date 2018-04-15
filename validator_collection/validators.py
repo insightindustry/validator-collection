@@ -100,6 +100,7 @@ def uuid(value, allow_empty = False):
 
     return value
 
+
 def string(value,
            allow_empty = False,
            coerce_value = False,
@@ -201,7 +202,7 @@ def iterable(value,
     :rtype: iterable / ``None``
 
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises TypeError: if ``value`` is not a valid iterable or ``None``
+    :raises ValueError: if ``value`` is not a valid iterable or ``None``
     :raises ValueError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
@@ -217,7 +218,7 @@ def iterable(value,
     maximum_length = integer(maximum_length, allow_empty = True)
 
     if isinstance(value, forbid_literals) or not hasattr(value, '__iter__'):
-        raise TypeError('value must be a valid iterable')
+        raise ValueError('value must be a valid iterable')
 
     if value and minimum_length is not None and len(value) < minimum_length:
         raise ValueError('value has fewer items than the minimum length')
@@ -226,6 +227,31 @@ def iterable(value,
         raise ValueError('value has more items than the maximum length')
 
     return value
+
+
+def none(value,
+         allow_empty = False):
+    """Validate that ``value`` is ``None``.
+
+    :param value: The value to validate.
+
+    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty but
+      **not** ``None``. If  ``False``, raises a :ref:`ValueError` if ``value``
+      is empty but **not** ``None``. Defaults to ``False``.
+    :type allow_empty: :ref:`bool <python:bool>`
+
+    :returns: ``None``
+
+    :raises ValueError: if ``allow_empty`` is ``False`` and ``value`` is empty
+      but **not** ``None`` and
+
+    """
+    if value is not None and not value and allow_empty:
+        pass
+    elif (value is not None and not value) or value:
+        raise ValueError('value must be None')
+
+    return None
 
 
 ## DATE / TIME
@@ -740,47 +766,6 @@ def not_empty(value, allow_empty = False):
         raise ValueError('value was empty')
 
     return value
-
-
-def none(value,
-         allow_empty = False,
-         coerce_value = False):
-    """Validate that ``value`` is ``None``
-
-    .. note::
-
-      If ``coerce_value`` is ``True``, the function will always return ``None``
-      even if ``value`` is not *strictly* Python's ``NoneType``.
-
-      If ``coerce_value`` is ``False``, the function will raise an error if
-      ``value`` is not strictly Python's ``NoneType``.
-
-    :param value: The value to validate.
-
-    :param allow_empty: If ``True``, returns ``None`` if ``value`` is empty but
-      not ``None``. If  ``False``, raises a :ref:`ValueError` if ``value``
-      is empty but not ``None``. Defaults to ``False``.
-    :type allow_empty: :ref:`bool <python:bool>`
-
-    :param coerce_value: If ``True``, returns ``None`` regardless of ``value``.
-      If ``False``, raises a :ref:`RequestPayloadError` if ``value`` is not ``None``.
-      Defaults to ``False``.
-    :type allow_empty: :ref:`bool <python:bool>`
-
-    :returns: ``value`` / ``None``
-
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    """
-    return_value = None
-
-    if coerce_value:
-        return_value = None
-    elif value is not None and not value and allow_empty:
-        return_value = None
-    elif (value is not None and not value) or value:
-        raise ValueError('value must be None')
-
-    return return_value
 
 
 def decimal(value,

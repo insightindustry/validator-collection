@@ -367,16 +367,20 @@ def is_not_empty(value):
     return True
 
 
-def is_none(value):
+def is_none(value, allow_empty = False):
     """Indicate whether ``value`` is ``None``.
 
     :param value: The value to evaluate.
+
+    :param allow_empty: If ``True``, accepts falsey values as equivalent to
+      ``None``. Defaults to ``False``.
+    :type allow_empty: :ref:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is ``None``, ``False`` if it is not.
     :rtype: :ref:`bool <python:bool>`
     """
     try:
-        value = validators.none(value)
+        value = validators.none(value, allow_empty = allow_empty)
     except Exception:
         return False
 

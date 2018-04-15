@@ -160,7 +160,7 @@ def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             validated = validators.iterable(value,
                                             allow_empty = allow_empty,
                                             minimum_length = minimum_length,
@@ -197,32 +197,24 @@ def test_not_empty(value, fails, allow_empty):
             validated = validators.not_empty(value, allow_empty = allow_empty)
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, coerce_value', [
-    (['test', 123], False, False, True),
-    ([], False, True, False),
-    ([], True, False, False),
-    (None, False, False, False),
-    ('', False, True, False),
-    ('', True, False, False),
-    ('', False, False, True)
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    (['test', 123], True, False),
+    ([], False, True),
+    ([], True, False),
+    (None, False, False),
+    ('', False, True),
+    ('', True, False),
 ])
-def test_none(value, fails, allow_empty, coerce_value):
+def test_none(value, fails, allow_empty):
     """Test the null validator."""
     if not fails:
         validated = validators.none(value,
-                                    allow_empty = allow_empty,
-                                    coerce_value = coerce_value)
-        if coerce_value:
-            assert validated is None
-        elif allow_empty and not value:
-            assert validated is None
-        else:
-            assert validated is None
+                                    allow_empty = allow_empty)
+        assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             validated = validators.none(value,
-                                        allow_empty = allow_empty,
-                                        coerce_value = coerce_value)
+                                        allow_empty = allow_empty)
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
