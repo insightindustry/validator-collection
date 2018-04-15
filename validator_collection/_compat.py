@@ -12,6 +12,7 @@ import math
 import sys
 from decimal import Decimal
 import datetime as datetime_
+from fractions import Fraction
 import time as time_
 
 import chardet
@@ -34,7 +35,7 @@ if is_py2:
     bytes = str
     str = unicode
     basestring = basestring
-    numeric_types = (int, long, float, Decimal)
+    numeric_types = (int, long, float, Decimal, Fraction)
     integer_types = (int, long)
     long = long
     xrange = xrange
@@ -100,7 +101,7 @@ elif is_py3:
     str = str
     bytes = bytes
     basestring = (str, bytes)
-    numeric_types = (int, float, Decimal)
+    numeric_types = (int, float, Decimal, Fraction)
     integer_types = (int,)
     long = int
     POSITIVE_INFINITY = math.inf
@@ -130,6 +131,13 @@ time_types.extend(numeric_types)
 time_types = tuple(time_types)
 
 tzinfo_types = [str,
+                datetime_.datetime,
+                datetime_.date,
                 datetime_.tzinfo,
+                datetime_.time,
                 TimeZone]
+tzinfo_types.extend(numeric_types)
 tzinfo_types = tuple(tzinfo_types)
+
+dict_ = dict
+float_ = float

@@ -18,7 +18,7 @@ from ast import parse
 
 from validator_collection._compat import numeric_types, datetime_types, date_types, \
     time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, NEGATIVE_INFINITY, \
-    TimeZone, json, is_py2, is_py3
+    TimeZone, json, is_py2, is_py3, dict_, float_
 
 
 URL_REGEX = re.compile(
@@ -62,6 +62,9 @@ EMAIL_REGEX = re.compile(
 
 MAC_ADDRESS_REGEX = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
 
+IPV6_REGEX = re.compile(
+    '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)(?:%25(?:[A-Za-z0-9\\-._~]|%[0-9A-Fa-f]{2})+)?$'
+)
 
 def uuid(value, allow_empty = False):
     """Validate that ``value`` is a valid :ref:`UUID <python:uuid.UUID>`.
@@ -342,14 +345,34 @@ def datetime(value,
                              'or POSIX timestamp')
     elif isinstance(value, str):
         try:
-            value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+            if 'T' in value:
+                value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+            else:
+                value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
         except ValueError:
             try:
-                value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+                if 'T' in value:
+                    value = datetime_.datetime.strptime(value, '%Y/%m/%dT%H:%M:%S')
+                else:
+                    value = datetime_.datetime.strptime(value, '%Y/%m/%d %H:%M:%S')
             except ValueError:
-                value = date(value)
+                try:
+                    if 'T' in value:
+                        value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+                    else:
+                        value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    try:
+                        if 'T' in value:
+                            value = datetime_.datetime.strptime(value,
+                                                                '%Y/%m/%dT%H:%M:%S')
+                        else:
+                            value = datetime_.datetime.strptime(value,
+                                                                '%Y/%m/%d %H:%M:%S')
+                    except ValueError:
+                        value = date(value)
 
-    if isinstance(value, datetime_.date):
+    if isinstance(value, datetime_.date) and not isinstance(value, datetime_.datetime):
         value = datetime_.datetime(value.year,                                  # pylint: disable=R0204
                                    value.month,
                                    value.day,
@@ -404,8 +427,8 @@ def date(value,
     elif not value:
         return None
 
-    minimum = datetime(minimum, allow_empty = True)
-    maximum = datetime(maximum, allow_empty = True)
+    minimum = date(minimum, allow_empty = True)
+    maximum = date(maximum, allow_empty = True)
 
     if not isinstance(value, date_types):
         raise ValueError('value must be a date object, datetime object, '
@@ -516,6 +539,8 @@ def time(value,
     elif isinstance(value, str):
         try:
             datetime_value = datetime(value)
+            print('datetime_value:')
+            print(datetime_value)
             value = datetime_value.time()
         except ValueError:
             try:
@@ -525,6 +550,8 @@ def time(value,
                 elif '-' in value:
                     components = value.split('-')
                     is_offset_positive = False
+                else:
+                    raise ValueError()
 
                 time_string = components[0]
                 if len(components) > 1:
@@ -572,7 +599,7 @@ def time(value,
 def timezone(value,
              allow_empty = False,
              positive = True):
-    """Validate that ``value`` is a valid :ref:`timezone <python:datetime.timezone>`.
+    """Validate that ``value`` is a valid :ref:`tzinfo <python:datetime.tzinfo>`.
 
     :param value: The value to validate.
     :type value: :ref:`str <python:str>` / :ref:`tzinfo <python:datetime.tzinfo>`
@@ -604,17 +631,53 @@ def timezone(value,
     if not isinstance(value, tzinfo_types):
         raise ValueError('value must be a tzinfo, '
                          'UTC offset in seconds expressed as a number, '
-                         'UTC offset expressed as string of form HH:MM')
+                         'UTC offset expressed as string of form +HH:MM')
+    elif isinstance(value, datetime_.datetime):
+        value = value.tzinfo
+    elif isinstance(value, datetime_.date):
+        return None
+    elif isinstance(value, datetime_.time):
+        return value.tzinfo
+    elif isinstance(value, timestamp_types):
+        return None
     elif isinstance(value, str):
+        if '+' not in value and '-' not in value:
+            try:
+                datetime_value = datetime(value)
+                return datetime_value.tzinfo
+            except ValueError:
+                raise ValueError('value must be a tzinfo, '
+                                 'UTC offset in seconds expressed as a number, '
+                                 'UTC offset expressed as string of form +HH:MM')
+        elif '-' in value:
+            try:
+                datetime_value = datetime(value)
+                return datetime_value.tzinfo
+            except ValueError:
+                pass
+
+        if '+' in value and not positive:
+            raise ValueError('expected a negative UTC offset but value is positive')
+        elif '-' in value and positive:
+            raise ValueError('expected a positive UTC offset but value is negative')
+
+        if '+' in value:
+            value = value[value.find('+'):]
+        elif '-' in value:
+            value = value[value.rfind('+'):]
+
+        value = value[1:]
+
         offset_components = value.split(':')
         if len(offset_components) != 2:
             raise ValueError('value must be a tzinfo, '
                              'UTC offset in seconds expressed as a number, '
-                             'UTC offset expressed as string of form HH:MM')
+                             'UTC offset expressed as string of form +HH:MM')
         hour = int(offset_components[0])
         minutes = int(offset_components[1])
 
         value = (hour * 60 * 60) + (minutes * 60)
+        print(value)
 
         if not positive:
             value = 0 - value
@@ -744,6 +807,11 @@ def decimal(value,
             value = decimal_.Decimal(value.strip())
         except decimal_.InvalidOperation:
             raise ValueError('value cannot be converted to a Decimal')
+    elif isinstance(value, fractions.Fraction):
+        try:
+            value = float(value)                                                # pylint: disable=R0204
+        except ValueError:
+            raise ValueError('value cannot be converted to a Decimal')
 
     value = numeric(value,
                     allow_empty = False,
@@ -786,20 +854,21 @@ def numeric(value,
       ``maximum``
 
     """
-    maximum = numeric(maximum, allow_empty = True)
-    minimum = numeric(minimum, allow_empty = True)
-
     if maximum is None:
         maximum = POSITIVE_INFINITY
+    else:
+        maximum = numeric(maximum)
     if minimum is None:
         minimum = NEGATIVE_INFINITY
+    else:
+        minimum = numeric(minimum)
 
     if value is None and not allow_empty:
         raise ValueError('value cannot be empty')
     elif value is not None:
         if isinstance(value, str):
             try:
-                value = float(value)
+                value = float_(value)
             except (ValueError, TypeError):
                 raise ValueError('value cannot be coerced to a numeric form')
         elif not isinstance(value, numeric_types):
@@ -859,7 +928,7 @@ def integer(value,
                     maximum = maximum)
 
     if value is not None:
-        value = int(math.ceil(value), base = base)
+        value = int(str(math.ceil(value)), base = base)
 
     return value
 
@@ -882,7 +951,7 @@ def float(value,
     :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     """
     value = _numeric_coercion(value,
-                              coercion_function = float,
+                              coercion_function = float_,
                               allow_empty = allow_empty,
                               minimum = minimum,
                               maximum = maximum)
@@ -1146,7 +1215,10 @@ def ipv4(value, allow_empty = False):
     elif not value:
         return None
 
-    components = value.split('.')
+    try:
+        components = value.split('.')
+    except AttributeError:
+        raise ValueError('value (%s) is not a valid ipv4' % value)
 
     if len(components) != 4 or not all(x.isdigit() for x in components):
         raise ValueError('value (%s) is not a valid ipv4' % value)
@@ -1181,31 +1253,17 @@ def ipv6(value, allow_empty = False):
     elif not value:
         return None
 
-    components = value.split('.')
-
-    if len(components) > 8:
+    if not isinstance(value, str):
         raise ValueError('value (%s) is not a valid ipv6' % value)
 
-    empties = 0
-    for item in components:
-        if not item:
-            empties += 1
-        else:
-            try:
-                value = integer(value,
-                                minimum = 0,
-                                maximum = 65536,
-                                base = 16)
-            except ValueError:
-                raise ValueError('value (%s) is not a valid ipv6' % value)
+    value = value.lower()
 
-    if empties < 2:
-        return value
+    is_valid = IPV6_REGEX.match(value)
 
-    if empties == 2 and not components[0] and not components[1]:
-        return value
+    if not is_valid:
+        raise ValueError('value (%s) is not a valid ipv6' % value)
 
-    raise ValueError('value (%s) is not a valid ipv6' % value)
+    return value
 
 
 def mac_address(value, allow_empty = False):
@@ -1231,12 +1289,15 @@ def mac_address(value, allow_empty = False):
         return None
 
     if not isinstance(value, str):
-        raise TypeError('value must be a valid string')
+        raise ValueError('value must be a valid string')
+
+    if '-' in value:
+        value = value.replace('-', ':')
 
     is_valid = MAC_ADDRESS_REGEX.match(value)
 
     if not is_valid:
-        raise TypeError('value (%s) is not a valid MAC address' % value)
+        raise ValueError('value (%s) is not a valid MAC address' % value)
 
     return value
 
@@ -1274,7 +1335,7 @@ def dict(value,
         except Exception:
             raise ValueError('value (%s) cannot be coerced to a dict)' % original_value)
 
-    if not isinstance(value, dict):
+    if not isinstance(value, dict_):
         raise ValueError('value (%s) is not a dict' % original_value)
 
     return value
