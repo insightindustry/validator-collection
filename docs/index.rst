@@ -22,9 +22,20 @@ Validator Collection
   The **Validator Collection** is designed to be compatible with Python 2.7 and
   Python 3.4 and higher.
 
-  Most validator functions will work on earlier versions as well, however certain
-  validator functions will raise a :class:`NotImplementedError` if they are
-  not supported in your Python environment.
+  .. list-table:: Test Performance
+    :widths: 10 50
+    :header-rows: 1
+
+    * - Branch
+      - Unit Tests
+    * - `latest <https://github.com/insightindustry/validator-collection/tree/master>`_
+      -
+        .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=latest
+          :target: https://travis-ci.org/insightindustry/validator-collection
+    * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
+      -
+        .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=develop
+          :target: https://travis-ci.org/insightindustry/validator-collection
 
 .. toctree::
   :hidden:
@@ -42,7 +53,7 @@ The **Validator Collection** is a Python library that provides more than 60
 functions that can be used to validate the type and contents of an input value.
 
 Each function has a consistent syntax for easy use, and has been tested on
-Python 2.7, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, and 3.6.
+Python 2.7, 3.4, 3.5, and 3.6.
 
 For a list of validators available, please see the table of contents below.
 
