@@ -218,7 +218,7 @@ sure that value is in the form your code needs it in.
 There are two fundamental patterns that we find work well in practice.
 
 Defensive Aprpoach: Check, then Convert if Necessary
--------------------------------------------------------
+=======================================================
 
 We find this pattern is best used when we don't have any certainty over a given
 value might contain. It's fundamentally defensive in nature, and applies the
@@ -279,7 +279,7 @@ If it can't coerce ``value`` to a whole number? It raises a :class:`ValueError`.
 
 
 Confident Approach: try ... except
---------------------------------------
+=====================================
 
 Sometimes, we'll have more confidence in the values that we can expect to work
 with. This means that we might expect ``value`` to *generally* have the kind of
@@ -326,6 +326,26 @@ to receive a ``value`` that contains an email address. We expect that ``value``
 will *typically* be an email address, and not something weird (like a number or
 something). So we just try the validator - and if validation fails, we handle
 the error appropriately.
+
+********************
+Dependencies
+********************
+
+.. tabs::
+
+  .. tab:: Python 3.x
+
+    None. Uses the standard library.
+
+  .. tab:: Python 2.x
+
+    The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
+    Python's (buggy) standard :class:`re <python:re>` module.
+
+    .. note::
+
+      This conditional dependency will be automatically installed if you are
+      installing to Python 2.x.
 
 ********************
 Indices and tables
