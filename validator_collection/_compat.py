@@ -25,15 +25,21 @@ is_py2 = (_ver[0] == 2)
 #: Python 3.x?
 is_py3 = (_ver[0] == 3)
 is_py36 = (_ver[0] == 3 and _ver[1] >= 6)
-is_py34 = (_ver[0] == 3 and _ver[1] == 4)
 is_py35 = (_ver[0] == 3 and _ver[1] == 5)
+is_py34 = (_ver[0] == 3 and _ver[1] == 4)
+is_py33 = (_ver[0] == 3 and _ver[1] == 3)
+is_py32 = (_ver[0] == 3 and _ver[1] == 2)
+is_py31 = (_ver[0] == 3 and _ver[1] == 1)
+is_py30 = (_ver[0] == 3 and _ver[1] == 0)
 
 try:
     import simplejson as json
 except ImportError:
     import json
 
-if is_py2 or is_py34:
+uses_float_infinity = (is_py2 or is_py34 or is_py33 or is_py32 or is_py31 or is_py30)
+
+if uses_float_infinity:
     POSITIVE_INFINITY = float('+inf')
     NEGATIVE_INFINITY = float('-inf')
 
@@ -112,7 +118,7 @@ elif is_py3:
     numeric_types = (int, float, Decimal, Fraction)
     integer_types = (int,)
     long = int
-    if is_py35 or is_py36:
+    if not uses_float_infinity:
         POSITIVE_INFINITY = math.inf
         NEGATIVE_INFINITY = -math.inf
     TimeZone = datetime_.timezone
