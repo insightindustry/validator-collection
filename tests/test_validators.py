@@ -20,7 +20,7 @@ from datetime import datetime, date, time, tzinfo, timedelta
 import pytest
 
 import validator_collection.validators as validators
-from validator_collection._compat import numeric_types
+from validator_collection._compat import numeric_types, basestring
 
 
 ## CORE
