@@ -41,7 +41,7 @@ Validator Reference
     -
     - :func:`directory_exists <validator_collection.validators.directory_exists>`
     -
-  * - :func:`valid_variable_name <validator_collection.validators.valid_variable_name>`
+  * - :func:`variable_name <validator_collection.validators.variable_name>`
     -
     -
     -

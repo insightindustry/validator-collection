@@ -1028,9 +1028,15 @@ def _numeric_coercion(value,
     return value
 
 
-def valid_variable_name(value,
-                        allow_empty = False):
+def variable_name(value,
+                  allow_empty = False):
     """Validate that the value is a valid Python variable name.
+
+    .. caution::
+
+      This function does **NOT** check whether the variable exists. It only
+      checks that the ``value`` would work as a Python variable (or class, or
+      function, etc.) name.
 
     :param value: The value to validate.
 

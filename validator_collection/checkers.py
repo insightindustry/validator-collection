@@ -423,7 +423,7 @@ def is_fraction(value,
     return True
 
 
-def is_valid_variable_name(value):
+def is_variable_name(value):
     """Indicate whether ``value`` is a valid Python variable name.
 
     :param value: The value to evaluate.
@@ -432,7 +432,7 @@ def is_valid_variable_name(value):
     :rtype: :ref:`bool <python:bool>`
     """
     try:
-        value = validators.valid_variable_name(value)
+        value = validators.variable_name(value)
     except Exception:
         return False
 

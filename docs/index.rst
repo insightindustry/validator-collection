@@ -106,7 +106,7 @@ Available Validators and Checkers
         -
         - :func:`directory_exists <validator_collection.validators.directory_exists>`
         -
-      * - :func:`valid_variable_name <validator_collection.validators.valid_variable_name>`
+      * - :func:`variable_name <validator_collection.validators.variable_name>`
         -
         -
         -
@@ -163,7 +163,7 @@ Available Validators and Checkers
         -
         -
         -
-      * - :func:`is_valid_variable_name <validator_collection.checkers.is_valid_variable_name>`
+      * - :func:`is_variable_name <validator_collection.checkers.is_ariable_name>`
         -
         -
         -

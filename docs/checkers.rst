@@ -51,7 +51,7 @@ Checker Reference
     -
     -
     -
-  * - :func:`is_valid_variable_name <validator_collection.checkers.is_valid_variable_name>`
+  * - :func:`is_variable_name <validator_collection.checkers.is_variable_name>`
     -
     -
     -
