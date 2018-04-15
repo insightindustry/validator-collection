@@ -52,7 +52,7 @@ def is_url(value):
     :rtype: :ref:`bool <python:bool>`
     """
     try:
-        value = validators.email(value)
+        value = validators.url(value)
     except Exception:
         return False
 
@@ -336,11 +336,18 @@ def is_decimal(value,
 
 
 def is_integer(value,
+               coerce_value = False,
                minimum = None,
-               maximum = None):
+               maximum = None,
+               base = 10):
     """Indicate whether ``value`` is an :ref:`int <python:int>`.
 
     :param value: The value to evaluate.
+
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be coerced
+      to an integer. If ``False``, will only return ``True`` if ``value`` is already
+      a whole number (regardless of type). Defaults to ``False``.
+    :type coerce_value: :ref:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is greater than or
       equal to this value.
@@ -350,18 +357,24 @@ def is_integer(value,
       equal to this value.
     :type maximum: numeric
 
+    :param base: Indicates the base that is used to determine the integer value.
+      The allowed values are 0 and 2–36. Base-2, -8, and -16 literals can be
+      optionally prefixed with ``0b/0B``, ``0o/0O/0``, or ``0x/0X``, as with
+      integer literals in code. Base 0 means to interpret the string exactly as
+      an integer literal, so that the actual base is 2, 8, 10, or 16. Defaults to
+      ``10``.
+    :type base: :ref:`int <python:int>`
+
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :ref:`bool <python:bool>`
     """
-    minimum = validators.numeric(minimum, allow_empty = True)
-    maximum = validators.numeric(maximum, allow_empty = True)
-
-    if value is None or not isinstance(value, integer_types):
-        return False
-
-    if value and minimum and value < minimum:
-        return False
-    elif value and maximum and value > maximum:
+    try:
+        value = validators.integer(value,
+                                   coerce_value = coerce_value,
+                                   minimum = minimum,
+                                   maximum = maximum,
+                                   base = base)
+    except Exception:
         return False
 
     return True
@@ -471,7 +484,7 @@ def is_ipv6(value):
     return True
 
 
-def is_ip(value):
+def is_ip_address(value):
     """Indicate whether ``value`` is a valid IP address.
 
     :param value: The value to evaluate.
@@ -479,7 +492,12 @@ def is_ip(value):
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :ref:`bool <python:bool>`
     """
-    return is_ipv4(value) or is_ipv6(value)
+    try:
+        value = validators.ip_address(value)
+    except Exception:
+        return False
+
+    return True
 
 
 def is_mac_address(value):
