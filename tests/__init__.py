@@ -7,7 +7,7 @@ Testing Philosophy
 
 .. note::
 
-  Unit tests for the **PDF Layer Extractor** are written using `pytest`_ and
+  Unit tests for the **Validator Collection** are written using `pytest`_ and
   a comprehensive set of test automation are provided by `tox`_.
 
 There are many schools of thought when it comes to test design. When building
@@ -22,7 +22,7 @@ the **Validator Collection**, we decided to focus on practicality. That means:
   * **Coverage matters...kind of.** We have documented the primary intended
     behavior of every function in the **Validator Collection** library, and the
     most-likely failure modes that can be expected.  At the time of writing, we
-    have about 80% code coverage. Yes, yes: We know that is less than 100%. But
+    have about 97% code coverage. Yes, yes: We know that is less than 100%. But
     there are edge cases which are almost impossible to bring about, based on
     confluences of factors in the wide world. Our goal is to test the key
     functionality, and as bugs are uncovered to add to the test functions as
@@ -70,24 +70,12 @@ Installing with the Test Suite
 Command-line Options
 =====================
 
-The test suite exposes a number of command-line options that are used to configure
-the context in which the **Validator Collection** is to be tested. These options are:
-
-.. todo::
-
-  Update the CLI options.
-
-
-* CLI OPTIONS GO HERE
-
-In order for a test function to accept these options, they should have an argument
-whose name matches the command-line option minus the ``--`` prefix, with ``-``
-replaced by ``_``. Thus: ``--keep-db`` becomes ``keep_db``. Options that
-are IDs should then receive a suffix of ``_id``.
+The **Validator Collection** does not use any custom command-line options in its
+test suite.
 
 .. tip::
 
-  For a full list of the CLI options available, try:
+  For a full list of the CLI options, including the defaults available, try:
 
   .. code-block:: bash
 
@@ -97,34 +85,27 @@ are IDs should then receive a suffix of ``_id``.
 Configuration File
 ===================
 
-Because it can be tedious to constantly type or copy/paste lots of options into
-your terminal to run tests, we have prepared a ``pytest.ini`` file in the
-``tests/`` directory that will automatically apply default CLI options when you
-run the test suite.
-
-Of course, you can override any of these default CLI options using the command
-line directly.
+Because the **Validator Collection** has a very simple test suite, we have not
+prepared a ``pytest.ini`` configuration file.
 
 Running Tests
 ==============
 
 .. tabs::
 
-  .. tab:: Using ``pytest.ini``
-
-    To run the entire test suite:
+  .. tab:: Entire Test Suite
 
     .. code-block:: bash
 
       tests/ $ pytest
 
-    To run a specific test module:
+  .. tab:: Test Module
 
     .. code-block:: bash
 
       tests/ $ pytest tests/test_module.py
 
-    To run a specific test function::
+  .. tab:: Test Function
 
     .. code-block: bash
 
@@ -134,19 +115,19 @@ Running Tests
 Skipping Tests
 *****************
 
-.. todo::
+.. note::
 
-  Update skipping logic
-
-Tests that rely on command-line options will be skipped if those command-line
-options are not supplied. To ensure that a test gets skipped correctly, you can
-decorate the test with the following::
-
-    @pytest.mark.            # Skips if keep_db is falsey
+  Because of the simplicity of the **Validator Collection**, the test suite does
+  not currently support any test skipping.
 
 *******************
 Incremental Tests
 *******************
+
+.. note::
+
+  The **Validator Collection** test suite does support incremental testing using,
+  however at the moment none of the tests designed rely on this functionality.
 
 A variety of test functions are designed to test related functionality. As a
 result, they are designed to execute incrementally. In order to execute tests
