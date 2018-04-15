@@ -82,6 +82,18 @@ def is_string(value,
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :ref:`bool <python:bool>`
     """
+    if value is None:
+        return False
+
+    minimum_length = validators.integer(minimum_length, allow_empty = True)
+    maximum_length = validators.integer(maximum_length, allow_empty = True)
+
+    if isinstance(value, str) and not value:
+        if minimum_length and minimum_length > 0 and not whitespace_padding:
+            return False
+
+        return True
+
     try:
         value = validators.string(value,
                                   minimum_length = minimum_length,
@@ -109,9 +121,15 @@ def is_iterable(obj,
     :returns: ``True`` if ``obj`` is a valid iterable, ``False`` if not.
     :rtype: :ref:`bool <python:bool>`
     """
+    if obj is None:
+        return False
+
+    if obj == str or obj == bytes:
+        return False
+
     try:
         obj = validators.iterable(obj,
-                                  allow_empty = False,
+                                  allow_empty = True,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length)
     except Exception:
@@ -488,6 +506,9 @@ def is_dict(value):
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :ref:`bool <python:bool>`
     """
+    if isinstance(value, dict):
+        return True
+
     try:
         value = validators.dict(value)
     except Exception:
@@ -655,7 +676,7 @@ def are_dicts_equivalent(*args):
     if len(args) == 1:
         return True
 
-    if not all(is_dict(args)):
+    if not all(is_dict(x) for x in args):
         return False
 
     first_item = args[0]
@@ -665,9 +686,12 @@ def are_dicts_equivalent(*args):
 
         for key in item:
             if key not in first_item:
+                print('key not in first item')
                 return False
 
             if not are_equivalent(item[key], first_item[key]):
+                print(item[key])
+                print(first_item[key])
                 return False
 
         for key in first_item:

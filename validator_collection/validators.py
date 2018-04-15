@@ -269,7 +269,7 @@ def iterable(value,
     """
     if not value and not allow_empty:
         raise ValueError('value cannot be empty')
-    elif not value:
+    elif value is None:
         return None
 
     minimum_length = integer(minimum_length, allow_empty = True)
