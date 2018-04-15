@@ -147,7 +147,7 @@ def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
                                         allow_empty = allow_empty,
                                         minimum_length = minimum_length,
                                         maximum_length = maximum_length)
-        if value:
+        if value is not None:
             assert validated is not None
             assert hasattr(validated, '__iter__')
         else:
@@ -216,6 +216,38 @@ def test_none(value, fails, allow_empty, coerce_value):
             validated = validators.none(value,
                                         allow_empty = allow_empty,
                                         coerce_value = coerce_value)
+
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('my_variable', False, False),
+    ('_my_variable', False, False),
+    ('', True, False),
+    ('my variable', True, False),
+    ('123_variable', True, False),
+    ('', True, False),
+    ('my variable', True, False),
+    ('123_variable', True, False),
+    (None, True, False),
+    ('', True, False),
+    ('my variable', True, False),
+    ('123_variable', True, False),
+    (None, True, False)
+])
+def test_variable_name(value, fails, allow_empty):
+    """Test the variable name validator."""
+    if not fails:
+        validated = validators.variable_name(value,
+                                             allow_empty = allow_empty)
+        if allow_empty and not value:
+            assert validated is None
+        else:
+            assert validated is not None
+    else:
+        with pytest.raises(ValueError):
+            validated = validators.variable_name(value,
+                                                 allow_empty = allow_empty)
+
+
 
 ## DATE / TIME
 
@@ -426,6 +458,13 @@ def test_time(value, fails, allow_empty, minimum,  maximum):
     ('01/01/2018T00:00:00.00000-48:00', True, False),
     ('2018-01-01T00:00:00+48:00', False, False),
 
+
+    ('+06:00', False, False),
+    ('-06:00', False, False),
+    ('+12:00', False, False),
+    ('+1:00', False, False),
+    ('+48:00', True, False),
+
 ])
 def test_timezone(value, fails, allow_empty):
     """Test the tzinfo validator."""
@@ -437,7 +476,7 @@ def test_timezone(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             value = validators.timezone(value,
                                         allow_empty = allow_empty)
 
@@ -481,29 +520,33 @@ def test_numeric(value, fails, allow_empty, minimum, maximum):
                                            maximum = maximum)
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum, expects', [
-    (1, False, False, None, None, 1),
-    (1.5, False, False, None, None, 2),
-    (0, False, False, None, None, 0),
-    (None, True, False, None, None, None),
-    (None, False, True, None, None, None),
-    (decimal.Decimal(1.5), False, False, None, None, 2),
-    (fractions.Fraction(1.5), False, False, None, None, 2),
+@pytest.mark.parametrize('value, fails, allow_empty, coerce_value, minimum, maximum, expects', [
+    (1, False, False, False, None, None, 1),
+    (1.5, True, False, False, None, None, 2),
+    (1.5, False, False, True, None, None, 2),
+    (0, False, False, False, None, None, 0),
+    (None, True, False, False, None, None, None),
+    (None, False, True, False, None, None, None),
+    (decimal.Decimal(1.5), True, False, False, None, None, 2),
+    (decimal.Decimal(1.5), False, False, True, None, None, 2),
+    (fractions.Fraction(1.5), True, False, False, None, None, 2),
+    (fractions.Fraction(1.5), False, False, True, None, None, 2),
 
-    (1, False, False, -5, None, 1),
-    (1, False, False, 1, None, 1),
-    (1, True, False, 5, None, None),
+    (1, False, False, False, -5, None, 1),
+    (1, False, False, False, 1, None, 1),
+    (1, True, False, False, 5, None, None),
 
-    (5, False, False, None, 10, 5),
-    (5, False, False, None, 5, 5),
-    (5, True, False, None, 1, None),
+    (5, False, False, None, False, 10, 5),
+    (5, False, False, None, False, 5, 5),
+    (5, True, False, None, False, 1, None),
 
 ])
-def test_integer(value, fails, allow_empty, minimum, maximum, expects):
+def test_integer(value, fails, allow_empty, coerce_value, minimum, maximum, expects):
     """Test the numeric validator."""
     if not fails:
         validated = validators.integer(value,
                                        allow_empty = allow_empty,
+                                       coerce_value = coerce_value,
                                        minimum = minimum,
                                        maximum = maximum)
         if value is not None:
@@ -515,6 +558,7 @@ def test_integer(value, fails, allow_empty, minimum, maximum, expects):
         with pytest.raises((ValueError, TypeError)):
             validated = validators.integer(value,
                                            allow_empty = allow_empty,
+                                           coerce_value = coerce_value,
                                            minimum = minimum,
                                            maximum = maximum)
 
@@ -885,6 +929,59 @@ def test_email(value, fails, allow_empty):
         with pytest.raises((ValueError, TypeError)):
             value = validators.email(value, allow_empty = allow_empty)
 
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('0.0.0.0', False, False),
+    ('10.10.10.10', False, False),
+    ('192.168.1.1', False, False),
+    ('255.255.255.255', False, False),
+    ('0.0.0', True, False),
+    ('0', True, False),
+    ('abc0.0.0.0', True, False),
+    ('a.b.c.d', True, False),
+    ('275.276.278.279', True, False),
+    ('not-a-valid-value', True, False),
+    (123, True, False),
+    ("", True, False),
+    (None, True, False),
+    ("", False, True),
+    (None, False, True),
+
+    ('::1', False, False),
+    ('abcd:ffff:0:0:0:0:41:2', False, False),
+    ('abcd:abcd::1:2', False, False),
+    ('0:0:0:0:0:ffff:1.2.3.4', False, False),
+    ('0:0:0:0:ffff:1.2.3.4', True, False),
+    ('::0.0.0.0', False, False),
+    ('::10.10.10.10', False, False),
+    ('::192.168.1.1', False, False),
+    ('::255.255.255.255', False, False),
+    ('abcd.0.0.0', True, False),
+    ('abcd:123::123:1', False, False),
+    ('1:2:3:4:5:6:7:8:9', True, False),
+    ('abcd:1abcd', True, False),
+    ('::0.0.0', True, False),
+    ('abc0.0.0.0', True, False),
+    ('a.b.c.d', True, False),
+    ('::275.276.278.279', True, False),
+    ('not-a-valid-value', True, False),
+    (123, True, False),
+    ("", True, False),
+    (None, True, False),
+    ("", False, True),
+    (None, False, True)
+])
+def test_ip_address(value, fails, allow_empty):
+    """Test the ip address validator."""
+    if not fails:
+        validated = validators.ip_address(value, allow_empty = allow_empty)
+        if value:
+            assert validated is not None
+        else:
+            assert validated is None
+    else:
+        with pytest.raises(ValueError):
+            validated = validators.ip_address(value, allow_empty = allow_empty)
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [

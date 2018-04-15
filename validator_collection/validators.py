@@ -16,9 +16,9 @@ import datetime as datetime_
 
 from ast import parse
 
-from validator_collection._compat import numeric_types, datetime_types, date_types, \
-    time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, NEGATIVE_INFINITY, \
-    TimeZone, json, is_py2, is_py3, dict_, float_
+from validator_collection._compat import numeric_types, integer_types, datetime_types,\
+    date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
+    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_
 
 
 URL_REGEX = re.compile(
@@ -658,13 +658,15 @@ def timezone(value,
 
         if '+' in value and not positive:
             raise ValueError('expected a negative UTC offset but value is positive')
+        elif '-' in value and positive and len(value) == 6:
+            positive = False
         elif '-' in value and positive:
             raise ValueError('expected a positive UTC offset but value is negative')
 
         if '+' in value:
             value = value[value.find('+'):]
         elif '-' in value:
-            value = value[value.rfind('+'):]
+            value = value[value.rfind('-'):]
 
         value = value[1:]
 
@@ -677,7 +679,6 @@ def timezone(value,
         minutes = int(offset_components[1])
 
         value = (hour * 60 * 60) + (minutes * 60)
-        print(value)
 
         if not positive:
             value = 0 - value
@@ -695,7 +696,7 @@ def timezone(value,
             value = TimeZone(offset = offset)
         elif is_py3:
             try:
-                TimeZone(offset)
+                value = TimeZone(offset)
             except ValueError:
                 raise ValueError('value (%s) cannot exceed +/- 24h' % original_value)
         else:
@@ -885,6 +886,7 @@ def numeric(value,
 
 def integer(value,
             allow_empty = False,
+            coerce_value = False,
             minimum = None,
             maximum = None,
             base = 10):
@@ -902,6 +904,11 @@ def integer(value,
       If  ``False``, raises a :ref:`ValueError` if ``value`` is ``None``.
       Defaults to ``False``.
     :type allow_empty: :ref:`bool <python:bool>`
+
+    :param coerce_value: If ``True``, will force any numeric ``value`` to an integer
+      (always rounding up). If ``False``, will raise an error if ``value`` is not
+      a whole number. Defaults to ``False``.
+    :type coerce_value: :ref:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is greater than or
       equal to this value.
@@ -927,8 +934,14 @@ def integer(value,
                     minimum = minimum,
                     maximum = maximum)
 
-    if value is not None:
+    if value is not None and hasattr(value, 'is_integer'):
+        if value.is_integer():
+            return int(value)
+
+    if value is not None and coerce_value:
         value = int(str(math.ceil(value)), base = base)
+    elif value is not None and not isinstance(value, integer_types):
+        raise ValueError('value (%s) is not an integer' % value)
 
     return value
 
@@ -1198,6 +1211,48 @@ def path(value,
     elif is_py3:
         if not isinstance(value, (str, bytes, os.PathLike)):
             raise ValueError('value (%s) is not a valid path' % value)
+
+    return value
+
+
+def ip_address(value, allow_empty = False):
+    """Validate that ``value`` is a valid IP address.
+
+    .. note::
+
+      First, the validator will check if the address is a valid IPv6 address.
+      If that doesn't work, the validator will check if the address is a valid
+      IPv4 address.
+
+      If neither works, the validator will raise an error (as always).
+
+    :param value: The value to validate.
+
+    :param allow_empty: If ``True``, returns ``None`` if ``value`` is ``None``.
+      If  ``False``, raises a :ref:`ValueError` if ``value`` is ``None``.
+      Defaults to ``False``.
+    :type allow_empty: :ref:`bool <python:bool>`
+
+    :returns: ``value`` / ``None``
+
+    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    """
+    if not value and not allow_empty:
+        raise ValueError('value cannot be empty')
+    elif not value:
+        return None
+
+    try:
+        value = ipv6(value)
+        ipv6_failed = False
+    except ValueError:
+        ipv6_failed = True
+
+    if ipv6_failed:
+        try:
+            value = ipv4(value)
+        except ValueError:
+            raise ValueError('value (%s) is not a valid IPv6 or IPv4 address')
 
     return value
 
