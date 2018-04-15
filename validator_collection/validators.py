@@ -10,7 +10,6 @@ import fractions
 import io
 import math
 import os
-import re
 import uuid as uuid_
 import datetime as datetime_
 
@@ -18,7 +17,7 @@ from ast import parse
 
 from validator_collection._compat import numeric_types, integer_types, datetime_types,\
     date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
-    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring
+    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring, re
 
 
 URL_REGEX = re.compile(
@@ -613,9 +612,13 @@ def time(value,
     """
     # pylint: disable=too-many-branches
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        if isinstance(value, datetime_.time):
+            pass
+        else:
+            raise ValueError('value cannot be empty')
     elif not value:
-        return None
+        if not isinstance(value, datetime_.time):
+            return None
 
     minimum = time(minimum, allow_empty = True)
     maximum = time(maximum, allow_empty = True)
@@ -634,11 +637,17 @@ def time(value,
             raise ValueError('value must be a datetime object, '
                              'ISO 8601-formatted string, '
                              'or POSIX timestamp')
-    elif isinstance(value, str):
-        try:
-            datetime_value = datetime(value)
-            value = datetime_value.time()
-        except ValueError:
+    elif isinstance(value, basestring):
+        is_value_calculated = False
+        if len(value) > 10:
+            try:
+                datetime_value = datetime(value)
+                value = datetime_value.time()
+                is_value_calculated = True
+            except ValueError:
+                pass
+
+        if not is_value_calculated:
             try:
                 if '+' in value:
                     components = value.split('+')
@@ -675,7 +684,6 @@ def time(value,
                                        second = seconds,
                                        microsecond = microseconds,
                                        tzinfo = utc_offset)
-
             except (ValueError, TypeError, IndexError):
                 raise ValueError('value must be a date object, datetime object, '
                                  'ISO 8601-formatted string, '
@@ -684,9 +692,9 @@ def time(value,
         if value is not None:
             value = value.replace(tzinfo = None)
 
-    if minimum and value and value < minimum:
+    if minimum is not None and value and value < minimum:
         raise ValueError('value (%s) is before the minimum given' % value.isoformat())
-    if maximum and value and value > maximum:
+    if maximum is not None and value and value > maximum:
         raise ValueError('value (%s) is after the maximum given' % value.isoformat())
 
     return value
@@ -930,7 +938,14 @@ def integer(value,
             return int(value)
 
     if value is not None and coerce_value:
-        value = int(str(math.ceil(value)), base = base)                         # pylint: disable=R0204
+        float_value = math.ceil(value)
+        if is_py2:
+            value = int(float_value)                                            # pylint: disable=R0204
+        elif is_py3:
+            str_value = str(float_value)
+            value = int(str_value, base = base)
+        else:
+            raise NotImplementedError('Python %s not supported' % os.sys.version)
     elif value is not None and not isinstance(value, integer_types):
         raise ValueError('value (%s) is not an integer' % value)
 

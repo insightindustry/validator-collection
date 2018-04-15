@@ -354,8 +354,8 @@ def test_datetime(value, fails, allow_empty, minimum,  maximum):
 
 
 @pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum', [
-    ('2018-01-01', False, False, None, None),
-    ('2018/01/01', False, False, None, None),
+    ('2018-01-01', True, False, None, None),
+    ('2018/01/01', True, False, None, None),
     ('01/01/2018', True, False, None, None),
     (date(2018,1,1), True, False, None, None),
     (datetime.utcnow(), False, False, None, None),
@@ -375,23 +375,35 @@ def test_datetime(value, fails, allow_empty, minimum,  maximum):
     ('not-a-date', True, False, None, None),
     ('2018-01-01T00:00:00', False, False, None, None),
 
-    ('2018-01-01', False, False, datetime(year = 2017,
-                                          month = 1,
-                                          day = 1).time(), None),
-    ('2018/01/01', False, False, datetime(year = 2018,
-                                          month = 1,
-                                          day = 1).time(), None),
+    ('2018-01-01', True, False, datetime(year = 2017,
+                                         month = 1,
+                                         day = 1).time(), None),
+    ('2018/01/01', True, False, datetime(year = 2018,
+                                         month = 1,
+                                         day = 1).time(), None),
+    ('2018-01-01T00:00:00', False, False, datetime(year = 2017,
+                                                   month = 1,
+                                                   day = 1).time(), None),
+    ('2018/01/01T00:00:00', False, False, datetime(year = 2018,
+                                                   month = 1,
+                                                   day = 1).time(), None),
     ('2018/01/01', True, False, datetime(year = 2018,
                                          month = 2,
                                          day = 1,
                                          hour = 3).time(), None),
 
-    ('2018-01-01', False, False, None, datetime(year = 2019,
-                                                month = 1,
-                                                day = 1).time()),
-    ('2018/01/01', False, False, None, datetime(year = 2018,
-                                                month = 1,
-                                                day = 1).time()),
+    ('2018-01-01', True, False, None, datetime(year = 2019,
+                                               month = 1,
+                                               day = 1).time()),
+    ('2018/01/01', True, False, None, datetime(year = 2018,
+                                               month = 1,
+                                               day = 1).time()),
+    ('2018-01-01T00:00:00', False, False, None, datetime(year = 2019,
+                                                         month = 1,
+                                                         day = 1).time()),
+    ('2018/01/01T00:00:00', False, False, None, datetime(year = 2018,
+                                                         month = 1,
+                                                         day = 1).time()),
     ('2018/01/01T03:00:00', True, False, None, datetime(year = 2017,
                                                         month = 1,
                                                         day = 1,
@@ -410,15 +422,18 @@ def test_time(value, fails, allow_empty, minimum,  maximum):
                                     maximum = maximum)
         if value:
             assert isinstance(validated, time)
+            if minimum is not None:
+                assert validated >= minimum
+            if maximum is not None:
+                assert validated <= maximum
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             validated = validators.time(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
                                         maximum = maximum)
-            print(validated)
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
@@ -554,7 +569,7 @@ def test_integer(value, fails, allow_empty, coerce_value, minimum, maximum, expe
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             validated = validators.integer(value,
                                            allow_empty = allow_empty,
                                            coerce_value = coerce_value,
@@ -813,83 +828,83 @@ def test_directory_exists(value, fails, allow_empty):
 ## INTERNET-RELATED
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
-    ("http://foo.com/blah_blah", False, False),
-    ("http://foo.com/blah_blah/", False, False),
-    ("http://foo.com/blah_blah_(wikipedia)", False, False),
-    ("http://foo.com/blah_blah_(wikipedia)_(again)", False, False),
-    ("http://www.example.com/wpstyle/?p=364", False, False),
-    ("https://www.example.com/foo/?bar=baz&inga=42&quux", False, False),
-    ("http://✪df.ws/123", False, False),
-    ("http://userid:password@example.com:8080", False, False),
-    ("http://userid:password@example.com:8080/", False, False),
-    ("http://userid@example.com", False, False),
-    ("http://userid@example.com/", False, False),
-    ("http://userid@example.com:8080", False, False),
-    ("http://userid@example.com:8080/", False, False),
-    ("http://userid:password@example.com", False, False),
-    ("http://userid:password@example.com/", False, False),
-    ("http://142.42.1.1/", False, False),
-    ("http://142.42.1.1:8080/", False, False),
-    ("http://➡.ws/䨹", False, False),
-    ("http://⌘.ws", False, False),
-    ("http://⌘.ws/", False, False),
-    ("http://foo.com/blah_(wikipedia)#cite-1", False, False),
-    ("http://foo.com/blah_(wikipedia)_blah#cite-1", False, False),
-    ("http://foo.com/unicode_(✪)_in_parens", False, False),
-    ("http://foo.com/(something)?after=parens", False, False),
-    ("http://☺.damowmow.com/", False, False),
-    ("http://code.google.com/events/#&product=browser", False, False),
-    ("http://j.mp", False, False),
-    ("ftp://foo.bar/baz", False, False),
-    ("http://foo.bar/?q=Test%20URL-encoded%20stuff", False, False),
-    ("http://مثال.إختبار", False, False),
-    ("http://例子.测试", False, False),
-    ("http://उदाहरण.परीक्षा", False, False),
-    ("http://-.~_!$&'()*+,;=:%40:80%2f::::::@example.com", False, False),
-    ("http://1337.net", False, False),
-    ("http://a.b-c.de", False, False),
-    ("http://a.b--c.de/", False, False),
-    ("http://223.255.255.254", False, False),
-    ("", True, False),
+    (u"http://foo.com/blah_blah", False, False),
+    (u"http://foo.com/blah_blah/", False, False),
+    (u"http://foo.com/blah_blah_(wikipedia)", False, False),
+    (u"http://foo.com/blah_blah_(wikipedia)_(again)", False, False),
+    (u"http://www.example.com/wpstyle/?p=364", False, False),
+    (u"https://www.example.com/foo/?bar=baz&inga=42&quux", False, False),
+    (u"http://✪df.ws/123", False, False),
+    (u"http://userid:password@example.com:8080", False, False),
+    (u"http://userid:password@example.com:8080/", False, False),
+    (u"http://userid@example.com", False, False),
+    (u"http://userid@example.com/", False, False),
+    (u"http://userid@example.com:8080", False, False),
+    (u"http://userid@example.com:8080/", False, False),
+    (u"http://userid:password@example.com", False, False),
+    (u"http://userid:password@example.com/", False, False),
+    (u"http://142.42.1.1/", False, False),
+    (u"http://142.42.1.1:8080/", False, False),
+    (u"http://➡.ws/䨹", False, False),
+    (u"http://⌘.ws", False, False),
+    (u"http://⌘.ws/", False, False),
+    (u"http://foo.com/blah_(wikipedia)#cite-1", False, False),
+    (u"http://foo.com/blah_(wikipedia)_blah#cite-1", False, False),
+    (u"http://foo.com/unicode_(✪)_in_parens", False, False),
+    (u"http://foo.com/(something)?after=parens", False, False),
+    (u"http://☺.damowmow.com/", False, False),
+    (u"http://code.google.com/events/#&product=browser", False, False),
+    (u"http://j.mp", False, False),
+    (u"ftp://foo.bar/baz", False, False),
+    (u"http://foo.bar/?q=Test%20URL-encoded%20stuff", False, False),
+    (u"http://مثال.إختبار", False, False),
+    (u"http://例子.测试", False, False),
+    (u"http://उदाहरण.परीक्षा", False, False),
+    (u"http://-.~_!$&'()*+,;=:%40:80%2f::::::@example.com", False, False),
+    (u"http://1337.net", False, False),
+    (u"http://a.b-c.de", False, False),
+    (u"http://a.b--c.de/", False, False),
+    (u"http://223.255.255.254", False, False),
+    (u"", True, False),
     (None, True, False),
-    ("http://", True, False),
-    ("http://.", True, False),
-    ("http://..", True, False),
-    ("http://../", True, False),
-    ("http://?", True, False),
-    ("http://??", True, False),
-    ("http://??/", True, False),
-    ("http://#", True, False),
-    ("http://##", True, False),
-    ("http://##/", True, False),
-    ("http://foo.bar?q=Spaces should be encoded", True, False),
-    ("//", True, False),
-    ("//a", True, False),
-    ("///a", True, False),
-    ("///", True, False),
-    ("http:///a", True, False),
-    ("foo.com", True, False),
-    ("rdar://1234", True, False),
-    ("h://test", True, False),
-    ("http:// shouldfail.com", True, False),
-    (":// should fail", True, False),
-    ("http://foo.bar/foo(bar)baz quux", True, False),
-    ("ftps://foo.bar/", True, False),
-    ("http://-error-.invalid/", True, False),
-    ("http://-a.b.co", True, False),
-    ("http://a.b-.co", True, False),
-    ("http://0.0.0.0", True, False),
-    ("http://10.1.1.0", True, False),
-    ("http://10.1.1.255", True, False),
-    ("http://224.1.1.1", True, False),
-    ("http://1.1.1.1.1", True, False),
-    ("http://123.123.123", True, False),
-    ("http://3628126748", True, False),
-    ("http://.www.foo.bar/", True, False),
-    ("http://www.foo.bar./", True, False),
-    ("http://.www.foo.bar./", True, False),
-    ("http://10.1.1.1", True, False),
-    ("", False, True),
+    (u"http://", True, False),
+    (u"http://.", True, False),
+    (u"http://..", True, False),
+    (u"http://../", True, False),
+    (u"http://?", True, False),
+    (u"http://??", True, False),
+    (u"http://??/", True, False),
+    (u"http://#", True, False),
+    (u"http://##", True, False),
+    (u"http://##/", True, False),
+    (u"http://foo.bar?q=Spaces should be encoded", True, False),
+    (u"//", True, False),
+    (u"//a", True, False),
+    (u"///a", True, False),
+    (u"///", True, False),
+    (u"http:///a", True, False),
+    (u"foo.com", True, False),
+    (u"rdar://1234", True, False),
+    (u"h://test", True, False),
+    (u"http:// shouldfail.com", True, False),
+    (u":// should fail", True, False),
+    (u"http://foo.bar/foo(bar)baz quux", True, False),
+    (u"ftps://foo.bar/", True, False),
+    (u"http://-error-.invalid/", True, False),
+    (u"http://-a.b.co", True, False),
+    (u"http://a.b-.co", True, False),
+    (u"http://0.0.0.0", True, False),
+    (u"http://10.1.1.0", True, False),
+    (u"http://10.1.1.255", True, False),
+    (u"http://224.1.1.1", True, False),
+    (u"http://1.1.1.1.1", True, False),
+    (u"http://123.123.123", True, False),
+    (u"http://3628126748", True, False),
+    (u"http://.www.foo.bar/", True, False),
+    (u"http://www.foo.bar./", True, False),
+    (u"http://.www.foo.bar./", True, False),
+    (u"http://10.1.1.1", True, False),
+    (u"", False, True),
     (None, False, True)
 ])
 def test_url(value, fails, allow_empty):
@@ -897,11 +912,11 @@ def test_url(value, fails, allow_empty):
     if not fails:
         validated = validators.url(value, allow_empty = allow_empty)
         if value:
-            assert isinstance(validated, str)
+            assert isinstance(validated, basestring)
         else:
             assert validated is None
     else:
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             value = validators.url(value, allow_empty = allow_empty)
 
 

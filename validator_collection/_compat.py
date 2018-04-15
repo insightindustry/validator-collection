@@ -31,6 +31,8 @@ except ImportError:
     import json
 
 if is_py2:
+    import regex
+    re = regex
     builtin_str = str
     bytes = str
     str = unicode
@@ -42,9 +44,9 @@ if is_py2:
     POSITIVE_INFINITY = float('+inf')
     NEGATIVE_INFINITY = float('-inf')
 
-    STDOFFSET = timedelta(seconds = -time_.timezone)
+    STDOFFSET = datetime_.timedelta(seconds = -time_.timezone)
     if time_.daylight:
-        DSTOFFSET = timedelta(seconds = -time_.altzone)
+        DSTOFFSET = datetime_.timedelta(seconds = -time_.altzone)
     else:
         DSTOFFSET = STDOFFSET
 
@@ -79,10 +81,10 @@ if is_py2:
             if not tzname:
                 tzname = 'UTC'
 
-            if not isinstance(tzname, str):
+            if not isinstance(tzname, basestring):
                 raise ValueError('tzname must be None or a valid string')
 
-            self._offset = seconds
+            self._offset = offset
             self._name = tzname
 
             super(TimeZone, self).__init__(**kwargs)
@@ -97,6 +99,7 @@ if is_py2:
             return self._name
 
 elif is_py3:
+    import re
     builtin_str = str
     str = str
     bytes = bytes
@@ -110,13 +113,13 @@ elif is_py3:
 else:
     raise NotImplementedError()
 
-datetime_types = [str,
+datetime_types = [basestring,
                   datetime_.datetime,
                   datetime_.date]
 datetime_types.extend(numeric_types)
 datetime_types = tuple(datetime_types)
 
-date_types = [str,
+date_types = [basestring,
               datetime_.datetime,
               datetime_.date]
 date_types.extend(numeric_types)
@@ -124,13 +127,13 @@ date_types = tuple(date_types)
 
 timestamp_types = numeric_types
 
-time_types = [str,
+time_types = [basestring,
               datetime_.datetime,
               datetime_.time]
 time_types.extend(numeric_types)
 time_types = tuple(time_types)
 
-tzinfo_types = [str,
+tzinfo_types = [basestring,
                 datetime_.datetime,
                 datetime_.date,
                 datetime_.tzinfo,
