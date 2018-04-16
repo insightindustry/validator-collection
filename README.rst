@@ -24,7 +24,21 @@ Validator Collection
 
       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=latest
          :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
-         :alt: Documentation Status
+         :alt: Documentation Status (ReadTheDocs)
+
+  * - `v. 1.0.0 <https://github.com/insightindustry/validator-collection/tree/v1-0-0>`_
+    -
+     .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=v1-0-0
+        :target: https://travis-ci.org/insightindustry/validator-collection
+        :alt: Build Status (Travis CI)
+
+     .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/v1-0-0/graph/badge.svg
+        :target: https://codecov.io/gh/insightindustry/validator-collection
+        :alt: Code Coverage Status (Codecov)
+
+     .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=v1-0-0
+        :target: http://validator-collection.readthedocs.io/en/latest/?badge=v1-0-0
+        :alt: Documentation Status (ReadTheDocs)
 
   * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
     -
@@ -38,7 +52,9 @@ Validator Collection
 
       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=develop
          :target: http://validator-collection.readthedocs.io/en/latest/?badge=develop
-         :alt: Documentation Status
+         :alt: Documentation Status (ReadTheDocs)
+
+
 
 The **Validator Collection** is a Python library that provides more than 60
 functions that can be used to validate the type and contents of an input value.
@@ -50,10 +66,14 @@ For a list of validators available, please see the lists below.
 
 **COMPLETE DOCUMENTATION ON READTHEDOCS:** http://validator-collection.readthedocs.io/en/latest
 
+------
+
 .. contents:: Contents
   :local:
   :depth: 3
   :backlinks: entry
+
+--------
 
 ***************
 Installation
@@ -65,24 +85,22 @@ To install the **Validator Collection**, just execute:
 
   $ pip install validator-collection
 
-Dependencies
-==============
+**Dependencies:**
 
-Python 3.x
--------------
+.. list-table::
+  :widths: 50 50
+  :header-rows: 1
 
-None. Uses the standard library.
+  * - Python 3.x
+    - Python 2.7
+  * - None. Uses the standard library.
+    - The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
+      Python's (buggy) standard ``re`` module.
 
-Python 2.x
-------------
+      Conditional dependencies will be automatically installed if you are
+      installing to Python 2.x.
 
-The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
-Python's (buggy) standard ``re`` module.
-
-.. note::
-
-  This conditional dependency will be automatically installed if you are
-  installing to Python 2.x.
+-------
 
 ***********************************
 Available Validators and Checkers
@@ -91,7 +109,7 @@ Available Validators and Checkers
 Validators
 =============
 
-Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+**SEE:** `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
 .. list-table::
   :widths: 30 30 30 30 30
@@ -141,7 +159,7 @@ Please see the `Validator Reference <http://validator-collection.readthedocs.io/
 Checkers
 ==========
 
-Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
+**SEE:** `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
 
 .. list-table::
   :widths: 30 30 30 30 30
@@ -218,6 +236,8 @@ Please see the `Checker Reference <http://validator-collection.readthedocs.io/en
     -
     -
 
+-----
+
 ************************************
 Hello, World and Standard Usage
 ************************************
@@ -227,8 +247,7 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  import validator_collection.validators as validators
-  import validator_collection.checkers as checkers
+  from validator_collection import validators, checkers
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
@@ -262,7 +281,7 @@ two flavors: a validator and a checker.
 Using Validators
 ==================
 
-Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+**SEE:** `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
 A validator does what it says on the tin: It validates that an input value is
 what you think it should be, and returns its valid form.
@@ -293,9 +312,7 @@ then the validator will raise a ``ValueError`` exception. If ``allow_empty``
 is ``True``, then an empty/falsey input value will be converted to a ``None``
 value.
 
-.. caution::
-
-  By default, ``allow_empty`` is always set to ``False``.
+**CAUTION:** By default, ``allow_empty`` is always set to ``False``.
 
 If the value you're validating fails its validation for some reason, the validator
 may raise different exceptions depending on the reason. In most cases, this will
@@ -303,13 +320,10 @@ be a ``ValueError`` though it can sometimes be a ``TypeError``, or an
 ``AttributeError``, etc. For specifics on each validator's likely exceptions
 and what can cause them, please review the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_.
 
-.. hint::
-
-  Some validators (particularly numeric ones like
-  ```integer``) have additional
-  options which are used to make sure the value meets criteria that you set for
-  it. These options are always included as keyword arguments *after* the
-  ``allow_empty`` argument, and are documented for each validator below.
+**HINT:** Some validators (particularly numeric ones like ``integer``) have additional
+options which are used to make sure the value meets criteria that you set for
+it. These options are always included as keyword arguments *after* the
+``allow_empty`` argument, and are documented for each validator below.
 
 .. _checkers-explained:
 
@@ -321,16 +335,13 @@ Please see the `Checker Reference <http://validator-collection.readthedocs.io/en
 Likewise, a checker is what it sounds like: It checks that an input value
 is what you expect it to be, and tells you ``True``/``False`` whether it is or not.
 
-.. important::
-
-  Checkers do *not* verify or convert object types. You can think of a checker as
-  a tool that tells you whether its corresponding `validator <#using-validators>`_
-  would fail. See `Best Practices <#best-practices>`_ for tips and tricks on
-  using the two together.
+**IMPORTANT:** Checkers do *not* verify or convert object types. You can think of a checker as
+a tool that tells you whether its corresponding `validator <#using-validators>`_
+would fail. See `Best Practices <#best-practices>`_ for tips and tricks on
+using the two together.
 
 Each checker is expressed as the name of the thing being validated, prefixed by
-``is_``. So the checker for an email address is
-```is_email()`` and the checker
+``is_``. So the checker for an email address is ``is_email()`` and the checker
 for an integer is ``is_integer()``.
 
 Checkers take the input value you want to check as their first (and often only)
@@ -338,21 +349,18 @@ positional argumet. If the input value validates, they will return ``True``. Unl
 `validators <#using-validators>`_, checkers will not raise an exception if
 validation fails. They will instead return ``False``.
 
-.. hint::
+**HINT:** If you need to know *why* a given value failed to validate, use the validator
+instead.
 
-  If you need to know *why* a given value failed to validate, use the validator
-  instead.
-
-.. hint::
-
-  Some checkers (particularly numeric ones like
-  ``is_integer()``) have additional
-  options which are used to make sure the value meets criteria that you set for
-  it. These options are always *optional* and are included as keyword arguments
-  *after* the input value argument. For details, please see the
-  `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_.
+**HINT:** Some checkers (particularly numeric ones like ``is_integer()``) have additional
+options which are used to make sure the value meets criteria that you set for
+it. These options are always *optional* and are included as keyword arguments
+*after* the input value argument. For details, please see the
+`Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_.
 
 .. _best-practices:
+
+------
 
 *****************
 Best Practices
@@ -474,6 +482,8 @@ to receive a ``value`` that contains an email address. We expect that ``value``
 will *typically* be an email address, and not something weird (like a number or
 something). So we just try the validator - and if validation fails, we handle
 the error appropriately.
+
+----------
 
 *********************
 Questions and Issues

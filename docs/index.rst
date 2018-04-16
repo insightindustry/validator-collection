@@ -87,8 +87,7 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  import validator_collection.validators as validators
-  import validator_collection.checkers as checkers
+  from validator_collection import validators, checkers
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
