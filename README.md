@@ -12,21 +12,25 @@ functions that can be used to validate the type and contents of an input value.
 Each function has a consistent syntax for easy use, and has been tested on
 Python 2.7, 3.4, 3.5, and 3.6.
 
-For a list of validators available, please see [below](#available_validators_and_checkers).
+For a list of validators available, please see [below](#available-validators-and-checkers).
 
-For complete documentation on the library, please visit our **[Validator Collection Documentation](https://validator-collection.readthedocs.io)**.
+**For complete documentation on the library, please visit our** **[Validator Collection Documentation](https://validator-collection.readthedocs.io)**.
 
 ## Table of Contents
 
 1. [Table of Contents](#table_of_contents)
 2. [Installation](#installation)
 3. [Dependencies](#dependencies)
-4. [Available Validators and Checkers](#available_validators_and_checkers)
-   - [Validators](#validators)
-   - [Checkers](#checkers)
+4. [Available Validators and Checkers](#available-validators-and-checkers)
+   - [Validators](#using-validators)
+   - [Checkers](#using-checkers)
 5. [Best Practices](#best-practices)
-   - [Defensive Approach: Check, then Convert if Necessary](#defensive-approach)
-   - [Confident Approach: try ... except](#confident-approach)
+   - [Defensive Approach: Check, then Convert if Necessary](#defensive-approach-check-then-convert-if-necessary)
+   - [Confident Approach: try ... except](#confident-approach-try---except)
+6. [Reporting Issues](#reporting-issues)
+7. [Contributing](#contributing)
+8. [Testing](#testing)
+9. [License](#license)
 
 ## Installation
 
@@ -179,10 +183,10 @@ is what you expect it to be, and tells you `True`/`False` whether it is or not.
 
 :warning: **IMPORTANT:**
 
-    Checkers do *not* verify or convert object types. You can think of a checker as
-    a tool that tells you whether its corresponding [validator](#validators-explained)
-    would fail. See [Best Practices](#best-practices) for tips and tricks on
-    using the two together.
+Checkers do *not* verify or convert object types. You can think of a checker as
+a tool that tells you whether its corresponding [validator](#validators-explained)
+would fail. See [Best Practices](#best-practices) for tips and tricks on
+using the two together.
 
 Each checker is expressed as the name of the thing being validated, prefixed by
 `is_`. So the checker for an email address is
@@ -196,17 +200,17 @@ validation fails. They will instead return `False`.
 
 :bulb: Here's a tip:
 
-    If you need to know *why* a given value failed to validate, use the validator
-    instead.
+If you need to know *why* a given value failed to validate, use the validator
+instead.
 
 :bulb: Here's a tip:
 
-    Some checkers (particularly numeric ones like
-    `is_integer`) have additional
-    options which are used to make sure the value meets criteria that you set for
-    it. These options are always *optional* and are included as keyword arguments
-    *after* the input value argument. For details, please see the
-    **[Checker Reference](http://validator-collection.readthedocs.io/en/develop/checkers.html)**
+Some checkers (particularly numeric ones like
+`is_integer`) have additional
+options which are used to make sure the value meets criteria that you set for
+it. These options are always *optional* and are included as keyword arguments
+*after* the input value argument. For details, please see the
+**[Checker Reference](http://validator-collection.readthedocs.io/en/develop/checkers.html)**
 
 ## Best Practices
 
@@ -261,16 +265,13 @@ new_value = some_function('not-a-number')
 ```
 
 Let's break down what this code does. First, we define `some_function()` which
-takes a value. This function uses the
-`is_integer()`
-checker to see if `value` contains a whole number, regardless of its type.
+takes a value. This function uses the `is_integer()` checker to see if `value`
+contains a whole number, regardless of its type.
 
 If it doesn't contain a whole number, maybe it contains a numeric value that can
-be rounded up to a whole number? It again uses the
-`is_integer()` to check if that's
-possible. If it is, then it calls the
-`integer()` validator to coerce
-`value` to a whole number.
+be rounded up to a whole number? It again uses the `is_integer()` to check if that's
+possible. If it is, then it calls the `integer()` validator to coerce `value` to a
+whole number.
 
 If it can't coerce `value` to a whole number? It raises a `ValueError`.
 
@@ -333,3 +334,7 @@ Please see our complete **[Contributor Guide](http://validator-collection.readth
 ## Testing
 
 Please see our **[Testing Reference](http://validator-collection.readthedocs.io/en/develop/testing.html)**
+
+## License
+
+The **Validator Collection** is available via an [MIT License](/LICENSE).
