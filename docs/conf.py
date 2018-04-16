@@ -22,6 +22,17 @@ sys.path.insert(0, os.path.join(os.path.dirname(__name__), '..'))
 
 import sphinx_rtd_theme
 
+# Load Version Information
+version_dict = {}
+with open(os.path.join(os.path.dirname(__file__),
+                       '../',
+                       'validator_collection',
+                       '_version.py')) as version_file:
+    exec(version_file.read(), version_dict)                                     # pylint: disable=W0122
+
+__version__ = version_dict.get('__version__')
+
+
 # -- Project information -----------------------------------------------------
 
 project = 'Validator Collection'
@@ -29,9 +40,9 @@ copyright = '2018, Insight Industry Inc.'
 author = 'Insight Industry Inc.'
 
 # The short X.Y version
-version = '1.0'
+version = __version__[:3]
 # The full version, including alpha/beta/rc tags
-release = '1.0.0rc10'
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------

@@ -6,11 +6,6 @@ Validator Collection
 
 **Python library of 60+ commonly-used validator functions**
 
-.. sidebar:: Version Compatability
-
-  The **Validator Collection** is designed to be compatible with Python 2.7 and
-  Python 3.4 or higher.
-
 .. list-table::
   :widths: 10 90
   :header-rows: 1
@@ -20,25 +15,30 @@ Validator Collection
   * - `latest <https://github.com/insightindustry/validator-collection/tree/master>`_
     -
       .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=latest
-        :target: https://travis-ci.org/insightindustry/validator-collection
+         :target: https://travis-ci.org/insightindustry/validator-collection
+         :alt: Build Status (Travis CI)
 
       .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/master/graph/badge.svg
-        :target: https://codecov.io/gh/insightindustry/validator-collection
+         :target: https://codecov.io/gh/insightindustry/validator-collection
+         :alt: Code Coverage Status (Codecov)
 
       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=latest
-        :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+         :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
+         :alt: Documentation Status
+
   * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
     -
       .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=develop
-        :target: https://travis-ci.org/insightindustry/validator-collection
+         :target: https://travis-ci.org/insightindustry/validator-collection
+         :alt: Build Status (Travis CI)
 
       .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/develop/graph/badge.svg
-        :target: https://codecov.io/gh/insightindustry/validator-collection
+         :target: https://codecov.io/gh/insightindustry/validator-collection
+         :alt: Code Coverage Status (Codecov)
 
       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=develop
-        :target: http://validator-collection.readthedocs.io/en/latest/?badge=develop
-        :alt: Documentation Status
+         :target: http://validator-collection.readthedocs.io/en/latest/?badge=develop
+         :alt: Documentation Status
 
 The **Validator Collection** is a Python library that provides more than 60
 functions that can be used to validate the type and contents of an input value.
@@ -48,7 +48,10 @@ Python 2.7, 3.4, 3.5, and 3.6.
 
 For a list of validators available, please see the lists below.
 
-.. contents::
+**COMPLETE DOCUMENTATION ON READTHEDOCS:** http://validator-collection.readthedocs.io/en/latest
+
+.. contents:: Contents
+  :local:
   :depth: 3
   :backlinks: entry
 
