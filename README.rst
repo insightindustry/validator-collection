@@ -91,6 +91,10 @@ Available Validators and Checkers
 Validators
 =============
 
+.. seealso::
+
+  Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+
 .. list-table::
   :widths: 30 30 30 30 30
   :header-rows: 1
@@ -138,6 +142,10 @@ Validators
 
 Checkers
 ==========
+
+.. sealso::
+
+  Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
 
 .. list-table::
   :widths: 30 30 30 30 30
@@ -257,6 +265,11 @@ two flavors: a validator and a checker.
 
 Using Validators
 ==================
+
+.. sealso::
+
+  Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+
 A validator does what it says on the tin: It validates that an input value is
 what you think it should be, and returns its valid form.
 
@@ -309,13 +322,17 @@ and what can cause them, please review the `Validator Reference <http://validato
 Using Checkers
 ================
 
+.. seealso::
+
+  Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
+
 Likewise, a checker is what it sounds like: It checks that an input value
 is what you expect it to be, and tells you ``True``/``False`` whether it is or not.
 
 .. important::
 
   Checkers do *not* verify or convert object types. You can think of a checker as
-  a tool that tells you whether its corresponding `validator <#validators-explained>`_
+  a tool that tells you whether its corresponding `validator <#using-validators>`_
   would fail. See `Best Practices <#best-practices>`_ for tips and tricks on
   using the two together.
 
@@ -326,7 +343,7 @@ for an integer is ``is_integer()``.
 
 Checkers take the input value you want to check as their first (and often only)
 positional argumet. If the input value validates, they will return ``True``. Unlike
-`validators <#validators-explained>`_, checkers will not raise an exception if
+`validators <#using-validators>`_, checkers will not raise an exception if
 validation fails. They will instead return ``False``.
 
 .. hint::
@@ -349,7 +366,7 @@ validation fails. They will instead return ``False``.
 Best Practices
 *****************
 
-`Checkers <#checkers-explained>`_ and `Validators <#validators-explained>`_
+`Checkers <#using-checkers>`_ and `Validators <#using-validators>`_
 are designed to be used together. You can think of them as a way to quickly and
 easily verify that a value contains the information you expect, and then make
 sure that value is in the form your code needs it in.
@@ -478,7 +495,7 @@ Contributing
 *********************
 
 We welcome contributions and pull requests! For more information, please see the
-`Contributor Guide <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
+`Contributor Guide <http://validator-collection.readthedocs.io/en/latest/contributing.html>`_
 
 *********************
 Testing
