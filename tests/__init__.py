@@ -53,7 +53,7 @@ Installing with the Test Suite
 
 .. tabs::
 
-  ..tab:: Installing via pip
+  .. tab:: Installing via pip
 
     .. code-block:: bash
 
@@ -107,7 +107,7 @@ Running Tests
 
   .. tab:: Test Function
 
-    .. code-block: bash
+    .. code-block:: bash
 
       tests/ $ pytest tests/test_module.py -k 'test_my_test_function'
 

@@ -211,9 +211,10 @@ Testing
 =========
 
 If you've added a new feature, we recommend you:
-* create local unit tests to verify that your feature works as expected, and
-* run local unit tests before you submit the pull request to make sure nothing
-  else got broken by accident.
+
+  * create local unit tests to verify that your feature works as expected, and
+  * run local unit tests before you submit the pull request to make sure nothing
+    else got broken by accident.
 
 .. seealso::
 
