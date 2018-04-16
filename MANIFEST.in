@@ -1,0 +1,9 @@
+# Include the LICENSE file
+include LICENSE
+
+# Include the VERSION file
+# include VERSION
+
+# Include the README file
+include README.rst
+include _README.md
