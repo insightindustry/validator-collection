@@ -7,7 +7,7 @@
 Validator Collection
 ####################################################
 
-**Python library of commonly-used validator functions**
+**Python library of 60+ commonly-used validator functions**
 
 .. |strong| raw:: html
 
@@ -20,28 +20,9 @@ Validator Collection
 .. sidebar:: Version Compatability
 
   The **Validator Collection** is designed to be compatible with Python 2.7 and
-  Python 3.4 and higher.
+  Python 3.4 or higher.
 
-  .. list-table:: Test Performance
-    :widths: 10 50
-    :header-rows: 1
-
-    * - Branch
-      - Unit Tests
-    * - `latest <https://github.com/insightindustry/validator-collection/tree/master>`_
-      -
-        .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=latest
-          :target: https://travis-ci.org/insightindustry/validator-collection
-
-        .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/master/graph/badge.svg
-          :target: https://codecov.io/gh/insightindustry/validator-collection
-    * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
-      -
-        .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=develop
-          :target: https://travis-ci.org/insightindustry/validator-collection
-
-        .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/develop/graph/badge.svg
-          :target: https://codecov.io/gh/insightindustry/validator-collection
+.. include:: _unit_tests_code_coverage.rst
 
 .. toctree::
   :hidden:
@@ -51,7 +32,7 @@ Validator Collection
   Home <self>
   Validator Reference <validators>
   Checker Reference <checkers>
-  Contributing <contributing>
+  Contributor Guide <contributing>
   Testing Reference <testing>
   Glossary <glossary>
 
@@ -61,7 +42,7 @@ functions that can be used to validate the type and contents of an input value.
 Each function has a consistent syntax for easy use, and has been tested on
 Python 2.7, 3.4, 3.5, and 3.6.
 
-For a list of validators available, please see the table of contents below.
+For a list of validators available, please see the lists below.
 
 .. contents::
   :depth: 3
@@ -234,7 +215,7 @@ sure that value is in the form your code needs it in.
 
 There are two fundamental patterns that we find work well in practice.
 
-Defensive Aprpoach: Check, then Convert if Necessary
+Defensive Approach: Check, then Convert if Necessary
 =======================================================
 
 We find this pattern is best used when we don't have any certainty over a given

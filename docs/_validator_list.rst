@@ -21,7 +21,7 @@
     - :func:`time <validator_collection.validators.time>`
     - :func:`float <validator_collection.validators.float>`
     - :func:`path <validator_collection.validators.path>`
-    - :func:`path <validator_collection.validators.ip_address>`
+    - :func:`ip_address <validator_collection.validators.ip_address>`
   * - :func:`none <validator_collection.validators.none>`
     - :func:`timezone <validator_collection.validators.timezone>`
     - :func:`fraction <validator_collection.validators.fraction>`
@@ -31,12 +31,12 @@
     -
     - :func:`decimal <validator_collection.validators.decimal>`
     - :func:`file_exists <validator_collection.validators.file_exists>`
-    - :func:`mac_address <validator_collection.validators.mac_address>`
+    - :func:`ipv6 <validator_collection.validators.ipv6>`
   * - :func:`uuid <validator_collection.validators.uuid>`
     -
     -
     - :func:`directory_exists <validator_collection.validators.directory_exists>`
-    - :func:`ipv6 <validator_collection.validators.ipv6>`
+    - :func:`mac_address <validator_collection.validators.mac_address>`
   * - :func:`variable_name <validator_collection.validators.variable_name>`
     -
     -

@@ -11,6 +11,10 @@
 
       .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/master/graph/badge.svg
         :target: https://codecov.io/gh/insightindustry/validator-collection
+
+      .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=latest
+        :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
   * - `develop <https://github.com/insightindustry/validator-collection/tree/develop>`_
     -
       .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=develop
@@ -18,3 +22,7 @@
 
       .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/develop/graph/badge.svg
         :target: https://codecov.io/gh/insightindustry/validator-collection
+
+      .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=develop
+        :target: http://validator-collection.readthedocs.io/en/latest/?badge=develop
+        :alt: Documentation Status

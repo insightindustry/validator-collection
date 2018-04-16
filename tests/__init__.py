@@ -22,7 +22,7 @@ the **Validator Collection**, we decided to focus on practicality. That means:
   * **Coverage matters...kind of.** We have documented the primary intended
     behavior of every function in the **Validator Collection** library, and the
     most-likely failure modes that can be expected.  At the time of writing, we
-    have about 97% code coverage. Yes, yes: We know that is less than 100%. But
+    have about 85% code coverage. Yes, yes: We know that is less than 100%. But
     there are edge cases which are almost impossible to bring about, based on
     confluences of factors in the wide world. Our goal is to test the key
     functionality, and as bugs are uncovered to add to the test functions as
