@@ -58,6 +58,11 @@ To install the **Validator Collection**, just execute:
 
   $ pip install validator-collection
 
+Dependencies
+==============
+
+.. include:: _dependencies.rst
+
 ***********************************
 Available Validators and Checkers
 ***********************************
@@ -325,17 +330,35 @@ will *typically* be an email address, and not something weird (like a number or
 something). So we just try the validator - and if validation fails, we handle
 the error appropriately.
 
-********************
-Dependencies
-********************
+*********************
+Questions and Issues
+*********************
 
-.. include:: _dependencies.rst
+You can ask questions and report issues on the project's
+`Github Issues Page <https://github.com/insightindustry/validator-collection/issues>`_
 
-******************************
-Unit Tests and Code Coverage
-******************************
+*********************
+Contributing
+*********************
 
-.. include:: _unit_tests_code_coverage.rst
+We welcome contributions and pull requests! For more information, please see the
+:doc:`Contributor Guide <contributing>`
+
+*********************
+Testing
+*********************
+
+We use `TravisCI <http://travisci.org>`_ for our build automation and
+`ReadTheDocs <https://readthedocs.org>`_ for our documentation.
+
+Detailed information about our test suite and how to run tests locally can be
+found in our :doc:`Testing Reference <testing>`.
+
+**********************
+License
+**********************
+
+The **Validator Collection** is made available on a **MIT License**.
 
 ********************
 Indices and tables

@@ -27,8 +27,8 @@ For a list of validators available, please see [below](#available-validators-and
    - [Validators](#validators)
    - [Checkers](#checkers)
 5. [Hello World](#hello-world)
-   - [Validators Explained](#validators-explained)
-   - [Checkers Explained][#checkers-explained]
+   - [Using Validators](#using-validators)
+   - [Using Checkers][#using-checkers]
 6. [Best Practices](#best-practices)
    - [Defensive Approach: Check, then Convert if Necessary](#defensive-approach-check-then-convert-if-necessary)
    - [Confident Approach: try ... except](#confident-approach-try---except)
@@ -63,7 +63,7 @@ replacement for the Python standard library's buggy `re` module.
 
 ### Validators
 
-:green_book: **COMPLETE DOCUMENTATION: Validator Reference](http://validator-collection.readthedocs.io/en/latest/validators.html)**
+:green_book: **[COMPLETE DOCUMENTATION: Validator Reference](http://validator-collection.readthedocs.io/en/latest/validators.html)**
 
 - **Core**
   - [`dict`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.dict)
@@ -212,8 +212,7 @@ then the validator will raise a `ValueError` exception. If `allow_empty`
 is `True`, then an empty/falsey input value will be converted to a `None`
 value.
 
-**PLEASE NOTE:**
-By default, `allow_empty` is always set to `False`.
+:warning: **PLEASE NOTE:** By default, `allow_empty` is always set to `False`.
 
 If the value you're validating fails its validation for some reason, the validator
 may raise different exceptions depending on the reason. In most cases, this will
@@ -221,7 +220,7 @@ be a `ValueError` though it can sometimes be a `TypeError`, or an
 `AttributeError`, etc. For specifics on each validator's likely exceptions
 and what can cause them, please review the **[Validator Reference](http://validator-collection.readthedocs.io/en/latest/validators.html)**.
 
-**PLEASE NOTE:**
+:pencil: **PLEASE NOTE:**
 Some validators (particularly numeric ones like `integer`) have additional
 options which are used to make sure the value meets criteria that you set for
 it. These options are always included as keyword arguments *after* the
@@ -232,11 +231,9 @@ it. These options are always included as keyword arguments *after* the
 Likewise, a **checker** is what it sounds like: It checks that an input value
 is what you expect it to be, and tells you `True`/`False` whether it is or not.
 
-:warning: **IMPORTANT:**
-
-Checkers do *not* verify or convert object types. You can think of a checker as
-a tool that tells you whether its corresponding [validator](#validators-explained)
-would fail. See [Best Practices](#best-practices) for tips and tricks on
+:warning: **IMPORTANT:** Checkers do *not* verify or convert object types. You can think of a checker as
+a tool that tells you whether its corresponding [validator](#using-validators)
+would fail. See **[Best Practices](#best-practices)** for tips and tricks on
 using the two together.
 
 Each checker is expressed as the name of the thing being validated, prefixed by
@@ -246,17 +243,13 @@ for an integer is `is_integer()`.
 
 Checkers take the input value you want to check as their first (and often only)
 positional argumet. If the input value validates, they will return `True`. Unlike
-[validators](#validators-explained), checkers will not raise an exception if
+[validators](#using-validators), checkers will not raise an exception if
 validation fails. They will instead return `False`.
 
-:bulb: Here's a tip:
-
-If you need to know *why* a given value failed to validate, use the validator
+:bulb: **Here's a tip:** If you need to know *why* a given value failed to validate, use the validator
 instead.
 
-:bulb: Here's a tip:
-
-Some checkers (particularly numeric ones like
+:bulb: **Here's a tip:** Some checkers (particularly numeric ones like
 `is_integer`) have additional
 options which are used to make sure the value meets criteria that you set for
 it. These options are always *optional* and are included as keyword arguments
@@ -267,7 +260,7 @@ it. These options are always *optional* and are included as keyword arguments
 
 ## Best Practices
 
-[Checkers](#checkers-explained) and [Validators](validators-explained)
+[Checkers](#using-checkers) and [Validators](using-validators)
 are designed to be used together. You can think of them as a way to quickly and
 easily verify that a value contains the information you expect, and then make
 sure that value is in the form your code needs it in.

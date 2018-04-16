@@ -201,6 +201,34 @@ In order to prepare your local development environment, you should:
 
 And you should be good to go!
 
+Ideas and Feature Requests
+============================
+
+Check for open `issues <https://github.com/insightindustry/validator-collection/issues>`_
+or create a new issue to start a discussion around a bug or feature idea.
+
+Testing
+=========
+
+If you've added a new feature, we recommend you:
+* create local unit tests to verify that your feature works as expected, and
+* run local unit tests before you submit the pull request to make sure nothing
+  else got broken by accident.
+
+.. seealso::
+
+  For more information about the **Validator Collection** testing approach please
+  see: :doc:`Testing the Validator Collection <testing>`
+
+Submitting Pull Requests
+===========================
+
+After you have made changes that you think are ready to be included in the main
+library, submit a pull request on Github and one of our developers will review
+your changes. If they're ready (meaning they're well documented, pass unit tests,
+etc.) then they'll be merged back into the main repository and slated for inclusion
+in the next release.
+
 Building Documentation
 =========================
 
@@ -222,14 +250,6 @@ available at:
 
   Built documentation (the HTML) is **not** included in the project's Git
   repository. If you need local documentation, you'll need to build it.
-
-Testing
-=========
-
-.. seealso::
-
-  For more information about the **Validator Collection** testing approach please
-  see: :doc:`Testing the Validator Collection <testing>`
 
 References
 =============
