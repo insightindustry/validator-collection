@@ -10,9 +10,13 @@ and ``validator_collection/checkers.py`` respectively.
 
 import os
 
-with open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                       'VERSION')) as version_file:
-    __version__ = version_file.read().strip()
+# Get the version number from the _version.py file
+version_dict = {}
+with open(os.path.join(os.path.dirname(__file__), '_version.py')) as version_file:
+    exec(version_file.read(), version_dict)                                     # pylint: disable=W0122
+
+__version__ = version_dict.get('__version__')
+
 
 from validator_collection.validators import bytesIO, date, dict, decimal, \
     directory_exists, datetime, email, float, fraction, file_exists, ip_address, \

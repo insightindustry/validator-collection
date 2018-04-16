@@ -1,11 +1,8 @@
-.. Validator Collection documentation master file, created by
-   sphinx-quickstart on Sat Apr 14 11:13:03 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-####################################################
+
+======================
 Validator Collection
-####################################################
+======================
 
 **Python library of 60+ commonly-used validator functions**
 
@@ -91,9 +88,7 @@ Available Validators and Checkers
 Validators
 =============
 
-.. seealso::
-
-  Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
 .. list-table::
   :widths: 30 30 30 30 30
@@ -143,9 +138,7 @@ Validators
 Checkers
 ==========
 
-.. sealso::
-
-  Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
+Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
 
 .. list-table::
   :widths: 30 30 30 30 30
@@ -266,9 +259,7 @@ two flavors: a validator and a checker.
 Using Validators
 ==================
 
-.. sealso::
-
-  Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+Please see the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
 A validator does what it says on the tin: It validates that an input value is
 what you think it should be, and returns its valid form.
@@ -322,9 +313,7 @@ and what can cause them, please review the `Validator Reference <http://validato
 Using Checkers
 ================
 
-.. seealso::
-
-  Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
+Please see the `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_
 
 Likewise, a checker is what it sounds like: It checks that an input value
 is what you expect it to be, and tells you ``True``/``False`` whether it is or not.

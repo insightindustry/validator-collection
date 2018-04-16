@@ -5,6 +5,8 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
+import sys
+
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
@@ -18,11 +20,16 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 # Get the version number from the VERSION file
-with open(path.join(here, 'VERSION'), encoding='utf-8') as f:
-    version = f.read().strip()
+version_dict = {}
+with open('./validator_collection/_version.py') as version_file:
+    exec(version_file.read(), version_dict)                                     # pylint: disable=W0122
+
+version = version_dict.get('__version__')
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
+
+
 
 setup(
     # This is the name of your project. The first time you publish this
@@ -139,8 +146,8 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "regex ; python_version<'3'"
-    ],  # Optional
+        'regex;python_version<"3"',
+    ],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -162,9 +169,12 @@ setup(
     #
     # If using Python 2.6 or earlier, then these have to be included in
     # MANIFEST.in as well.
-    #package_data={  # Optional
-    #    'sample': ['package_data.dat'],
+    #package_data={
+    #    '': ['_README.rst', 'README.md'],
+    #    '': ['LICENSE', 'VERSION'],
     #},
+
+    #include_package_data = True,
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
@@ -172,6 +182,11 @@ setup(
     #
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     #data_files=[('my_data', ['data/data_file'])],  # Optional
+    #data_files = [
+    #    ('validator_collection', ['LICENSE']),
+    #    ('validator_collection', ['README.md']),
+    #    ('validator_collection', ['VERSION']),
+    #],
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow

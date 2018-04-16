@@ -15,8 +15,6 @@ import datetime as datetime_
 from fractions import Fraction
 import time as time_
 
-import chardet
-
 _ver = sys.version_info
 
 #: Python 2.x?
