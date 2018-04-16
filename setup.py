@@ -14,7 +14,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'docs/index.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 # Get the version number from the VERSION file
@@ -59,7 +59,9 @@ setup(
     #
     # This field corresponds to the "Description" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#description-optional
-    long_description=long_description,  # Optional
+    long_description=long_description,
+
+    long_description_content_type = 'text/markdown',
 
     # This should be a valid link to your project's main homepage.
     #
@@ -89,19 +91,30 @@ setup(
         'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
+        'Environment :: Web Environment',
+        'Operating System :: OS Independent',
         'Intended Audience :: Developers',
+
         'Topic :: Software Development :: Libraries',
+        'Topic :: Utilities',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries :: Python Modules',
 
         # Pick your license as you wish
         'License :: OSI Approved :: MIT License',
+
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
+
+    zip_safe = False,
 
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -184,10 +197,8 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        'Documentation': 'http://validator-collection.readthedocs.io/en/',
+        'Documentation': 'http://validator-collection.readthedocs.io/en/latest',
         'Bug Reports': 'https://github.com/insightindustry/validator-collection/issues',
-        'Funding': 'https://donate.pypi.org',
-        'Say Thanks!': 'http://saythanks.io/to/example',
         'Source': 'https://github.com/insightindustry/validator-collection/',
     },
 )

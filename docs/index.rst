@@ -142,7 +142,7 @@ will both return an ``int`` of ``1``.
 
 If the value you're validating is empty/falsey and ``allow_empty`` is ``False``,
 then the validator will raise a :class:`ValueError` exception. If ``allow_empty``
-is ``True``, then an empty/falsey input value will be convertd to a :class:`None <python:None>`
+is ``True``, then an empty/falsey input value will be converted to a :class:`None <python:None>`
 value.
 
 .. caution::

@@ -14,23 +14,30 @@ Python 2.7, 3.4, 3.5, and 3.6.
 
 For a list of validators available, please see [below](#available-validators-and-checkers).
 
-**For complete documentation on the library, please visit our** **[Validator Collection Documentation](https://validator-collection.readthedocs.io)**.
+**For complete documentation on the library, please visit our [Validator Collection Documentation](https://validator-collection.readthedocs.io)**.
+
+***
 
 ## Table of Contents
 
 1. [Table of Contents](#table_of_contents)
 2. [Installation](#installation)
-3. [Dependencies](#dependencies)
+   - [Dependencies](#dependencies)
 4. [Available Validators and Checkers](#available-validators-and-checkers)
-   - [Validators](#using-validators)
-   - [Checkers](#using-checkers)
-5. [Best Practices](#best-practices)
+   - [Validators](#validators)
+   - [Checkers](#checkers)
+5. [Hello World](#hello-world)
+   - [Validators Explained](#validators-explained)
+   - [Checkers Explained][#checkers-explained]
+6. [Best Practices](#best-practices)
    - [Defensive Approach: Check, then Convert if Necessary](#defensive-approach-check-then-convert-if-necessary)
    - [Confident Approach: try ... except](#confident-approach-try---except)
-6. [Reporting Issues](#reporting-issues)
-7. [Contributing](#contributing)
-8. [Testing](#testing)
-9. [License](#license)
+7. [Reporting Issues](#reporting-issues)
+8. [Contributing](#contributing)
+9. [Testing](#testing)
+10. [License](#license)
+
+***
 
 ## Installation
 
@@ -50,48 +57,92 @@ will use the Python standard library.
 If you are using Python 2.7, the library will install the [regex](https://pypi.python.org/pypi/regex) drop-in
 replacement for the Python standard library's buggy `re` module.
 
+***
+
 ## Available Validators and Checkers
 
 ### Validators
 
-:green_book: **COMPLETE DOCUMENTATION:** [Validator Reference](http://validator-collection.readthedocs.io/en/develop/validators.html)
+:green_book: **COMPLETE DOCUMENTATION: Validator Reference](http://validator-collection.readthedocs.io/en/latest/validators.html)**
 
 - **Core**
-  - [`dict`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.dict)
-  - [`string`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.string)
-  - [`iterable`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.iterable)
-  - [`none`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.none)
-  - [`not_empty`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.not_empty)
-  - [`variable_name`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.variable_name)
+  - [`dict`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.dict)
+  - [`string`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.string)
+  - [`iterable`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.iterable)
+  - [`none`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.none)
+  - [`not_empty`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.not_empty)
+  - [`variable_name`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.variable_name)
 - **Date/Time**
-  - [`date`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.date)
-  - [`datetime`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.datetime)
-  - [`time`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.time)
-  - [`timezone`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.timezone)
+  - [`date`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.date)
+  - [`datetime`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.datetime)
+  - [`time`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.time)
+  - [`timezone`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.timezone)
 - **Numbers**
-  - [`numeric`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.numeric)
-  - [`integer`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.integer)
-  - [`float`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.float)
-  - [`fraction`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.fraction)
-  - [`decimal`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.decimal)
+  - [`numeric`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.numeric)
+  - [`integer`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.integer)
+  - [`float`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.float)
+  - [`fraction`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.fraction)
+  - [`decimal`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.decimal)
 - **File-related**
-  - [`bytesIO`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.bytesIO)
-  - [`stringIO`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.stringIO)
-  - [`path`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.path)
-  - [`path_exists`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.path_exists)
-  - [`file_exists`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.file_exists)
-  - [`directory_exists`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.directory_exists)
+  - [`bytesIO`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.bytesIO)
+  - [`stringIO`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.stringIO)
+  - [`path`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.path)
+  - [`path_exists`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.path_exists)
+  - [`file_exists`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.file_exists)
+  - [`directory_exists`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.directory_exists)
 - **Internet-related**
-  - [`email`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.email)
-  - [`url`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.url)
-  - [`ip_address`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.ip_address)
-  - [`ipv4`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.ipv4)
-  - [`ipv6`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.ipv6)
-  - [`mac_address`](http://validator-collection.readthedocs.io/en/develop/validators.html#validator_collection.validators.mac_address)
+  - [`email`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.email)
+  - [`url`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.url)
+  - [`ip_address`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.ip_address)
+  - [`ipv4`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.ipv4)
+  - [`ipv6`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.ipv6)
+  - [`mac_address`](http://validator-collection.readthedocs.io/en/latest/validators.html#validator_collection.validators.mac_address)
 
 ### Checkers
 
-:green_book: **COMPLETE DOCUMENTATION:** [Checker Reference](http://validator-collection.readthedocs.io/en/develop/checkers.html)
+:green_book: **[COMPLETE DOCUMENTATION: Checker Reference](http://validator-collection.readthedocs.io/en/latest/checkers.html)**
+
+- **Core**
+  - [`is_type`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_type)
+  - [`is_between`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_between)
+  - [`has_length`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.has_length)
+  - [`are_equivalent`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.are_equivalent)
+  - [`are_dicts_equivalent`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.are_dicts_equivalent)
+  - [`is_dict`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_dict)
+  - [`is_string`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_string)
+  - [`is_iterable`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_iterable)
+  - [`is_not_empty`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_not_empty)
+  - [`is_none`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_none)
+  - [`is_callable`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_callable)
+  - [`is_uuid`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_uuid)
+  - [`is_variable_name`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_variable_name)
+* **Date/Time**
+  - [`is_date`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_date)
+  - [`is_datetime`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_datetime)
+  - [`is_time`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_time)
+  - [`is_timezone`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_timezone)
+* **Numbers**
+  - [`is_numeric`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_numeric)
+  - [`is_integer`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_integer)
+  - [`is_float`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_float)
+  - [`is_fraction`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_fraction)
+  - [`is_decimal`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_decimal)
+* **File-related**
+  - [`is_bytesIO`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_bytesIO)
+  - [`is_stringIO`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_stringIO)
+  - [`is_pathlike`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_pathlike)
+  - [`is_on_filesystem`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_on_filesystem)
+  - [`is_file`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_file)
+  - [`is_directory`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_directory)
+* **Internet-related**
+  - [`is_email`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_email)
+  - [`is_url`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_url)
+  - [`is_ip_address`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_ip_address)
+  - [`is_ipv4`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_ipv4)
+  - [`is_ipv6`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_ipv6)
+  - [`is_mac_address`](http://validator-collection.readthedocs.io/en/latest/checkers.html#validator_collection.checkers.is_mac_address)
+
+***
 
 ## Hello World
 
@@ -158,7 +209,7 @@ will both return an `int` of `1`.
 
 If the value you're validating is empty/falsey and `allow_empty` is `False`,
 then the validator will raise a `ValueError` exception. If `allow_empty`
-is `True`, then an empty/falsey input value will be convertd to a `None`
+is `True`, then an empty/falsey input value will be converted to a `None`
 value.
 
 **PLEASE NOTE:**
@@ -168,7 +219,7 @@ If the value you're validating fails its validation for some reason, the validat
 may raise different exceptions depending on the reason. In most cases, this will
 be a `ValueError` though it can sometimes be a `TypeError`, or an
 `AttributeError`, etc. For specifics on each validator's likely exceptions
-and what can cause them, please review the **[Validator Reference](http://validator-collection.readthedocs.io/en/develop/validators.html)**.
+and what can cause them, please review the **[Validator Reference](http://validator-collection.readthedocs.io/en/latest/validators.html)**.
 
 **PLEASE NOTE:**
 Some validators (particularly numeric ones like `integer`) have additional
@@ -210,7 +261,9 @@ Some checkers (particularly numeric ones like
 options which are used to make sure the value meets criteria that you set for
 it. These options are always *optional* and are included as keyword arguments
 *after* the input value argument. For details, please see the
-**[Checker Reference](http://validator-collection.readthedocs.io/en/develop/checkers.html)**
+**[Checker Reference](http://validator-collection.readthedocs.io/en/latest/checkers.html)**
+
+***
 
 ## Best Practices
 
@@ -323,17 +376,25 @@ will *typically* be an email address, and not something weird (like a number or
 something). So we just try the validator - and if validation fails, we handle
 the error appropriately.
 
+***
+
 ## Reporting Issues
 
 If you want to report issues to the **Validator Collection**, please go ahead and do so [here](https://github.com/insightindustry/validator-collection/issues).
 
+***
+
 ## Contributing
 
-Please see our complete **[Contributor Guide](http://validator-collection.readthedocs.io/en/develop/contributing.html)**
+Please see our complete **[Contributor Guide](http://validator-collection.readthedocs.io/en/latest/contributing.html)**
+
+***
 
 ## Testing
 
-Please see our **[Testing Reference](http://validator-collection.readthedocs.io/en/develop/testing.html)**
+Please see our **[Testing Reference](http://validator-collection.readthedocs.io/en/latest/testing.html)**
+
+***
 
 ## License
 
