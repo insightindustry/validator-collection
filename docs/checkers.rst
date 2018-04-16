@@ -64,6 +64,11 @@ is_variable_name
 
 .. autofunction:: is_variable_name
 
+is_callable
+-------------
+
+.. autofunction:: is_callable
+
 is_uuid
 ---------
 

@@ -277,6 +277,19 @@ def test_is_variable_name(value, fails, allow_empty):
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
+    (uuid.uuid4(), True, False),
+    (uuid.uuid4, False, False),
+    ('not-a-uuid', True, False),
+    ('', True, False),
+    (None, True, False),
+])
+def test_is_callable(value, fails, allow_empty):
+    expects = not fails
+    result = checkers.is_callable(value)
+    assert result == expects
+
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
     (uuid.uuid4(), False, False),
     ('123e4567-e89b-12d3-a456-426655440000', False, False),
     ('not-a-uuid', True, False),

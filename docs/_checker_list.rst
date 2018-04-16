@@ -57,6 +57,11 @@
     -
     -
     -
+  * - :func:`is_callable <validator_collection.checkers.is_callable>`
+    -
+    -
+    -
+    -
   * - :func:`is_uuid <validator_collection.checkers.is_uuid>`
     -
     -

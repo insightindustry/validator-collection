@@ -455,6 +455,17 @@ def is_variable_name(value):
     return True
 
 
+def is_callable(value):
+    """Indicate whether ``value`` is callable (like a function, method, or class).
+
+    :param value: The value to evaluate.
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+    """
+    return hasattr(value, '__call__')
+
+
 def is_uuid(value):
     """Indicate whether ``value`` contains a :class:`UUID <python:uuid.UUID>`
 
