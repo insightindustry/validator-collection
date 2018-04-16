@@ -14,7 +14,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, '_README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 # Get the version number from the VERSION file
@@ -49,7 +49,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description=('Collection of Python functions for validating data'),  # Required
+    description=('Collection of 60+ Python functions for validating data'),  # Required
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -59,9 +59,8 @@ setup(
     #
     # This field corresponds to the "Description" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#description-optional
-    long_description=long_description,
-
-    long_description_content_type = 'text/markdown',
+    long_description = long_description,
+    long_description_content_type = 'text/x-rst',
 
     # This should be a valid link to your project's main homepage.
     #
