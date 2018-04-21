@@ -735,15 +735,19 @@ def test_is_directory(value, fails, allow_empty):
     ('firstname-lastname@example.com', False, False),
     ('email@example.web', False, False),
     ('email+tag@example.com', False, False),
+    ('test(comment)@test.com', False, False),
 
     ('much."more\\ unusual"@example.com', False, False),
     ('very.unusual."@".unusual.com@example.com', False, False),
     ('very."(),:;<>[]".VERY."very@\\ "very".unusual@strange.example.com', False, False),
+    ('Joe.Smith."<".email.">".test@example.com', False, False),
 
     ('plainaddress', True, False),
     ('#@%^%#$@#$@#.com', True, False),
     ('@example.com', True, False),
     ('Joe Smith <email@example.com>', True, False),
+    ('Joe Smith <email@example.com', True, False),
+    ('Joe Smith email@example.com>', True, False),
     ('email.example.com', True, False),
     ('email@example@example.com', True, False),
     ('.email@example.com', True, False),
@@ -756,6 +760,8 @@ def test_is_directory(value, fails, allow_empty):
     ('email@111.222.333.44444', True, False),
     ('email@example..com', True, False),
     ('Abc..123@example.com', True, False),
+    ('test(bad-comment@test.com', True, False),
+    ('testbad-comment)goeshere@test.com', True, False),
 
 ])
 def test_is_email(value, fails, allow_empty):

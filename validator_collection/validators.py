@@ -57,7 +57,8 @@ URL_REGEX = re.compile(
     , re.UNICODE)
 
 DOMAIN_REGEX = re.compile(
-    r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
+    r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+"
+    r"(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
     re.UNICODE
 )
 
@@ -1342,6 +1343,20 @@ def directory_exists(value,
 def email(value, allow_empty = False):
     """Validate that ``value`` is a valid email address.
 
+    .. note::
+
+      Email address validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 5322 <https://tools.ietf.org/html/rfc5322>`_ and uses a combination of
+      string parsing and regular expressions.
+
+      String parsing in particular is used to validate certain *highly unusual*
+      but still valid email patterns, including the use of escaped text and
+      comments within an email address' local address (the user name part).
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
+
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`None <python:None>`
 
@@ -1358,7 +1373,7 @@ def email(value, allow_empty = False):
     :raises ValueError: if ``value`` is not a valid email address or
       empty with ``allow_empty`` set to ``True``
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
 
     if not value and not allow_empty:
         raise ValueError('value cannot be empty')
@@ -1370,9 +1385,25 @@ def email(value, allow_empty = False):
 
     if '@' not in value:
         raise ValueError('value (%s) is not a valid email address' % value)
-    elif '<' in value or '>' in value:
+    if '(' in value and ')' in value:
+        open_parentheses = value.find('(')
+        close_parentheses = value.find(')') + 1
+
+        if close_parentheses < open_parentheses:
+            raise ValueError('value (%s) is not a valid email address' % value)
+
+        commented_value = value[open_parentheses:close_parentheses]
+        value = value.replace(commented_value, '')
+    elif '(' in value:
+        raise ValueError('value (%s) is not a valid email address' % value)
+    elif ')' in value:
+        raise ValueError('value (%s) is not a valid email address' % value)
+
+    if '<' in value or '>' in value:
         lt_position = value.find('<')
         gt_position = value.find('>')
+        first_quote_position = -1
+        second_quote_position = -1
 
         if lt_position >= 0:
             first_quote_position = value.find('"', 0, lt_position)
@@ -1494,6 +1525,21 @@ def url(value, allow_empty = False):
 
 def domain(value, allow_empty = False):
     """Validate that ``value`` is a valid domain name.
+
+    .. note::
+
+      This validator checks to validate that ``value`` resembles a valid
+      domain name. It is - generally - compliant with
+      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_, however it diverges
+      in a number of key ways:
+
+        * Including authentication (e.g. ``username:password@domain.dev``) will
+          fail validation.
+        * Including a path (e.g. ``domain.dev/path/to/file``) will fail validation.
+        * Including a port (e.g. ``domain.dev:8080``) will fail validation.
+
+      If you are hoping to validate a more complete URL, we recommend that you
+      see :func:`url <validator_collection.validators.url>`.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`None <python:None>`
