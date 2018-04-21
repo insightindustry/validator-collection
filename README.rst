@@ -14,7 +14,7 @@ Validator Collection
     - Unit Tests
   * - `latest <https://github.com/insightindustry/validator-collection/tree/master>`_
     -
-      .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=latest
+      .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=master
          :target: https://travis-ci.org/insightindustry/validator-collection
          :alt: Build Status (Travis CI)
 
