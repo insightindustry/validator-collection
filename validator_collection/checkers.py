@@ -904,6 +904,22 @@ def is_url(value):
     return True
 
 
+def is_domain(value):
+    """Indicate whether ``value`` is a valid domain.
+
+    :param value: The value to evaluate.
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+    """
+    try:
+        value = validators.domain(value)
+    except Exception:
+        return False
+
+    return True
+
+
 def is_ip_address(value):
     """Indicate whether ``value`` is a valid IP address (version 4 or version 6).
 

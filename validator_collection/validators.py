@@ -12,6 +12,7 @@ import math
 import os
 import uuid as uuid_
 import datetime as datetime_
+import string as string_
 
 from ast import parse
 
@@ -55,9 +56,20 @@ URL_REGEX = re.compile(
     r"$"
     , re.UNICODE)
 
-EMAIL_REGEX = re.compile(
-    r"(?!localhost)[^@\s]+@[^@\s]+\.[a-zA-Z0-9]+$"
+DOMAIN_REGEX = re.compile(
+    r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
+    re.UNICODE
 )
+
+EMAIL_REGEX = re.compile(
+    r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\""
+    r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")"
+    r"@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])"
+    r"?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}"
+    r"(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:"
+    r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+)
+
 
 MAC_ADDRESS_REGEX = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
 
@@ -1346,6 +1358,8 @@ def email(value, allow_empty = False):
     :raises ValueError: if ``value`` is not a valid email address or
       empty with ``allow_empty`` set to ``True``
     """
+    # pylint: disable=too-many-branches
+
     if not value and not allow_empty:
         raise ValueError('value cannot be empty')
     elif not value:
@@ -1354,12 +1368,88 @@ def email(value, allow_empty = False):
     if not isinstance(value, basestring):
         raise ValueError('value must be a valid string')
 
-    value = value.lower()
+    if '@' not in value:
+        raise ValueError('value (%s) is not a valid email address' % value)
+    elif '<' in value or '>' in value:
+        lt_position = value.find('<')
+        gt_position = value.find('>')
 
-    is_valid = EMAIL_REGEX.match(value)
+        if lt_position >= 0:
+            first_quote_position = value.find('"', 0, lt_position)
+        if gt_position >= 0:
+            second_quote_position = value.find('"', gt_position)
 
-    if not is_valid:
-        raise ValueError('value must be a valid email address')
+        if first_quote_position < 0 or second_quote_position < 0:
+            raise ValueError('value (%s) is not a valid email address' % value)
+
+    at_count = value.count('@')
+    if at_count > 1:
+        last_at_position = 0
+        last_quote_position = 0
+        for x in range(0, at_count):
+            at_position = value.find('@', last_at_position + 1)
+            if at_position >= 0:
+                first_quote_position = value.find('"',
+                                                  last_quote_position,
+                                                  at_position)
+                second_quote_position = value.find('"',
+                                                   first_quote_position)
+                if first_quote_position < 0 or second_quote_position < 0:
+                    raise ValueError('value (%s) is not a valid email address' % value)
+            last_at_position = at_position
+            last_quote_position = second_quote_position
+
+    split_values = value.split('@')
+    if len(split_values) < 2:
+        raise ValueError('value (%s) is not a valid email address' % value)
+
+    local_value = ''.join(split_values[:-1])
+    domain_value = split_values[-1]
+    is_domain = False
+    is_ip = False
+    try:
+        if domain_value.startswith('[') and domain_value.endswith(']'):
+            domain_value = domain_value[1:-1]
+        domain(domain_value)
+        is_domain = True
+    except ValueError:
+        is_domain = False
+
+    if not is_domain:
+        try:
+            ip_address(domain_value)
+            is_ip = True
+        except ValueError:
+            is_ip = False
+
+    if not is_domain and is_ip:
+        try:
+            email(local_value + '@test.com')
+        except ValueError:
+            raise ValueError('value (%s) is not a valid email address' % value)
+
+        return value
+    elif not is_domain:
+        raise ValueError('value (%s) is not a valid email address' % value)
+    else:
+        is_valid = EMAIL_REGEX.search(value)
+
+        if not is_valid:
+            raise ValueError('value (%s) is not a valid email address' % value)
+
+        matched_string = is_valid.group(0)
+        position = value.find(matched_string)
+        if position > 0:
+            prefix = value[:position]
+            if prefix[0] in string_.punctuation:
+                raise ValueError('value (%s) is not a valid email address' % value)
+            if '..' in prefix:
+                raise ValueError('value (%s) is not a valid email address' % value)
+
+        end_of_match = position + len(matched_string)
+        suffix = value[end_of_match:]
+        if suffix:
+            raise ValueError('value (%s) is not a valid email address' % value)
 
     return value
 
@@ -1398,6 +1488,59 @@ def url(value, allow_empty = False):
 
     if not is_valid:
         raise ValueError('value must be a valid URL')
+
+    return value
+
+
+def domain(value, allow_empty = False):
+    """Validate that ``value`` is a valid domain name.
+
+    :param value: The value to validate.
+    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`ValueError <python:ValueError>` if ``value`` is empty.
+      Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: ``value`` / :class:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+
+    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises ValueError: if ``value`` is not a valid URL or
+      empty with ``allow_empty`` set to ``True``
+
+    """
+    if not value and not allow_empty:
+        raise ValueError('value cannot be empty')
+    elif not value:
+        return None
+
+    if not isinstance(value, basestring):
+        raise ValueError('value must be a valid string')
+
+    if '/' in value:
+        raise ValueError('valid domain name cannot contain "/"')
+    if '@' in value:
+        raise ValueError('valid domain name cannot contain "@"')
+    if ':' in value:
+        raise ValueError('valid domain name cannot contain ":"')
+
+    value = value.strip().lower()
+
+    for item in string_.whitespace:
+        if item in value:
+            raise ValueError('valid domain name cannot contain whitespace')
+
+    is_valid = DOMAIN_REGEX.match(value)
+
+    if not is_valid:
+        with_prefix = 'http://' + value
+        try:
+            url(with_prefix)
+        except ValueError:
+            raise ValueError('value (%s) is not a valid domain' % value)
 
     return value
 
