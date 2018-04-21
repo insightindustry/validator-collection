@@ -875,6 +875,20 @@ def is_directory(value):
 def is_email(value):
     """Indicate whether ``value`` is an email address.
 
+    .. note::
+
+      Email address validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 5322 <https://tools.ietf.org/html/rfc5322>`_ and uses a combination of
+      string parsing and regular expressions.
+
+      String parsing in particular is used to validate certain *highly unusual*
+      but still valid email patterns, including the use of escaped text and
+      comments within an email address' local address (the user name part).
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
+
     :param value: The value to evaluate.
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.

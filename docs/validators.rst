@@ -150,6 +150,11 @@ url
 
 .. autofunction:: url
 
+domain
+--------
+
+.. autofunction:: domain
+
 ip_address
 -------------
 

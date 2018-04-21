@@ -134,27 +134,27 @@ Validators
     - ``time``
     - ``float``
     - ``path``
-    - ``ip_address``
+    - ``domain``
   * - ``none``
     - ``timezone``
     - ``fraction``
     - ``path_exists``
-    - ``ipv4``
+    - ``ip_address``
   * - ``not_empty``
     -
     - ``decimal``
     - ``file_exists``
-    - ``ipv6``
+    - ``ipv4``
   * - ``uuid``
     -
     -
     - ``directory_exists``
-    - ``mac_address``
+    - ``ipv6``
   * - ``variable_name``
     -
     -
     -
-    -
+    - ``mac_address``
 
 Checkers
 ==========
@@ -184,27 +184,27 @@ Checkers
     - ``is_time``
     - ``is_float``
     - ``is_pathlike``
-    - ``is_ip_address``
+    - ``is_domain``
   * - ``are_equivalent``
     - ``is_timezone``
     - ``is_fraction``
     - ``is_on_filesystem``
-    - ``is_ipv4``
+    - ``is_ip_address``
   * - ``are_dicts_equivalent``
     -
     - ``is_decimal``
     - ``is_file``
-    - ``is_ipv6``
+    - ``is_ipv4``
   * - ``is_dict``
     -
     -
     - ``is_directory``
-    - ``is_mac_address``
+    - ``is_ipv6``
   * - ``is_string``
     -
     -
     -
-    -
+    - ``is_mac_address``
   * - ``is_iterable``
     -
     -

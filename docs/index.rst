@@ -34,6 +34,7 @@ Validator Collection
   Checker Reference <checkers>
   Contributor Guide <contributing>
   Testing Reference <testing>
+  Release History <history>
   Glossary <glossary>
 
 The **Validator Collection** is a Python library that provides more than 60

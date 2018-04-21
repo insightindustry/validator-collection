@@ -171,6 +171,11 @@ is_url
 
 .. autofunction:: is_url
 
+is_domain
+-----------------
+
+.. autofunction:: is_domain
+
 is_ip_address
 -------------------
 

@@ -21,27 +21,27 @@
     - :func:`is_time <validator_collection.checkers.is_time>`
     - :func:`is_float <validator_collection.checkers.is_float>`
     - :func:`is_pathlike <validator_collection.checkers.is_pathlike>`
-    - :func:`is_ip_address <validator_collection.checkers.is_ip_address>`
+    - :func:`is_domain <validator_collection.checkers.is_domain>`
   * - :func:`are_equivalent <validator_collection.checkers.are_equivalent>`
     - :func:`is_timezone <validator_collection.checkers.is_timezone>`
     - :func:`is_fraction <validator_collection.checkers.is_fraction>`
     - :func:`is_on_filesystem <validator_collection.checkers.is_on_filesystem>`
-    - :func:`is_ipv4 <validator_collection.checkers.is_ipv4>`
+    - :func:`is_ip_address <validator_collection.checkers.is_ip_address>`
   * - :func:`are_dicts_equivalent <validator_collection.checkers.are_dicts_equivalent>`
     -
     - :func:`is_decimal <validator_collection.checkers.is_decimal>`
     - :func:`is_file <validator_collection.checkers.is_file>`
-    - :func:`is_ipv6 <validator_collection.checkers.is_ipv6>`
+    - :func:`is_ipv4 <validator_collection.checkers.is_ipv4>`
   * - :func:`is_dict <validator_collection.checkers.is_dict>`
     -
     -
     - :func:`is_directory <validator_collection.checkers.is_directory>`
-    - :func:`is_mac_address <validator_collection.checkers.is_mac_address>`
+    - :func:`is_ipv6 <validator_collection.checkers.is_ipv6>`
   * - :func:`is_string <validator_collection.checkers.is_string>`
     -
     -
     -
-    -
+    - :func:`is_mac_address <validator_collection.checkers.is_mac_address>`
   * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
     -
     -
