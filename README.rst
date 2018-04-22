@@ -247,7 +247,7 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  from validator_collection import validators, checkers
+  from validator_collection import validators, checkers, errors
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
@@ -255,8 +255,13 @@ much identical. Here's how it works:
   email_address = validators.email('this-is-an-invalid-email')
   # Will raise a ValueError
 
-  email_address = validators.email(None)
-  # Will raise a ValueError
+  try:
+      email_address = validators.email(None)
+      # Will raise an EmptyValueError
+  except errors.EmptyValueError:
+      # Handling logic goes here
+  except errors.InvalidEmailError:
+      # More handlign logic goes here
 
   email_address = validators.email(None, allow_empty = True)
   # The value of email_address will now be None
@@ -308,22 +313,47 @@ validator will try to do that. So for example:
 will both return an ``int`` of ``1``.
 
 If the value you're validating is empty/falsey and ``allow_empty`` is ``False``,
-then the validator will raise a ``ValueError`` exception. If ``allow_empty``
-is ``True``, then an empty/falsey input value will be converted to a ``None``
-value.
+then the validator will raise a ``EmptyValueError`` exception (which inherits from
+the built-in ``ValueError``). If ``allow_empty`` is ``True``, then an empty/falsey
+input value will be converted to a ``None`` value.
 
 **CAUTION:** By default, ``allow_empty`` is always set to ``False``.
-
-If the value you're validating fails its validation for some reason, the validator
-may raise different exceptions depending on the reason. In most cases, this will
-be a ``ValueError`` though it can sometimes be a ``TypeError``, or an
-``AttributeError``, etc. For specifics on each validator's likely exceptions
-and what can cause them, please review the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_.
 
 **HINT:** Some validators (particularly numeric ones like ``integer``) have additional
 options which are used to make sure the value meets criteria that you set for
 it. These options are always included as keyword arguments *after* the
 ``allow_empty`` argument, and are documented for each validator below.
+
+When Validation Fails
+-----------------------
+
+Validators raise exceptions when validation fails. All exceptions raised inherit
+from built-in exceptions like ``ValueError``, ``TypeError``, and ``IOError``.
+
+If the value you're validating fails its validation for some reason, the validator
+may raise different exceptions depending on the reason. In most cases, this will
+be a descendent of ``ValueError`` though it can sometimes be a
+``TypeError``, or an ``IOError``, etc.
+
+For specifics on each validator's likely exceptions and what can cause them, please
+review the
+`Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+
+**HINT:** While validators will always raise built-in exceptions from the standard library,
+to give you greater programmatic control over how to respond when validation
+fails, we have defined a set of custom exceptions that inherit from those
+built-ins.
+
+Our custom exceptions provide you with very specific, fine-grained information
+as to *why* validation for a given value failed. In general, most validators
+will raise ``ValueError`` or ``TypeError`` exceptions, and you can safely catch those
+and be fine. But if you want to handle specific types of situations with greater
+control, then you can instead catch ``EmptyValueError``, ``CannotCoerceError``,
+``MaximumValueError``, and the like.
+
+For more detailed information, please see:
+* `Error Reference <http://validator-collection.readthedocs.io/en/latest/errors.html>`_
+* `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
 .. _checkers-explained:
 
@@ -456,13 +486,15 @@ Here's an example:
 
 .. code-block:: python
 
-  from validator_collection import validators
+  from validator_collection import validators, errors
 
   def some_function(value):
       try:
-        email_address = validators.email(value, allow_empty = False)
-      except ValueError:
-        # handle the error here
+          email_address = validators.email(value, allow_empty = False)
+      except errors.InvalidEmailError as error:
+          # handle the error here
+      except ValueError as error:
+          # handle other ValueErrors here
 
       # do something with your new email address value
 

@@ -7,6 +7,8 @@ Features Added
 ----------------
 
 * Added `validators.domain()` and `checkers.is_domain()` support with unit tests.
+* #8: Added more verbose exceptions while retaining backwards-compatability with standard
+  library exceptions.
 
 Bugs Fixed
 ------------
@@ -25,6 +27,8 @@ Documentation
 
 * Added CHANGES.rst.
 * #7: Added additional detail to `validators.email()` documentation.
+* #8: Added detailed exception / error handling documentation.
+* #8: Updated validator error documentation.
 
 ----------------
 
@@ -32,5 +36,3 @@ Release 1.0.0 (released April 16, 2018)
 =========================================
 
 * First public release
-
--------------------
