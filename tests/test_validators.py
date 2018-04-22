@@ -47,7 +47,7 @@ def test_dict(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.dict(value, allow_empty = allow_empty)
 
 
@@ -93,7 +93,7 @@ def test_string(value,
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.string(value,
                                           allow_empty = allow_empty,
                                           coerce_value = coerce_value,
@@ -160,7 +160,7 @@ def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.iterable(value,
                                             allow_empty = allow_empty,
                                             minimum_length = minimum_length,
@@ -212,7 +212,7 @@ def test_none(value, fails, allow_empty):
                                     allow_empty = allow_empty)
         assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.none(value,
                                         allow_empty = allow_empty)
 
@@ -242,7 +242,7 @@ def test_variable_name(value, fails, allow_empty):
         else:
             assert validated is not None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.variable_name(value,
                                                  allow_empty = allow_empty)
 
@@ -429,7 +429,7 @@ def test_time(value, fails, allow_empty, minimum,  maximum):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.time(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
@@ -490,7 +490,7 @@ def test_timezone(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.timezone(value,
                                         allow_empty = allow_empty)
 
@@ -569,7 +569,7 @@ def test_integer(value, fails, allow_empty, coerce_value, minimum, maximum, expe
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.integer(value,
                                            allow_empty = allow_empty,
                                            coerce_value = coerce_value,
@@ -917,7 +917,7 @@ def test_url(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.url(value, allow_empty = allow_empty)
 
 
@@ -1000,7 +1000,7 @@ def test_domain(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.domain(value, allow_empty = allow_empty)
 
 
@@ -1123,7 +1123,7 @@ def test_ip_address(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ip_address(value, allow_empty = allow_empty)
 
 
@@ -1153,7 +1153,7 @@ def test_ipv4(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ipv4(value, allow_empty = allow_empty)
 
 
@@ -1191,7 +1191,7 @@ def test_ipv6(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ipv6(value, allow_empty = allow_empty)
 
 
@@ -1227,5 +1227,5 @@ def test_mac_address(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.mac_address(value, allow_empty = allow_empty)
