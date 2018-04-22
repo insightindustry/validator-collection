@@ -26,7 +26,7 @@ import pytest
 
 ])
 def test_disable_on_env(env_value, input_value, force_run, expects):
-    if not os.getenv('VALIDATORS_DISABLED', None):
+    if os.getenv('VALIDATORS_DISABLED', None):
         del os.environ['VALIDATORS_DISABLED']
 
     if env_value:
@@ -56,7 +56,7 @@ def test_disable_on_env(env_value, input_value, force_run, expects):
 
 ])
 def test_disable_checker_on_env(env_value, input_value, force_run, expects):
-    if not os.getenv('CHECKERS_DISABLED', None):
+    if os.getenv('CHECKERS_DISABLED', None):
         del os.environ['CHECKERS_DISABLED']
 
     if env_value:
