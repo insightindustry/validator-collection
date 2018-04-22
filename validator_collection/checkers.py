@@ -11,11 +11,15 @@ import io
 
 import validator_collection.validators as validators
 from validator_collection._compat import integer_types, basestring
+from validator_collection._decorators import disable_checker_on_env
 
-
+# pylint: disable=W0613
 ## CORE
 
-def is_type(obj, type_):
+@disable_checker_on_env
+def is_type(obj,
+            type_,
+            **kwargs):
     """Indicate if ``obj`` is a type in ``type_``.
 
     .. hint::
@@ -77,7 +81,8 @@ def _check_base_classes(base_classes, check_for_type):
     return return_value
 
 
-def are_equivalent(*args):
+@disable_checker_on_env
+def are_equivalent(*args, **kwargs):
     """Indicate if arguments passed to this function are equivalent.
 
     .. hint::
@@ -135,7 +140,8 @@ def are_equivalent(*args):
     return True
 
 
-def are_dicts_equivalent(*args):
+@disable_checker_on_env
+def are_dicts_equivalent(*args, **kwargs):
     """Indicate if :ref:`dicts <python:dict>` passed to this function have identical
     keys and values.
 
@@ -179,9 +185,11 @@ def are_dicts_equivalent(*args):
     return True
 
 
+@disable_checker_on_env
 def is_between(value,
                minimum = None,
-               maximum = None):
+               maximum = None,
+               **kwargs):
     """Indicate whether ``value`` is greater than or equal to a supplied ``minimum``
     and/or less than or equal to ``maximum``.
 
@@ -231,9 +239,11 @@ def is_between(value,
         return value >= minimum and value <= maximum
 
 
+@disable_checker_on_env
 def has_length(value,
                minimum = None,
-               maximum = None):
+               maximum = None,
+               **kwargs):
     """Indicate whether ``value`` has a length greater than or equal to a
     supplied ``minimum`` and/or less than or equal to ``maximum``.
 
@@ -280,7 +290,8 @@ def has_length(value,
                       maximum = maximum)
 
 
-def is_dict(value):
+@disable_checker_on_env
+def is_dict(value, **kwargs):
     """Indicate whether ``value`` is a valid :class:`dict <python:dict>`
 
     .. note::
@@ -297,18 +308,20 @@ def is_dict(value):
         return True
 
     try:
-        value = validators.dict(value)
+        value = validators.dict(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_string(value,
               coerce_value = False,
               minimum_length = None,
               maximum_length = None,
-              whitespace_padding = False):
+              whitespace_padding = False,
+              **kwargs):
     """Indicate whether ``value`` is a string.
 
     :param value: The value to evaluate.
@@ -335,8 +348,8 @@ def is_string(value,
     if value is None:
         return False
 
-    minimum_length = validators.integer(minimum_length, allow_empty = True)
-    maximum_length = validators.integer(maximum_length, allow_empty = True)
+    minimum_length = validators.integer(minimum_length, allow_empty = True, **kwargs)
+    maximum_length = validators.integer(maximum_length, allow_empty = True, **kwargs)
 
     if isinstance(value, basestring) and not value:
         if minimum_length and minimum_length > 0 and not whitespace_padding:
@@ -349,17 +362,20 @@ def is_string(value,
                                   coerce_value = coerce_value,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length,
-                                  whitespace_padding = whitespace_padding)
+                                  whitespace_padding = whitespace_padding,
+                                  **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_iterable(obj,
                 forbid_literals = (str, bytes),
                 minimum_length = None,
-                maximum_length = None):
+                maximum_length = None,
+                **kwargs):
     """Indicate whether ``obj`` is iterable.
 
     :param forbid_literals: A collection of literals that will be considered invalid
@@ -389,14 +405,16 @@ def is_iterable(obj,
                                   allow_empty = True,
                                   forbid_literals = forbid_literals,
                                   minimum_length = minimum_length,
-                                  maximum_length = maximum_length)
+                                  maximum_length = maximum_length,
+                                  **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_not_empty(value):
+@disable_checker_on_env
+def is_not_empty(value, **kwargs):
     """Indicate whether ``value`` is empty.
 
     :param value: The value to evaluate.
@@ -405,14 +423,15 @@ def is_not_empty(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.not_empty(value)
+        value = validators.not_empty(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_none(value, allow_empty = False):
+@disable_checker_on_env
+def is_none(value, allow_empty = False, **kwargs):
     """Indicate whether ``value`` is :class:`None <python:None>`.
 
     :param value: The value to evaluate.
@@ -426,14 +445,15 @@ def is_none(value, allow_empty = False):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        validators.none(value, allow_empty = allow_empty)
+        validators.none(value, allow_empty = allow_empty, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_variable_name(value):
+@disable_checker_on_env
+def is_variable_name(value, **kwargs):
     """Indicate whether ``value`` is a valid Python variable name.
 
     .. caution::
@@ -448,14 +468,15 @@ def is_variable_name(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        validators.variable_name(value)
+        validators.variable_name(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_callable(value):
+@disable_checker_on_env
+def is_callable(value, **kwargs):
     """Indicate whether ``value`` is callable (like a function, method, or class).
 
     :param value: The value to evaluate.
@@ -466,7 +487,8 @@ def is_callable(value):
     return hasattr(value, '__call__')
 
 
-def is_uuid(value):
+@disable_checker_on_env
+def is_uuid(value, **kwargs):
     """Indicate whether ``value`` contains a :class:`UUID <python:uuid.UUID>`
 
     :param value: The value to evaluate.
@@ -476,7 +498,7 @@ def is_uuid(value):
 
     """
     try:
-        validators.uuid(value)
+        validators.uuid(value, **kwargs)
     except Exception:
         return False
 
@@ -485,9 +507,11 @@ def is_uuid(value):
 
 ## DATE / TIME
 
+@disable_checker_on_env
 def is_date(value,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Indicate whether ``value`` is a :class:`date <python:datetime.date>`.
 
     :param value: The value to evaluate.
@@ -510,16 +534,19 @@ def is_date(value,
     try:
         value = validators.date(value,
                                 minimum = minimum,
-                                maximum = maximum)
+                                maximum = maximum,
+                                **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_datetime(value,
                 minimum = None,
-                maximum = None):
+                maximum = None,
+                **kwargs):
     """Indicate whether ``value`` is a :class:`datetime <python:datetime.datetime>`.
 
     :param value: The value to evaluate.
@@ -542,16 +569,19 @@ def is_datetime(value,
     try:
         value = validators.datetime(value,
                                     minimum = minimum,
-                                    maximum = maximum)
+                                    maximum = maximum,
+                                    **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_time(value,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Indicate whether ``value`` is a :class:`time <python:datetime.time>`.
 
     :param value: The value to evaluate.
@@ -575,15 +605,18 @@ def is_time(value,
     try:
         value = validators.time(value,
                                 minimum = minimum,
-                                maximum = maximum)
+                                maximum = maximum,
+                                **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_timezone(value,
-                positive = True):
+                positive = True,
+                **kwargs):
     """Indicate whether ``value`` is a :class:`tzinfo <python:datetime.tzinfo>`.
 
     .. caution::
@@ -605,7 +638,8 @@ def is_timezone(value,
     """
     try:
         value = validators.timezone(value,
-                                    positive = positive)
+                                    positive = positive,
+                                    **kwargs)
     except Exception:
         return False
 
@@ -614,9 +648,11 @@ def is_timezone(value,
 
 ## NUMBERS
 
+@disable_checker_on_env
 def is_numeric(value,
                minimum = None,
-               maximum = None):
+               maximum = None,
+               **kwargs):
     """Indicate whether ``value`` is a numeric value.
 
     :param value: The value to evaluate.
@@ -635,18 +671,21 @@ def is_numeric(value,
     try:
         value = validators.numeric(value,
                                    minimum = minimum,
-                                   maximum = maximum)
+                                   maximum = maximum,
+                                   **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_integer(value,
                coerce_value = False,
                minimum = None,
                maximum = None,
-               base = 10):
+               base = 10,
+               **kwargs):
     """Indicate whether ``value`` contains a whole number.
 
     :param value: The value to evaluate.
@@ -680,16 +719,19 @@ def is_integer(value,
                                    coerce_value = coerce_value,
                                    minimum = minimum,
                                    maximum = maximum,
-                                   base = base)
+                                   base = base,
+                                   **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_float(value,
              minimum = None,
-             maximum = None):
+             maximum = None,
+             **kwargs):
     """Indicate whether ``value`` is a :class:`float <python:float>`.
 
     :param value: The value to evaluate.
@@ -708,16 +750,19 @@ def is_float(value,
     try:
         value = validators.float(value,
                                  minimum = minimum,
-                                 maximum = maximum)
+                                 maximum = maximum,
+                                 **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_fraction(value,
                 minimum = None,
-                maximum = None):
+                maximum = None,
+                **kwargs):
     """Indicate whether ``value`` is a :class:`Fraction <python:fractions.Fraction>`.
 
     :param value: The value to evaluate.
@@ -736,16 +781,19 @@ def is_fraction(value,
     try:
         value = validators.fraction(value,
                                     minimum = minimum,
-                                    maximum = maximum)
+                                    maximum = maximum,
+                                    **kwargs)
     except Exception:
         return False
 
     return True
 
 
+@disable_checker_on_env
 def is_decimal(value,
                minimum = None,
-               maximum = None):
+               maximum = None,
+               **kwargs):
     """Indicate whether ``value`` contains a :class:`Decimal <python:decimal.Decimal>`.
 
     :param value: The value to evaluate.
@@ -764,7 +812,8 @@ def is_decimal(value,
     try:
         value = validators.decimal(value,
                                    minimum = minimum,
-                                   maximum = maximum)
+                                   maximum = maximum,
+                                   **kwargs)
     except Exception:
         return False
 
@@ -773,7 +822,8 @@ def is_decimal(value,
 
 ## FILE-RELATED
 
-def is_bytesIO(value):
+@disable_checker_on_env
+def is_bytesIO(value, **kwargs):
     """Indicate whether ``value`` is a :class:`BytesIO <python:io.BytesIO>` object.
 
     .. note::
@@ -789,7 +839,8 @@ def is_bytesIO(value):
     return isinstance(value, io.BytesIO)
 
 
-def is_stringIO(value):
+@disable_checker_on_env
+def is_stringIO(value, **kwargs):
     """Indicate whether ``value`` is a :class:`StringIO <python:io.StringIO>` object.
 
     .. note::
@@ -805,7 +856,8 @@ def is_stringIO(value):
     return isinstance(value, io.StringIO)
 
 
-def is_pathlike(value):
+@disable_checker_on_env
+def is_pathlike(value, **kwargs):
     """Indicate whether ``value`` is a path-like object.
 
     :param value: The value to evaluate.
@@ -814,14 +866,15 @@ def is_pathlike(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.path(value)
+        value = validators.path(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_on_filesystem(value):
+@disable_checker_on_env
+def is_on_filesystem(value, **kwargs):
     """Indicate whether ``value`` is a file or directory that exists on the local
     filesystem.
 
@@ -831,14 +884,15 @@ def is_on_filesystem(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.path_exists(value)
+        value = validators.path_exists(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_file(value):
+@disable_checker_on_env
+def is_file(value, **kwargs):
     """Indicate whether ``value`` is a file that exists on the local filesystem.
 
     :param value: The value to evaluate.
@@ -847,14 +901,15 @@ def is_file(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.file_exists(value)
+        value = validators.file_exists(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_directory(value):
+@disable_checker_on_env
+def is_directory(value, **kwargs):
     """Indicate whether ``value`` is a directory that exists on the local filesystem.
 
     :param value: The value to evaluate.
@@ -863,7 +918,7 @@ def is_directory(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.directory_exists(value)
+        value = validators.directory_exists(value, **kwargs)
     except Exception:
         return False
 
@@ -872,7 +927,8 @@ def is_directory(value):
 
 ## INTERNET-RELATED
 
-def is_email(value):
+@disable_checker_on_env
+def is_email(value, **kwargs):
     """Indicate whether ``value`` is an email address.
 
     .. note::
@@ -895,14 +951,15 @@ def is_email(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.email(value)
+        value = validators.email(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_url(value):
+@disable_checker_on_env
+def is_url(value, **kwargs):
     """Indicate whether ``value`` is a URL.
 
     :param value: The value to evaluate.
@@ -911,14 +968,15 @@ def is_url(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.url(value)
+        value = validators.url(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_domain(value):
+@disable_checker_on_env
+def is_domain(value, **kwargs):
     """Indicate whether ``value`` is a valid domain.
 
     :param value: The value to evaluate.
@@ -927,14 +985,15 @@ def is_domain(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.domain(value)
+        value = validators.domain(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_ip_address(value):
+@disable_checker_on_env
+def is_ip_address(value, **kwargs):
     """Indicate whether ``value`` is a valid IP address (version 4 or version 6).
 
     :param value: The value to evaluate.
@@ -943,14 +1002,15 @@ def is_ip_address(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.ip_address(value)
+        value = validators.ip_address(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_ipv4(value):
+@disable_checker_on_env
+def is_ipv4(value, **kwargs):
     """Indicate whether ``value`` is a valid IP version 4 address.
 
     :param value: The value to evaluate.
@@ -959,14 +1019,15 @@ def is_ipv4(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.ipv4(value)
+        value = validators.ipv4(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_ipv6(value):
+@disable_checker_on_env
+def is_ipv6(value, **kwargs):
     """Indicate whether ``value`` is a valid IP version 6 address.
 
     :param value: The value to evaluate.
@@ -975,14 +1036,15 @@ def is_ipv6(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.ipv6(value)
+        value = validators.ipv6(value, **kwargs)
     except Exception:
         return False
 
     return True
 
 
-def is_mac_address(value):
+@disable_checker_on_env
+def is_mac_address(value, **kwargs):
     """Indicate whether ``value`` is a valid MAC address.
 
     :param value: The value to evaluate.
@@ -991,7 +1053,7 @@ def is_mac_address(value):
     :rtype: :class:`bool <python:bool>`
     """
     try:
-        value = validators.mac_address(value)
+        value = validators.mac_address(value, **kwargs)
     except Exception:
         return False
 

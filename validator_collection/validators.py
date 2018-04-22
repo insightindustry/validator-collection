@@ -19,6 +19,7 @@ from ast import parse
 from validator_collection._compat import numeric_types, integer_types, datetime_types,\
     date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
     NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring, re
+from validator_collection._decorators import disable_on_env
 from validator_collection import errors
 
 
@@ -79,16 +80,22 @@ IPV6_REGEX = re.compile(
     '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)(?:%25(?:[A-Za-z0-9\\-._~]|%[0-9A-Fa-f]{2})+)?$'
 )
 
+# pylint: disable=W0613
+
 ## CORE
 
-def uuid(value, allow_empty = False):
+@disable_on_env
+def uuid(value,
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid :class:`UUID <python:uuid.UUID>`.
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` coerced to a :class:`UUID <python:uuid.UUID>` object /
@@ -116,20 +123,23 @@ def uuid(value, allow_empty = False):
     return value
 
 
+@disable_on_env
 def string(value,
            allow_empty = False,
            coerce_value = False,
            minimum_length = None,
            maximum_length = None,
-           whitespace_padding = False):
+           whitespace_padding = False,
+           **kwargs):
     """Validate that ``value`` is a valid string.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`None <python:None>`
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param coerce_value: If ``True``, will attempt to coerce ``value`` to a string if
@@ -190,17 +200,20 @@ def string(value,
     return value
 
 
+@disable_on_env
 def iterable(value,
              allow_empty = False,
              forbid_literals = (str, bytes),
              minimum_length = None,
-             maximum_length = None):
+             maximum_length = None,
+             **kwargs):
     """Validate that ``value`` is a valid iterable.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if
+      is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
       ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -234,8 +247,8 @@ def iterable(value,
     elif value is None:
         return None
 
-    minimum_length = integer(minimum_length, allow_empty = True)
-    maximum_length = integer(maximum_length, allow_empty = True)
+    minimum_length = integer(minimum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
+    maximum_length = integer(maximum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
 
     if isinstance(value, forbid_literals) or not hasattr(value, '__iter__'):
         raise errors.NotAnIterableError('value type (%s) not iterable' % type(value))
@@ -253,8 +266,10 @@ def iterable(value,
     return value
 
 
+@disable_on_env
 def none(value,
-         allow_empty = False):
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is :class:`None <python:None>`.
 
     :param value: The value to validate.
@@ -279,13 +294,17 @@ def none(value,
     return None
 
 
-def not_empty(value, allow_empty = False):
+@disable_on_env
+def not_empty(value,
+              allow_empty = False,
+              **kwargs):
     """Validate that ``value`` is not empty.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is empty. If ``False``, raises a :class:`EmptyValueError`
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -301,8 +320,10 @@ def not_empty(value, allow_empty = False):
     return value
 
 
+@disable_on_env
 def variable_name(value,
-                  allow_empty = False):
+                  allow_empty = False,
+                  **kwargs):
     """Validate that the value is a valid Python variable name.
 
     .. caution::
@@ -313,9 +334,10 @@ def variable_name(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If  ``False``, raises a :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -339,9 +361,11 @@ def variable_name(value,
     return value
 
 
+@disable_on_env
 def dict(value,
          allow_empty = False,
-         json_serializer = None):
+         json_serializer = None,
+         **kwargs):
     """Validate that ``value`` is a :class:`dict <python:dict>`.
 
     .. hint::
@@ -355,9 +379,10 @@ def dict(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param json_serializer: The JSON encoder/decoder to use to deserialize a
@@ -403,10 +428,12 @@ def dict(value,
 ## DATE / TIME
 
 
+@disable_on_env
 def date(value,
          allow_empty = False,
          minimum = None,
-         maximum = None):
+         maximum = None,
+         **kwargs):
     """Validate that ``value`` is a valid date.
 
     :param value: The value to validate.
@@ -414,7 +441,8 @@ def date(value,
       / :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is empty. If ``False``, raises a :class:`EmptyValueError`
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -446,8 +474,8 @@ def date(value,
     elif not value:
         return None
 
-    minimum = date(minimum, allow_empty = True)
-    maximum = date(maximum, allow_empty = True)
+    minimum = date(minimum, allow_empty = True, force_run = True)               # pylint: disable=E1123
+    maximum = date(maximum, allow_empty = True, force_run = True)               # pylint: disable=E1123
 
     if not isinstance(value, date_types):
         raise errors.CannotCoerceError(
@@ -508,10 +536,12 @@ def date(value,
     return value
 
 
+@disable_on_env
 def datetime(value,
              allow_empty = False,
              minimum = None,
-             maximum = None):
+             maximum = None,
+             **kwargs):
     """Validate that ``value`` is a valid datetime.
 
     .. caution::
@@ -523,9 +553,10 @@ def datetime(value,
     :type value: :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>`
       / :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
@@ -558,8 +589,8 @@ def datetime(value,
     elif not value:
         return None
 
-    minimum = datetime(minimum, allow_empty = True)
-    maximum = datetime(maximum, allow_empty = True)
+    minimum = datetime(minimum, allow_empty = True, force_run = True)           # pylint: disable=E1123
+    maximum = datetime(maximum, allow_empty = True, force_run = True)           # pylint: disable=E1123
 
     if not isinstance(value, datetime_types):
         raise errors.CannotCoerceError(
@@ -630,10 +661,12 @@ def datetime(value,
     return value
 
 
+@disable_on_env
 def time(value,
          allow_empty = False,
          minimum = None,
-         maximum = None):
+         maximum = None,
+         **kwargs):
     """Validate that ``value`` is a valid :class:`time <python:datetime.time>`.
 
     .. caution::
@@ -648,9 +681,10 @@ def time(value,
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
       :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`EmptyValueError` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
@@ -688,8 +722,8 @@ def time(value,
         if not isinstance(value, datetime_.time):
             return None
 
-    minimum = time(minimum, allow_empty = True)
-    maximum = time(maximum, allow_empty = True)
+    minimum = time(minimum, allow_empty = True, force_run = True)               # pylint: disable=E1123
+    maximum = time(maximum, allow_empty = True, force_run = True)               # pylint: disable=E1123
 
     if not isinstance(value, time_types):
         raise errors.CannotCoerceError(
@@ -702,7 +736,7 @@ def time(value,
         value = value.time()
     elif isinstance(value, timestamp_types):
         try:
-            datetime_value = datetime(value)
+            datetime_value = datetime(value, force_run = True)                  # pylint: disable=E1123
             value = datetime_value.time()
         except ValueError:
             raise errors.CannotCoerceError(
@@ -715,7 +749,7 @@ def time(value,
         is_value_calculated = False
         if len(value) > 10:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 value = datetime_value.time()
                 is_value_calculated = True
             except ValueError:
@@ -749,9 +783,10 @@ def time(value,
                 else:
                     microseconds = 0
 
-                utc_offset = timezone(utc_offset,
+                utc_offset = timezone(utc_offset,                               # pylint: disable=E1123
                                       allow_empty = True,
-                                      positive = is_offset_positive)
+                                      positive = is_offset_positive,
+                                      force_run = True)
 
                 value = datetime_.time(hour = hour,
                                        minute = minutes,
@@ -783,9 +818,11 @@ def time(value,
     return value
 
 
+@disable_on_env
 def timezone(value,
              allow_empty = False,
-             positive = True):
+             positive = True,
+             **kwargs):
     """Validate that ``value`` is a valid :class:`tzinfo <python:datetime.tzinfo>`.
 
     .. caution::
@@ -800,9 +837,10 @@ def timezone(value,
     :type value: :class:`str <python:str>` / :class:`tzinfo <python:datetime.tzinfo>`
       / numeric / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param positive: Indicates whether the ``value`` is positive or negative
@@ -847,7 +885,7 @@ def timezone(value,
     elif isinstance(value, str):
         if '+' not in value and '-' not in value:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 return datetime_value.tzinfo
             except TypeError:
                 raise errors.CannotCoerceError(
@@ -858,7 +896,7 @@ def timezone(value,
                 )
         elif '-' in value:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 return datetime_value.tzinfo
             except TypeError:
                 pass
@@ -923,17 +961,20 @@ def timezone(value,
 
 ## NUMBERS
 
+@disable_on_env
 def numeric(value,
             allow_empty = False,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Validate that ``value`` is a numeric value.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is :class:`None <python:None>`. If ``False``, raises an
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -994,19 +1035,22 @@ def numeric(value,
     return value
 
 
+@disable_on_env
 def integer(value,
             allow_empty = False,
             coerce_value = False,
             minimum = None,
             maximum = None,
-            base = 10):
+            base = 10,
+            **kwargs):
     """Validate that ``value`` is an :class:`int <python:int>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -1044,10 +1088,11 @@ def integer(value,
       :class:`int <python:int>`
 
     """
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = allow_empty,
                     minimum = minimum,
-                    maximum = maximum)
+                    maximum = maximum,
+                    force_run = True)
 
     if value is not None and hasattr(value, 'is_integer'):
         if value.is_integer():
@@ -1070,18 +1115,20 @@ def integer(value,
     return value
 
 
+@disable_on_env
 def float(value,
           allow_empty = False,
           minimum = None,
-          maximum = None):
+          maximum = None,
+          **kwargs):
     """Validate that ``value`` is a :class:`float <python:float>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1116,18 +1163,20 @@ def float(value,
     return value
 
 
+@disable_on_env
 def fraction(value,
              allow_empty = False,
              minimum = None,
-             maximum = None):
+             maximum = None,
+             **kwargs):
     """Validate that ``value`` is a :class:`Fraction <python:fractions.Fraction>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1162,18 +1211,20 @@ def fraction(value,
     return value
 
 
+@disable_on_env
 def decimal(value,
             allow_empty = False,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Validate that ``value`` is a :class:`Decimal <python:decimal.Decimal>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is greater than or
@@ -1211,16 +1262,17 @@ def decimal(value,
             )
     elif isinstance(value, fractions.Fraction):
         try:
-            value = float(value)                                                # pylint: disable=R0204
+            value = float(value, force_run = True)                              # pylint: disable=R0204, E1123
         except ValueError:
             raise errors.CannotCoerceError(
                 'value (%s) cannot be converted to a Decimal' % value
             )
 
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = False,
                     maximum = maximum,
-                    minimum = minimum)
+                    minimum = minimum,
+                    force_run = True)
 
     if not isinstance(value, decimal_.Decimal):
         value = decimal_.Decimal(value)
@@ -1243,8 +1295,8 @@ def _numeric_coercion(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1265,10 +1317,11 @@ def _numeric_coercion(value,
     elif not hasattr(coercion_function, '__call__'):
         raise errors.NotCallableError('coercion_function must be callable')
 
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = allow_empty,
                     minimum = minimum,
-                    maximum = maximum)
+                    maximum = maximum,
+                    force_run = True)
 
     if value is not None:
         try:
@@ -1283,16 +1336,18 @@ def _numeric_coercion(value,
 
 ## FILE-RELATED
 
+@disable_on_env
 def bytesIO(value,
-            allow_empty = False):
+            allow_empty = False,
+            **kwargs):
     """Validate that ``value`` is a :class:`BytesIO <python:io.BytesIO>` object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1314,16 +1369,18 @@ def bytesIO(value,
     return value
 
 
+@disable_on_env
 def stringIO(value,
-             allow_empty = False):
+             allow_empty = False,
+             **kwargs):
     """Validate that ``value`` is a :class:`StringIO <python:io.StringIO>` object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1345,16 +1402,18 @@ def stringIO(value,
     return value
 
 
+@disable_on_env
 def path(value,
-         allow_empty = False):
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid path-like object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The path represented by ``value``.
@@ -1382,8 +1441,10 @@ def path(value,
     return value
 
 
+@disable_on_env
 def path_exists(value,
-                allow_empty = False):
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a path-like object that exists on the local
     filesystem.
 
@@ -1391,8 +1452,8 @@ def path_exists(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
@@ -1409,7 +1470,7 @@ def path_exists(value,
     elif not value:
         return None
 
-    value = path(value)
+    value = path(value, force_run = True)                                       # pylint: disable=E1123
 
     if not os.path.exists(value):
         raise errors.PathExistsError('value (%s) not found' % value)
@@ -1417,16 +1478,18 @@ def path_exists(value,
     return value
 
 
+@disable_on_env
 def file_exists(value,
-                allow_empty = False):
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a valid file that exists on the local filesystem.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
@@ -1444,7 +1507,7 @@ def file_exists(value,
     elif not value:
         return None
 
-    value = path_exists(value)
+    value = path_exists(value, force_run = True)                                # pylint: disable=E1123
 
     if not os.path.isfile(value):
         raise errors.NotAFileError('value (%s) is not a file')
@@ -1452,8 +1515,10 @@ def file_exists(value,
     return value
 
 
+@disable_on_env
 def directory_exists(value,
-                     allow_empty = False):
+                     allow_empty = False,
+                     **kwargs):
     """Validate that ``value`` is a valid directory that exists on the local
     filesystem.
 
@@ -1461,8 +1526,8 @@ def directory_exists(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
@@ -1480,7 +1545,7 @@ def directory_exists(value,
     elif not value:
         return None
 
-    value = path_exists(value)
+    value = path_exists(value, force_run = True)                                # pylint: disable=E1123
 
     if not os.path.isdir(value):
         raise errors.NotADirectoryError('value (%s) is not a directory' % value)
@@ -1490,7 +1555,10 @@ def directory_exists(value,
 
 ## INTERNET-RELATED
 
-def email(value, allow_empty = False):
+@disable_on_env
+def email(value,
+          allow_empty = False,
+          **kwargs):
     """Validate that ``value`` is a valid email address.
 
     .. note::
@@ -1512,8 +1580,8 @@ def email(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1525,7 +1593,7 @@ def email(value, allow_empty = False):
     :raises InvalidEmailError: if ``value`` is not a valid email address or
       empty with ``allow_empty`` set to ``True``
     """
-    # pylint: disable=too-many-branches,too-many-statements
+    # pylint: disable=too-many-branches,too-many-statements,R0914
 
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
@@ -1605,14 +1673,14 @@ def email(value, allow_empty = False):
 
     if not is_domain:
         try:
-            ip_address(domain_value)
+            ip_address(domain_value, force_run = True)                          # pylint: disable=E1123
             is_ip = True
         except ValueError:
             is_ip = False
 
     if not is_domain and is_ip:
         try:
-            email(local_value + '@test.com')
+            email(local_value + '@test.com', force_run = True)                  # pylint: disable=E1123
         except ValueError:
             raise errors.InvalidEmailError('value (%s) is not a valid email '
                                            'address' % value)
@@ -1647,7 +1715,10 @@ def email(value, allow_empty = False):
     return value
 
 
-def url(value, allow_empty = False):
+@disable_on_env
+def url(value,
+        allow_empty = False,
+        **kwargs):
     """Validate that ``value`` is a valid URL.
 
     :param value: The value to validate.
@@ -1655,8 +1726,8 @@ def url(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1688,7 +1759,10 @@ def url(value, allow_empty = False):
     return value
 
 
-def domain(value, allow_empty = False):
+@disable_on_env
+def domain(value,
+           allow_empty = False,
+           **kwargs):
     """Validate that ``value`` is a valid domain name.
 
     .. caution::
@@ -1720,8 +1794,8 @@ def domain(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1768,14 +1842,17 @@ def domain(value, allow_empty = False):
     if not is_valid:
         with_prefix = 'http://' + value
         try:
-            url(with_prefix)
+            url(with_prefix, force_run = True)                                  # pylint: disable=E1123
         except ValueError:
             raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
 
     return value
 
 
-def ip_address(value, allow_empty = False):
+@disable_on_env
+def ip_address(value,
+               allow_empty = False,
+               **kwargs):
     """Validate that ``value`` is a valid IP address.
 
     .. note::
@@ -1790,8 +1867,8 @@ def ip_address(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1807,14 +1884,14 @@ def ip_address(value, allow_empty = False):
         return None
 
     try:
-        value = ipv6(value)
+        value = ipv6(value, force_run = True)                                   # pylint: disable=E1123
         ipv6_failed = False
     except ValueError:
         ipv6_failed = True
 
     if ipv6_failed:
         try:
-            value = ipv4(value)
+            value = ipv4(value, force_run = True)                               # pylint: disable=E1123
         except ValueError:
             raise errors.InvalidIPAddressError('value (%s) is not a valid IPv6 or '
                                                'IPv4 address' % value)
@@ -1822,6 +1899,7 @@ def ip_address(value, allow_empty = False):
     return value
 
 
+@disable_on_env
 def ipv4(value, allow_empty = False):
     """Validate that ``value`` is a valid IP version 4 address.
 
@@ -1829,8 +1907,8 @@ def ipv4(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1863,15 +1941,18 @@ def ipv4(value, allow_empty = False):
     return value
 
 
-def ipv6(value, allow_empty = False):
+@disable_on_env
+def ipv6(value,
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid IP address version 6.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
@@ -1899,7 +1980,10 @@ def ipv6(value, allow_empty = False):
     return value
 
 
-def mac_address(value, allow_empty = False):
+@disable_on_env
+def mac_address(value,
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a valid MAC address.
 
     :param value: The value to validate.
@@ -1907,8 +1991,8 @@ def mac_address(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`EmptyValueError` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`

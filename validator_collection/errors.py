@@ -136,7 +136,7 @@ class CannotCoerceError(TypeError):
 class NotAnIterableError(CannotCoerceError):
     """Exception raised when a value is not an iterable.
 
-    **INHERITS FROM:** :class:`TypeError <python:TypeError>` -> :class:`CannotCoerceError`
+    **INHERITS FROM:** :class:`TypeError <python:TypeError>` -> :class:`CannotCoerceError <validator_collection.errors.CannotCoerceError>`
 
     """
     pass

@@ -4,6 +4,13 @@ Checker Reference
 
 .. include:: _checker_list.rst
 
+Using Checkers
+==================
+
+.. include:: _using_checkers.rst
+
+-------------
+
 .. module:: validator_collection.checkers
 
 Core
@@ -74,6 +81,8 @@ is_uuid
 
 .. autofunction:: is_uuid
 
+------------
+
 Date / Time
 ==============
 
@@ -96,6 +105,8 @@ is_timezone
 --------------
 
 .. autofunction:: is_timezone
+
+-------------
 
 Numbers
 =========
@@ -124,6 +135,8 @@ is_decimal
 --------------
 
 .. autofunction:: is_decimal
+
+--------------
 
 File-related
 ===============
@@ -157,6 +170,8 @@ is_directory
 --------------
 
 .. autofunction:: is_directory
+
+-------------
 
 Internet-related
 ===================

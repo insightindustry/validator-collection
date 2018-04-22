@@ -205,8 +205,8 @@ NotADictError (from :class:`ValueError <python:ValueError>`)
 
 .. autoclass:: NotADictError
 
-NotAnIterableError (from :class:`CannotCoerceError`)
-------------------------------------------------------------------
+NotAnIterableError (from :class:`CannotCoerceError <validator_collection.errors.CannotCoerceError>`)
+---------------------------------------------------------------------------------------------------------
 
 .. autoclass:: NotAnIterableError
 

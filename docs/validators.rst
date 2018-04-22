@@ -2,9 +2,24 @@
 Validator Reference
 **********************************
 
+.. |strong| raw:: html
+
+  <strong>
+
+.. |/strong| raw:: html
+
+  </strong>
+
 .. include:: _validator_list.rst
 
+Using Validators
+====================
+
+.. include:: _using_validators.rst
+
 .. module:: validator_collection.validators
+
+-----------
 
 Core
 =========
@@ -44,6 +59,8 @@ variable_name
 
 .. autofunction:: variable_name
 
+-------------
+
 Date / Time
 ===============
 
@@ -66,6 +83,8 @@ timezone
 ----------
 
 .. autofunction:: timezone
+
+---------------
 
 Numbers
 ===========
@@ -104,6 +123,8 @@ decimal
 
 .. autofunction:: decimal
 
+------------
+
 File-related
 ===============
 
@@ -136,6 +157,8 @@ directory_exists
 ------------------
 
 .. autofunction:: directory_exists
+
+-------------------
 
 Internet-related
 ===================

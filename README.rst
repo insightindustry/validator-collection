@@ -355,6 +355,75 @@ For more detailed information, please see:
 * `Error Reference <http://validator-collection.readthedocs.io/en/latest/errors.html>`_
 * `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 
+Disabling Validation
+----------------------
+
+**CAUTION:**  If you are :ref:`disabling validators <disabling-validation>` using the
+``VALIDATORS_DISABLED`` environment variable, their related checkers will **also**
+be disabled (meaning they will always return ``True``).
+
+Validation can at times be an expensive (in terms of performance) operation. As
+a result, there are times when you want to disable certain kinds of validation
+when running in production. Using the **Validator-Collection** this is simple:
+
+Just add the name of the validator you want disabled to the ``VALIDATORS_DISABLED``
+environment variable, and validation will automatically be skipped.
+
+**CAUTION:** ``VALIDATORS_DISABLED`` expects a comma-separated list of values. If it isn't
+comma-separated, it won't work properly.
+
+Here's how it works in practice. Let's say we define the following environment
+variable:
+
+.. code-block:: bash
+
+  $ export VALIDATORS_DISABLED = "variable_name, email, ipv4"
+
+This disables the ``variable_name()``, ``email()``, and ``ipv4()`` validators respectively.
+
+Now if we run:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.variable_name('this is an invalid variable name')
+  except ValueError:
+      # handle the error
+
+The validator will return the ``value`` supplied to it un-changed. So that means
+``result`` will be equal to ``this is an invalid variable name``.
+
+However, if we run:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.integer('this is an invalid variable name')
+  except errors.NotAnIntegerError:
+      # handle the error
+
+the validator will run and raise ``NotAnIntegerError``.
+
+We can force validators to run (even if disabled using the environment variable)
+by passing a ``force_run = True`` keyword argument. For example:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.variable_name('this is an invalid variable name',
+                                        force_run = True)
+  except ValueError:
+      # handle the error
+
+will produce a ``InvalidVariableNameError`` (which is a type of
+``ValueError``).
+
 .. _checkers-explained:
 
 Using Checkers
@@ -387,6 +456,68 @@ options which are used to make sure the value meets criteria that you set for
 it. These options are always *optional* and are included as keyword arguments
 *after* the input value argument. For details, please see the
 `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_.
+
+Disabling Checking
+----------------------
+
+**CAUTION:**  If you are disabling validators using the ``VALIDATORS_DISABLED``
+environment variable, their related checkers will **also** be disabled. This means
+they will always return ``True`` unless called with ``force_run = True``.
+
+Checking can at times be an expensive (in terms of performance) operation. As
+a result, there are times when you want to disable certain kinds of checking
+when running in production. Using the **Validator-Collection** this is simple:
+
+Just add the name of the checker you want disabled to the ``CHECKERS_DISABLED``
+environment variable, and validation will automatically be skipped.
+
+**CAUTION:** ``CHECKERS_DISABLED`` expects a comma-separated list of values. If
+it isn't comma-separated, it won't work properly.
+
+Here's how it works in practice. Let's say we define the following environment
+variable:
+
+.. code-block:: bash
+
+  $ export CHECKERS_DISABLED = "is_variable_name, is_email, is_ipv4"
+
+This disables the ``is_variable_name()``, ``is_email()``, and ``is_ipv4()``
+checkers respectively.
+
+Now if we run:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = checkers.is_variable_name('this is an invalid variable name')
+  # result will be True
+
+The checker will return ``True``.
+
+However, if we run:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = validators.is_integer('this is an invalid variable name')
+  # result will be False
+
+the checker will return ``False``
+
+We can force checkers to run (even if disabled using the environment variable)
+by passing a ``force_run = True`` keyword argument. For example:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = checkers.is_variable_name('this is an invalid variable name',
+                                     force_run = True)
+  # result will be False
+
+will return ``False``.
 
 .. _best-practices:
 
