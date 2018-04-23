@@ -925,6 +925,24 @@ def is_directory(value, **kwargs):
     return True
 
 
+@disable_checker_on_env
+def is_readable(value, **kwargs):
+    """Indicate whether ``value`` is a readable file.
+
+    :param value: The value to evaluate.
+    :type value: Path-like object
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+    """
+    try:
+        validators.readable(value, **kwargs)
+    except Exception:
+        return False
+
+    return True
+
+
 ## INTERNET-RELATED
 
 @disable_checker_on_env
