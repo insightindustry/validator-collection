@@ -45,7 +45,7 @@
   * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
     -
     -
-    -
+    - :func:`is_writeable <validator_collection.checkers.is_writeable>`
     -
   * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
     -

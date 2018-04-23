@@ -17,6 +17,8 @@ Features Added
   by passing it a ``force_run = True`` keyword argument.
 * #5: Added ``validators.readable()`` and ``checkers.is_readable()`` support to
   validate whether a file (path) is readable.
+* #4: Added ``validators.writeable()`` and ``checkers.is_writeable()`` support to
+  validate whether a file (path) is writeable. Only works on Linux, by design.
 
 Bugs Fixed
 ------------
@@ -34,6 +36,7 @@ Testing
 * Added unit tests for ``validators.domain()`` and ``checkers.is_domain()``.
 * #5: Added unit tests for ``validators.readable()`` and ``validators.is_readable()``
   that work on the Linux platform. Missing unit tests on Windows.
+* #4: Added unit tests for ``validators.writeable()`` and ``validators.is_writeable()``.
 
 Documentation
 ---------------
@@ -44,6 +47,7 @@ Documentation
 * #8: Updated validator error documentation.
 * #6: Added documentation on disabling validators and checkers.
 * #5: Added documentation for ``validators.readable()`` and ``checkers.is_readable()``.
+* #4: Added documentation for ``validators.writeable()`` and ``checkers.is_writeable()``.
 
 ----------------
 

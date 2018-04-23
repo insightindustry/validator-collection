@@ -42,3 +42,8 @@
     -
     - :func:`readable <validator_collection.validators.readable>`
     - :func:`mac_address <validator_collection.validators.mac_address>`
+  * -
+    -
+    -
+    - :func:`writeable <validator_collection.validators.writeable>`
+    -

@@ -280,6 +280,11 @@ NotReadableError (from :class:`IOError <python:IOError>`)
 
 .. autoclass:: NotReadableError
 
+NotWriteableError (from :class:`IOError <python:IOError>`)
+--------------------------------------------------------------
+
+.. autoclass:: NotWriteableError
+
 NotBytesIOError (from :class:`ValueError <python:ValueError>`)
 ------------------------------------------------------------------
 

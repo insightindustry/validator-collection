@@ -163,6 +163,11 @@ readable
 
 .. autofunction:: readable
 
+writeable
+------------
+
+.. autofunction:: writeable
+
 -------------------
 
 Internet-related

@@ -155,6 +155,11 @@ Validators
     -
     - ``readable``
     - ``mac_address``
+  * -
+    -
+    -
+    - ``writeable``
+    -
 
 Checkers
 ==========
@@ -208,7 +213,7 @@ Checkers
   * - ``is_iterable``
     -
     -
-    -
+    - ``is_writeable``
     -
   * - ``is_not_empty``
     -

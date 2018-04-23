@@ -176,6 +176,11 @@ is_readable
 
 .. autofunction:: is_readable
 
+is_writeable
+---------------
+
+.. autofunction:: is_writeable
+
 -------------
 
 Internet-related
