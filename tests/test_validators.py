@@ -928,6 +928,59 @@ def test_writeable(fs, value, fails, allow_empty):
     else:
         raise NotImplementedError('platform is not supported')
 
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    (None, False, True),
+
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_executable(fs, value, fails, allow_empty):
+    """Test validators.executable()"""
+    if sys.platform in ['win32', 'cygwin'] and value:
+        fails = True
+
+    if value:
+        fs.create_file(value)
+
+    if not fails:
+        validated = validators.executable(value,
+                                          allow_empty = allow_empty)
+
+        if value:
+            assert validated is not None
+        else:
+            assert value is None
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            real_uid = os.getuid()
+            real_gid = os.getgid()
+            fake_uid = real_uid
+            fake_gid = real_gid
+            while fake_uid == real_uid:
+                fake_uid = int(random.random() * 100)
+
+            while fake_gid == real_gid:
+                fake_gid = int(random.random() * 100)
+
+            dirname = os.path.dirname(value)
+            os.chown(value, fake_uid, fake_gid)
+            os.chown(dirname, fake_uid, fake_gid)
+            os.chmod(dirname, 0o0444)
+            os.chmod(value, 0o0444)
+
+        with pytest.raises((IOError, ValueError)):
+            validated = validators.executable(value,
+                                              allow_empty = allow_empty)
+
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        with pytest.raises((IOError, ValueError, NotImplementedError)):
+            validated = validators.executable(value,
+                                              allow_empty = allow_empty)
+    else:
+        raise NotImplementedError('platform is not supported')
+
+
 ## INTERNET-RELATED
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
