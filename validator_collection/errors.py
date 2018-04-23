@@ -294,3 +294,11 @@ class NotADirectoryError(IOError):
 
     """
     pass
+
+
+class NotReadableError(IOError):
+    """Exception raised when a path is not readable.
+
+    **INHERITS FROM:** :class:`IOError <python:IOError>`
+    """
+    pass

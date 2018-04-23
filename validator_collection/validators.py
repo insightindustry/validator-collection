@@ -1553,6 +1553,49 @@ def directory_exists(value,
     return value
 
 
+@disable_on_env
+def readable(value,
+             allow_empty = False,
+             **kwargs):
+    """Validate that ``value`` is a path to a readable file.
+
+    :param value: The path to a file on the local filesystem whose readability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Validated path-like object or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist on the local filesystem
+    :raises NotAFileError: if ``value`` is not a valid file
+    :raises NotReadableError: if ``value`` cannot be opened for reading
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = file_exists(value, force_run = True)                                # pylint: disable=E1123
+
+    try:
+        with open(value, mode='r'):
+            pass
+    except (OSError, IOError):
+        raise errors.NotReadableError('file at %s could not be opened for '
+                                      'reading' % value)
+
+    return value
+
 ## INTERNET-RELATED
 
 @disable_on_env
