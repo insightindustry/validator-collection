@@ -722,7 +722,7 @@ def test_is_readable(fs, value, fails, allow_empty):
     if value:
         fs.create_file(value)
 
-    if fails and sys.platform in ['linux2', 'darwin']:
+    if fails and sys.platform in ['linux', 'linux2', 'darwin']:
         real_uid = os.getuid()
         real_gid = os.getgid()
         fake_uid = real_uid

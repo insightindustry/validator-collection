@@ -848,7 +848,7 @@ def test_readable(fs, value, fails, allow_empty):
             assert validated is not None
         else:
             assert value is None
-    elif fails and sys.platform in ['linux2', 'darwin']:
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
         real_uid = os.getuid()
         real_gid = os.getgid()
         fake_uid = real_uid
