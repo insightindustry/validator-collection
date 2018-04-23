@@ -13,6 +13,7 @@ import os
 import uuid as uuid_
 import datetime as datetime_
 import string as string_
+import sys
 
 from ast import parse
 
@@ -1559,6 +1560,29 @@ def readable(value,
              **kwargs):
     """Validate that ``value`` is a path to a readable file.
 
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the readability of a file *before* attempting to read it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when reading from a file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'r') as file_object:
+                # read from file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
     :param value: The path to a file on the local filesystem whose readability
       is to be validated.
     :type value: Path-like object
@@ -1599,9 +1623,53 @@ def readable(value,
 @disable_on_env
 def writeable(value,
               allow_empty = False,
-              mode = 'a',
               **kwargs):
     """Validate that ``value`` is a path to a writeable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the writability of a file *before* attempting to write to it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'a') as file_object:
+                # write to file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is writeable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
 
     :param value: The path to a file on the local filesystem whose writeability
       is to be validated.
@@ -1613,20 +1681,13 @@ def writeable(value,
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :param mode: The mode in which the file should be opened using the
-      :func:`open() <python:open>` function. Defaults to ``a`` (open for appending)
-    :type mode: :class:`str <python:str>` with acceptable values for
-      :func:`open() <python:open>`
-
-    :returns: Validated path-like object or :class:`None <python:None>`
+    :returns: Validated absolute path or :class:`None <python:None>`
     :rtype: Path-like object or :class:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
-    :raises ValidatorUsageError: if ``mode`` is invalid for :func:`open() <python:open>`
+    :raises NotImplementedError: if used on a Windows system
     :raises NotPathlikeError: if ``value`` is not a path-like object
-    :raises PathExistsError: if ``value`` does not exist on the local filesystem
-    :raises NotAFileError: if ``value`` is not a valid file
     :raises NotWriteableError: if ``value`` cannot be opened for writing
 
     """
@@ -1635,22 +1696,17 @@ def writeable(value,
     elif not value:
         return None
 
-    value = file_exists(value, force_run = True)
+    value = path(value, force_run = True)
 
-    try:
-        with open(value, mode=mode):
-            pass
-    except (OSError, IOError):
-        raise errors.NotReadableError('file at %s could not be opened for '
-                                      'writing' % value)
-    except ValueError as error:
-        if 'invalid mode' in error.args[0]:
-            raise errors.ValidatorUsageError('invalid mode (%s) supplied' % mode)
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
 
-        raise error
+    is_valid = os.access(value, mode = os.W_OK)
+
+    if not is_valid:
+        raise errors.NotWriteableError('writing not allowed for file at %s' % value)
 
     return value
-
 
 ## INTERNET-RELATED
 

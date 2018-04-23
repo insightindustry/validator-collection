@@ -8,6 +8,7 @@
 # pylint: disable=W0703
 
 import io
+import sys
 
 import validator_collection.validators as validators
 from validator_collection._compat import integer_types, basestring
@@ -929,6 +930,29 @@ def is_directory(value, **kwargs):
 def is_readable(value, **kwargs):
     """Indicate whether ``value`` is a readable file.
 
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the readability of a file *before* attempting to read it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when reading from a file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'r') as file_object:
+                # read from file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
     :param value: The value to evaluate.
     :type value: Path-like object
 
@@ -942,11 +966,57 @@ def is_readable(value, **kwargs):
 
     return True
 
+
 @disable_checker_on_env
 def is_writeable(value,
                  mode = 'a',
                  **kwargs):
     """Indicate whether ``value`` is a writeable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the writability of a file *before* attempting to write to it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'a') as file_object:
+                # write to file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is writeable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
 
     :param value: The value to evaluate.
     :type value: Path-like object
@@ -958,7 +1028,12 @@ def is_writeable(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises NotImplementedError: if called on a Windows system
     """
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
+
     try:
         validators.writeable(value,
                              mode = mode,
