@@ -285,6 +285,11 @@ NotWriteableError (from :class:`IOError <python:IOError>`)
 
 .. autoclass:: NotWriteableError
 
+NotExecutableError (from :class:`IOError <python:IOError>`)
+--------------------------------------------------------------
+
+.. autoclass:: NotExecutableError
+
 NotBytesIOError (from :class:`ValueError <python:ValueError>`)
 ------------------------------------------------------------------
 

@@ -181,6 +181,11 @@ is_writeable
 
 .. autofunction:: is_writeable
 
+is_executable
+----------------
+
+.. autofunction:: is_executable
+
 -------------
 
 Internet-related

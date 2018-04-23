@@ -47,3 +47,8 @@
     -
     - :func:`writeable <validator_collection.validators.writeable>`
     -
+  * -
+    -
+    -
+    - :func:`executable <validator_collection.validators.executable>`
+    -

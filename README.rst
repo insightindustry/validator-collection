@@ -160,6 +160,11 @@ Validators
     -
     - ``writeable``
     -
+  * -
+    -
+    -
+    - ``executable``
+    -
 
 Checkers
 ==========
@@ -218,7 +223,7 @@ Checkers
   * - ``is_not_empty``
     -
     -
-    -
+    - ``is_executable``
     -
   * - ``is_none``
     -

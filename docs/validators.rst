@@ -168,6 +168,11 @@ writeable
 
 .. autofunction:: writeable
 
+executable
+------------
+
+.. autofunction:: executable
+
 -------------------
 
 Internet-related

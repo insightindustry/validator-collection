@@ -19,6 +19,8 @@ Features Added
   validate whether a file (path) is readable.
 * #4: Added ``validators.writeable()`` and ``checkers.is_writeable()`` support to
   validate whether a file (path) is writeable. Only works on Linux, by design.
+* #9: Added ``validators.executable()`` and ``checkers.is_executable()`` support
+  to validate whether a file is executable. Only works on Linux, by design.
 
 Bugs Fixed
 ------------
@@ -34,9 +36,10 @@ Testing
   support for the ``force_run = True`` override.
 * #7: Added more extensive email address cases to test compliance with RFC 5322.
 * Added unit tests for ``validators.domain()`` and ``checkers.is_domain()``.
-* #5: Added unit tests for ``validators.readable()`` and ``validators.is_readable()``
+* #5: Added unit tests for ``validators.readable()`` and ``checkers.is_readable()``
   that work on the Linux platform. Missing unit tests on Windows.
-* #4: Added unit tests for ``validators.writeable()`` and ``validators.is_writeable()``.
+* #4: Added unit tests for ``validators.writeable()`` and ``checkers.is_writeable()``.
+* #9: Added unit tests for ``validators.executable()`` and ``checkers.is_executable()``.
 
 Documentation
 ---------------
@@ -48,6 +51,7 @@ Documentation
 * #6: Added documentation on disabling validators and checkers.
 * #5: Added documentation for ``validators.readable()`` and ``checkers.is_readable()``.
 * #4: Added documentation for ``validators.writeable()`` and ``checkers.is_writeable()``.
+* #9: Added documentation for ``validators.executable()`` and ``checkers.is_executable()``.
 
 ----------------
 

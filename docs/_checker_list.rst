@@ -50,7 +50,7 @@
   * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
     -
     -
-    -
+    - :func:`is_executable <validator_collection.checkers.is_executable>`
     -
   * - :func:`is_none <validator_collection.checkers.is_none>`
     -
