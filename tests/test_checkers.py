@@ -798,7 +798,13 @@ def test_is_executable(fs, value, fails, allow_empty):
     if value:
         fs.create_file(value)
 
-    if fails and sys.platform in ['linux', 'linux2', 'darwin']:
+    if not fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            os.chmod(value, 0o0777)
+
+        result = checkers.is_executable(value)
+        assert result == expects
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
         if value:
             real_uid = os.getuid()
             real_gid = os.getgid()

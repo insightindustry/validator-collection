@@ -943,7 +943,10 @@ def test_executable(fs, value, fails, allow_empty):
     if value:
         fs.create_file(value)
 
-    if not fails:
+    if not fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            os.chmod(value, 0o0777)
+
         validated = validators.executable(value,
                                           allow_empty = allow_empty)
 
