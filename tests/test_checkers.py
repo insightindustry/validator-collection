@@ -13,6 +13,8 @@ import decimal
 import fractions
 import io
 import os
+import random
+import sys
 import time as time_
 import uuid
 from datetime import datetime, date, time, tzinfo, timedelta
@@ -707,6 +709,38 @@ def test_is_directory(value, fails, allow_empty):
     expects = not fails
     result = checkers.is_directory(value)
     assert result == expects
+
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_is_readable(fs, value, fails, allow_empty):
+    """Test checkers.is_readable()"""
+    expects = not fails
+    if value:
+        fs.create_file(value)
+
+    if fails and sys.platform in ['linux2', 'darwin']:
+        real_uid = os.getuid()
+        real_gid = os.getgid()
+        fake_uid = real_uid
+        fake_gid = real_gid
+        while fake_uid == real_uid:
+            fake_uid = int(random.random() * 100)
+
+        while fake_gid == real_gid:
+            fake_gid = int(random.random() * 100)
+
+        os.chown(value, fake_uid, fake_gid)
+        os.chmod(value, 0o027)
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        expects = bool(value)
+
+    result = checkers.is_readable(value)
+    assert result == expects
+
 
 
 ## INTERNET-RELATED

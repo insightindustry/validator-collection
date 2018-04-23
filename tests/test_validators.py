@@ -14,6 +14,8 @@ import decimal
 import fractions
 import io
 import os
+import random
+import sys
 import uuid
 from datetime import datetime, date, time, tzinfo, timedelta
 
@@ -825,6 +827,49 @@ def test_directory_exists(value, fails, allow_empty):
         with pytest.raises((ValueError, TypeError, IOError)):
             validated = validators.directory_exists(value, allow_empty = allow_empty)
 
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    (None, False, True),
+
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_readable(fs, value, fails, allow_empty):
+    """Test validators.readable()"""
+    if value:
+        fs.create_file(value)
+
+    if not fails:
+        validated = validators.readable(value,
+                                        allow_empty = allow_empty)
+
+        if value:
+            assert validated is not None
+        else:
+            assert value is None
+    elif fails and sys.platform in ['linux2', 'darwin']:
+        real_uid = os.getuid()
+        real_gid = os.getgid()
+        fake_uid = real_uid
+        fake_gid = real_gid
+        while fake_uid == real_uid:
+            fake_uid = int(random.random() * 100)
+
+        while fake_gid == real_gid:
+            fake_gid = int(random.random() * 100)
+
+        os.chown(value, fake_uid, fake_gid)
+        os.chmod(value, 0o027)
+
+        with pytest.raises((IOError, ValueError)):
+            validated = validators.readable(value,
+                                            allow_empty = allow_empty)
+
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        pass
+    else:
+        raise NotImplementedError('platform is not supported')
 
 ## INTERNET-RELATED
 

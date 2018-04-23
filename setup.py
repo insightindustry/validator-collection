@@ -159,7 +159,13 @@ setup(
     # projects.
     extras_require={  # Optional
         'dev': ['check-manifest','sphinx','sphinx-rtd-theme','sphinx-tabs'],
-        'test': ['coverage', 'pytest','pytest-benchmark','pytest-cov','tox','codecov'],
+        'test': ['coverage',
+                 'pytest',
+                 'pytest-benchmark',
+                 'pytest-cov',
+                 'tox',
+                 'codecov',
+                 'pyfakefs'],
     },
 
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
