@@ -1596,6 +1596,62 @@ def readable(value,
 
     return value
 
+@disable_on_env
+def writeable(value,
+              allow_empty = False,
+              mode = 'a',
+              **kwargs):
+    """Validate that ``value`` is a path to a writeable file.
+
+    :param value: The path to a file on the local filesystem whose writeability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :param mode: The mode in which the file should be opened using the
+      :func:`open() <python:open>` function. Defaults to ``a`` (open for appending)
+    :type mode: :class:`str <python:str>` with acceptable values for
+      :func:`open() <python:open>`
+
+    :returns: Validated path-like object or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises ValidatorUsageError: if ``mode`` is invalid for :func:`open() <python:open>`
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist on the local filesystem
+    :raises NotAFileError: if ``value`` is not a valid file
+    :raises NotWriteableError: if ``value`` cannot be opened for writing
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = file_exists(value, force_run = True)
+
+    try:
+        with open(value, mode=mode):
+            pass
+    except (OSError, IOError):
+        raise errors.NotReadableError('file at %s could not be opened for '
+                                      'writing' % value)
+    except ValueError as error:
+        if 'invalid mode' in error.args[0]:
+            raise errors.ValidatorUsageError('invalid mode (%s) supplied' % mode)
+
+        raise error
+
+    return value
+
+
 ## INTERNET-RELATED
 
 @disable_on_env

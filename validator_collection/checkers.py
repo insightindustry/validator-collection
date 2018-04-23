@@ -942,6 +942,31 @@ def is_readable(value, **kwargs):
 
     return True
 
+@disable_checker_on_env
+def is_writeable(value,
+                 mode = 'a',
+                 **kwargs):
+    """Indicate whether ``value`` is a writeable file.
+
+    :param value: The value to evaluate.
+    :type value: Path-like object
+
+    :param mode: The mode in which the file should be opened using the
+      :func:`open() <python:open>` function. Defaults to ``a`` (open for appending)
+    :type mode: :class:`str <python:str>` with acceptable values for
+      :func:`open() <python:open>`
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+    """
+    try:
+        validators.writeable(value,
+                             mode = mode,
+                             **kwargs)
+    except Exception:
+        return False
+
+    return True
 
 ## INTERNET-RELATED
 
