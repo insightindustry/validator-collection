@@ -40,7 +40,7 @@
   * - :func:`is_string <validator_collection.checkers.is_string>`
     -
     -
-    -
+    - :func:`is_readable <validator_collection.checkers.is_readable>`
     - :func:`is_mac_address <validator_collection.checkers.is_mac_address>`
   * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
     -

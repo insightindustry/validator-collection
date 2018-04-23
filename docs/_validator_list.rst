@@ -40,5 +40,5 @@
   * - :func:`variable_name <validator_collection.validators.variable_name>`
     -
     -
-    -
+    - :func:`readable <validator_collection.validators.readable>`
     - :func:`mac_address <validator_collection.validators.mac_address>`

@@ -158,6 +158,11 @@ directory_exists
 
 .. autofunction:: directory_exists
 
+readable
+------------
+
+.. autofunction:: readable
+
 -------------------
 
 Internet-related

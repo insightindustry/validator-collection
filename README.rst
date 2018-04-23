@@ -153,7 +153,7 @@ Validators
   * - ``variable_name``
     -
     -
-    -
+    - ``readable``
     - ``mac_address``
 
 Checkers
@@ -203,7 +203,7 @@ Checkers
   * - ``is_string``
     -
     -
-    -
+    - ``is_readable``
     - ``is_mac_address``
   * - ``is_iterable``
     -
@@ -352,6 +352,7 @@ control, then you can instead catch ``EmptyValueError``, ``CannotCoerceError``,
 ``MaximumValueError``, and the like.
 
 For more detailed information, please see:
+
 * `Error Reference <http://validator-collection.readthedocs.io/en/latest/errors.html>`_
 * `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
 

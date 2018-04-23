@@ -275,6 +275,11 @@ NotADirectoryError (from :class:`IOError <python:IOError>`)
 
 .. autoclass:: NotADirectoryError
 
+NotReadableError (from :class:`IOError <python:IOError>`)
+--------------------------------------------------------------
+
+.. autoclass:: NotReadableError
+
 NotBytesIOError (from :class:`ValueError <python:ValueError>`)
 ------------------------------------------------------------------
 

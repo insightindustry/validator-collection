@@ -171,6 +171,11 @@ is_directory
 
 .. autofunction:: is_directory
 
+is_readable
+---------------
+
+.. autofunction:: is_readable
+
 -------------
 
 Internet-related

@@ -15,6 +15,8 @@ Features Added
   ``CHECKERS_DISABLED`` environment variable.
 * #6: Made it possible to force a validator or checker to run (even if disabled)
   by passing it a ``force_run = True`` keyword argument.
+* #5: Added ``validators.readable()`` and ``checkers.is_readable()`` support to
+  validate whether a file (path) is readable.
 
 Bugs Fixed
 ------------
@@ -30,6 +32,8 @@ Testing
   support for the ``force_run = True`` override.
 * #7: Added more extensive email address cases to test compliance with RFC 5322.
 * Added unit tests for ``validators.domain()`` and ``checkers.is_domain()``.
+* #5: Added unit tests for ``validators.readable()`` and ``validators.is_readable()``
+  that work on the Linux platform. Missing unit tests on Windows.
 
 Documentation
 ---------------
@@ -39,6 +43,7 @@ Documentation
 * #8: Added detailed exception / error handling documentation.
 * #8: Updated validator error documentation.
 * #6: Added documentation on disabling validators and checkers.
+* #5: Added documentation for ``validators.readable()`` and ``checkers.is_readable()``.
 
 ----------------
 
