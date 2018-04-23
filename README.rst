@@ -26,7 +26,21 @@ Validator Collection
          :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
          :alt: Documentation Status (ReadTheDocs)
 
-  * - `v. 1.0.0 <https://github.com/insightindustry/validator-collection/tree/v1.0.0>`_
+  * - `v. 1.1.0 <https://github.com/insightindustry/validator-collection/tree/v.1.1.0>`_
+    -
+     .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=v.1.1.0
+        :target: https://travis-ci.org/insightindustry/validator-collection
+        :alt: Build Status (Travis CI)
+
+     .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/v.1.1.0/graph/badge.svg
+        :target: https://codecov.io/gh/insightindustry/validator-collection
+        :alt: Code Coverage Status (Codecov)
+
+     .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=v.1.1.0
+        :target: http://validator-collection.readthedocs.io/en/latest/?badge=v.1.1.0
+        :alt: Documentation Status (ReadTheDocs)
+
+  * - `v. 1.0.0 <https://github.com/insightindustry/validator-collection/tree/v1-0-0>`_
     -
      .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=v.1.0.0
         :target: https://travis-ci.org/insightindustry/validator-collection
@@ -53,7 +67,6 @@ Validator Collection
       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=develop
          :target: http://validator-collection.readthedocs.io/en/latest/?badge=develop
          :alt: Documentation Status (ReadTheDocs)
-
 
 
 The **Validator Collection** is a Python library that provides more than 60
@@ -134,26 +147,36 @@ Validators
     - ``time``
     - ``float``
     - ``path``
-    - ``ip_address``
+    - ``domain``
   * - ``none``
     - ``timezone``
     - ``fraction``
     - ``path_exists``
-    - ``ipv4``
+    - ``ip_address``
   * - ``not_empty``
     -
     - ``decimal``
     - ``file_exists``
-    - ``ipv6``
+    - ``ipv4``
   * - ``uuid``
     -
     -
     - ``directory_exists``
-    - ``mac_address``
+    - ``ipv6``
   * - ``variable_name``
     -
     -
+    - ``readable``
+    - ``mac_address``
+  * -
     -
+    -
+    - ``writeable``
+    -
+  * -
+    -
+    -
+    - ``executable``
     -
 
 Checkers
@@ -184,36 +207,36 @@ Checkers
     - ``is_time``
     - ``is_float``
     - ``is_pathlike``
-    - ``is_ip_address``
+    - ``is_domain``
   * - ``are_equivalent``
     - ``is_timezone``
     - ``is_fraction``
     - ``is_on_filesystem``
-    - ``is_ipv4``
+    - ``is_ip_address``
   * - ``are_dicts_equivalent``
     -
     - ``is_decimal``
     - ``is_file``
-    - ``is_ipv6``
+    - ``is_ipv4``
   * - ``is_dict``
     -
     -
     - ``is_directory``
-    - ``is_mac_address``
+    - ``is_ipv6``
   * - ``is_string``
     -
     -
-    -
-    -
+    - ``is_readable``
+    - ``is_mac_address``
   * - ``is_iterable``
     -
     -
-    -
+    - ``is_writeable``
     -
   * - ``is_not_empty``
     -
     -
-    -
+    - ``is_executable``
     -
   * - ``is_none``
     -
@@ -247,7 +270,7 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  from validator_collection import validators, checkers
+  from validator_collection import validators, checkers, errors
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
@@ -255,8 +278,13 @@ much identical. Here's how it works:
   email_address = validators.email('this-is-an-invalid-email')
   # Will raise a ValueError
 
-  email_address = validators.email(None)
-  # Will raise a ValueError
+  try:
+      email_address = validators.email(None)
+      # Will raise an EmptyValueError
+  except errors.EmptyValueError:
+      # Handling logic goes here
+  except errors.InvalidEmailError:
+      # More handlign logic goes here
 
   email_address = validators.email(None, allow_empty = True)
   # The value of email_address will now be None
@@ -308,22 +336,117 @@ validator will try to do that. So for example:
 will both return an ``int`` of ``1``.
 
 If the value you're validating is empty/falsey and ``allow_empty`` is ``False``,
-then the validator will raise a ``ValueError`` exception. If ``allow_empty``
-is ``True``, then an empty/falsey input value will be converted to a ``None``
-value.
+then the validator will raise a ``EmptyValueError`` exception (which inherits from
+the built-in ``ValueError``). If ``allow_empty`` is ``True``, then an empty/falsey
+input value will be converted to a ``None`` value.
 
 **CAUTION:** By default, ``allow_empty`` is always set to ``False``.
-
-If the value you're validating fails its validation for some reason, the validator
-may raise different exceptions depending on the reason. In most cases, this will
-be a ``ValueError`` though it can sometimes be a ``TypeError``, or an
-``AttributeError``, etc. For specifics on each validator's likely exceptions
-and what can cause them, please review the `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_.
 
 **HINT:** Some validators (particularly numeric ones like ``integer``) have additional
 options which are used to make sure the value meets criteria that you set for
 it. These options are always included as keyword arguments *after* the
 ``allow_empty`` argument, and are documented for each validator below.
+
+When Validation Fails
+-----------------------
+
+Validators raise exceptions when validation fails. All exceptions raised inherit
+from built-in exceptions like ``ValueError``, ``TypeError``, and ``IOError``.
+
+If the value you're validating fails its validation for some reason, the validator
+may raise different exceptions depending on the reason. In most cases, this will
+be a descendent of ``ValueError`` though it can sometimes be a
+``TypeError``, or an ``IOError``, etc.
+
+For specifics on each validator's likely exceptions and what can cause them, please
+review the
+`Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+
+**HINT:** While validators will always raise built-in exceptions from the standard library,
+to give you greater programmatic control over how to respond when validation
+fails, we have defined a set of custom exceptions that inherit from those
+built-ins.
+
+Our custom exceptions provide you with very specific, fine-grained information
+as to *why* validation for a given value failed. In general, most validators
+will raise ``ValueError`` or ``TypeError`` exceptions, and you can safely catch those
+and be fine. But if you want to handle specific types of situations with greater
+control, then you can instead catch ``EmptyValueError``, ``CannotCoerceError``,
+``MaximumValueError``, and the like.
+
+For more detailed information, please see:
+
+* `Error Reference <http://validator-collection.readthedocs.io/en/latest/errors.html>`_
+* `Validator Reference <http://validator-collection.readthedocs.io/en/latest/validators.html>`_
+
+Disabling Validation
+----------------------
+
+**CAUTION:**  If you are `disabling validators <#disabling-validation>`_ using the
+``VALIDATORS_DISABLED`` environment variable, their related checkers will **also**
+be disabled (meaning they will always return ``True``).
+
+Validation can at times be an expensive (in terms of performance) operation. As
+a result, there are times when you want to disable certain kinds of validation
+when running in production. Using the **Validator-Collection** this is simple:
+
+Just add the name of the validator you want disabled to the ``VALIDATORS_DISABLED``
+environment variable, and validation will automatically be skipped.
+
+**CAUTION:** ``VALIDATORS_DISABLED`` expects a comma-separated list of values. If it isn't
+comma-separated, it won't work properly.
+
+Here's how it works in practice. Let's say we define the following environment
+variable:
+
+.. code-block:: bash
+
+  $ export VALIDATORS_DISABLED = "variable_name, email, ipv4"
+
+This disables the ``variable_name()``, ``email()``, and ``ipv4()`` validators respectively.
+
+Now if we run:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.variable_name('this is an invalid variable name')
+  except ValueError:
+      # handle the error
+
+The validator will return the ``value`` supplied to it un-changed. So that means
+``result`` will be equal to ``this is an invalid variable name``.
+
+However, if we run:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.integer('this is an invalid variable name')
+  except errors.NotAnIntegerError:
+      # handle the error
+
+the validator will run and raise ``NotAnIntegerError``.
+
+We can force validators to run (even if disabled using the environment variable)
+by passing a ``force_run = True`` keyword argument. For example:
+
+.. code-block:: python
+
+  from validator_collection import validators, errors
+
+  try:
+      result = validators.variable_name('this is an invalid variable name',
+                                        force_run = True)
+  except ValueError:
+      # handle the error
+
+will produce a ``InvalidVariableNameError`` (which is a type of
+``ValueError``).
 
 .. _checkers-explained:
 
@@ -357,6 +480,68 @@ options which are used to make sure the value meets criteria that you set for
 it. These options are always *optional* and are included as keyword arguments
 *after* the input value argument. For details, please see the
 `Checker Reference <http://validator-collection.readthedocs.io/en/latest/checkers.html>`_.
+
+Disabling Checking
+----------------------
+
+**CAUTION:**  If you are disabling validators using the ``VALIDATORS_DISABLED``
+environment variable, their related checkers will **also** be disabled. This means
+they will always return ``True`` unless called with ``force_run = True``.
+
+Checking can at times be an expensive (in terms of performance) operation. As
+a result, there are times when you want to disable certain kinds of checking
+when running in production. Using the **Validator-Collection** this is simple:
+
+Just add the name of the checker you want disabled to the ``CHECKERS_DISABLED``
+environment variable, and validation will automatically be skipped.
+
+**CAUTION:** ``CHECKERS_DISABLED`` expects a comma-separated list of values. If
+it isn't comma-separated, it won't work properly.
+
+Here's how it works in practice. Let's say we define the following environment
+variable:
+
+.. code-block:: bash
+
+  $ export CHECKERS_DISABLED = "is_variable_name, is_email, is_ipv4"
+
+This disables the ``is_variable_name()``, ``is_email()``, and ``is_ipv4()``
+checkers respectively.
+
+Now if we run:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = checkers.is_variable_name('this is an invalid variable name')
+  # result will be True
+
+The checker will return ``True``.
+
+However, if we run:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = validators.is_integer('this is an invalid variable name')
+  # result will be False
+
+the checker will return ``False``
+
+We can force checkers to run (even if disabled using the environment variable)
+by passing a ``force_run = True`` keyword argument. For example:
+
+.. code-block:: python
+
+  from validator_collection import checkers
+
+  result = checkers.is_variable_name('this is an invalid variable name',
+                                     force_run = True)
+  # result will be False
+
+will return ``False``.
 
 .. _best-practices:
 
@@ -456,13 +641,15 @@ Here's an example:
 
 .. code-block:: python
 
-  from validator_collection import validators
+  from validator_collection import validators, errors
 
   def some_function(value):
       try:
-        email_address = validators.email(value, allow_empty = False)
-      except ValueError:
-        # handle the error here
+          email_address = validators.email(value, allow_empty = False)
+      except errors.InvalidEmailError as error:
+          # handle the error here
+      except ValueError as error:
+          # handle other ValueErrors here
 
       # do something with your new email address value
 

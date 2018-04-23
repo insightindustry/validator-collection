@@ -12,12 +12,16 @@ import math
 import os
 import uuid as uuid_
 import datetime as datetime_
+import string as string_
+import sys
 
 from ast import parse
 
 from validator_collection._compat import numeric_types, integer_types, datetime_types,\
     date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
     NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring, re
+from validator_collection._decorators import disable_on_env
+from validator_collection import errors
 
 
 URL_REGEX = re.compile(
@@ -55,9 +59,21 @@ URL_REGEX = re.compile(
     r"$"
     , re.UNICODE)
 
-EMAIL_REGEX = re.compile(
-    r"(?!localhost)[^@\s]+@[^@\s]+\.[a-zA-Z0-9]+$"
+DOMAIN_REGEX = re.compile(
+    r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+"
+    r"(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
+    re.UNICODE
 )
+
+EMAIL_REGEX = re.compile(
+    r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\""
+    r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")"
+    r"@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])"
+    r"?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}"
+    r"(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:"
+    r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+)
+
 
 MAC_ADDRESS_REGEX = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
 
@@ -65,26 +81,35 @@ IPV6_REGEX = re.compile(
     '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)(?:%25(?:[A-Za-z0-9\\-._~]|%[0-9A-Fa-f]{2})+)?$'
 )
 
+# pylint: disable=W0613
+
 ## CORE
 
-def uuid(value, allow_empty = False):
+@disable_on_env
+def uuid(value,
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid :class:`UUID <python:uuid.UUID>`.
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value`` is empty. If
-      ``False``, raises a :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` coerced to a :class:`UUID <python:uuid.UUID>` object / :class:`None <python:None>`
+    :returns: ``value`` coerced to a :class:`UUID <python:uuid.UUID>` object /
+      :class:`None <python:None>`
     :rtype: :class:`UUID <python:uuid.UUID>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises TypeError: if ``value`` cannot be coerced to a :class:`UUID <python:uuid.UUID>`
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`UUID <python:uuid.UUID>`
+
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
@@ -94,25 +119,28 @@ def uuid(value, allow_empty = False):
     try:
         value = uuid_.UUID(value)
     except ValueError:
-        raise TypeError('value must be a valid UUID')
+        raise errors.CannotCoerceError('value (%s) cannot be coerced to a valid UUID')
 
     return value
 
 
+@disable_on_env
 def string(value,
            allow_empty = False,
            coerce_value = False,
            minimum_length = None,
            maximum_length = None,
-           whitespace_padding = False):
+           whitespace_padding = False,
+           **kwargs):
     """Validate that ``value`` is a valid string.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value`` is empty. If
-      ``False``, raises a :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
+      is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param coerce_value: If ``True``, will attempt to coerce ``value`` to a string if
@@ -135,17 +163,17 @@ def string(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`str <python:str>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid string and ``coerce_value``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a valid string and ``coerce_value``
       is ``False``
-    :raises ValueError: if ``minimum_length`` is supplied and the length of
+    :raises MinimumLengthError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
-    :raises ValueError: if ``maximum_length`` is supplied and the length of
+    :raises MaximumLengthError: if ``maximum_length`` is supplied and the length of
       ``value`` is more than the ``maximum_length``
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
@@ -155,31 +183,38 @@ def string(value,
     if coerce_value:
         value = str(value)
     elif not isinstance(value, basestring):
-        raise ValueError('value (%s) is not a string' % value)
+        raise errors.CannotCoerceError('value (%s) was not coerced to a string' % value)
 
     if value and maximum_length and len(value) > maximum_length:
-        raise ValueError('value (%s) exceeds maximum length')
+        raise errors.MaximumLengthError(
+            'value (%s) exceeds maximum length %s' % (value, maximum_length)
+        )
 
     if value and minimum_length and len(value) < minimum_length:
         if whitespace_padding:
             value = value.ljust(minimum_length, ' ')
         else:
-            raise ValueError('value (%s) is below the minimum length')
+            raise errors.MinimumLengthError(
+                'value (%s) is below the minimum length %s' % (value, minimum_length)
+            )
 
     return value
 
 
+@disable_on_env
 def iterable(value,
              allow_empty = False,
              forbid_literals = (str, bytes),
              minimum_length = None,
-             maximum_length = None):
+             maximum_length = None,
+             **kwargs):
     """Validate that ``value`` is a valid iterable.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
+      is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
       ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -199,84 +234,97 @@ def iterable(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: iterable / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid iterable or :class:`None <python:None>`
-    :raises ValueError: if ``minimum_length`` is supplied and the length of
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises NotAnIterableError: if ``value`` is not a valid iterable or
+      :class:`None <python:None>`
+    :raises MinimumLengthError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
-    :raises ValueError: if ``maximum_length`` is supplied and the length of
+    :raises MaximumLengthError: if ``maximum_length`` is supplied and the length of
       ``value`` is more than the ``maximum_length``
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif value is None:
         return None
 
-    minimum_length = integer(minimum_length, allow_empty = True)
-    maximum_length = integer(maximum_length, allow_empty = True)
+    minimum_length = integer(minimum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
+    maximum_length = integer(maximum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
 
     if isinstance(value, forbid_literals) or not hasattr(value, '__iter__'):
-        raise ValueError('value must be a valid iterable')
+        raise errors.NotAnIterableError('value type (%s) not iterable' % type(value))
 
     if value and minimum_length is not None and len(value) < minimum_length:
-        raise ValueError('value has fewer items than the minimum length')
+        raise errors.MinimumLengthError(
+            'value has fewer items than the minimum length %s' % minimum_length
+        )
 
     if value and maximum_length is not None and len(value) > maximum_length:
-        raise ValueError('value has more items than the maximum length')
+        raise errors.MaximumLengthError(
+            'value has more items than the maximum length %s' % maximum_length
+        )
 
     return value
 
 
+@disable_on_env
 def none(value,
-         allow_empty = False):
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is :class:`None <python:None>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is empty but **not** :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty but **not**
+      :class:`NotNoneError` if ``value`` is empty but **not**
       :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value`` is empty
+    :raises NotNoneError: if ``allow_empty`` is ``False`` and ``value`` is empty
       but **not** :class:`None <python:None>` and
 
     """
     if value is not None and not value and allow_empty:
         pass
     elif (value is not None and not value) or value:
-        raise ValueError('value must be None')
+        raise errors.NotNoneError('value was not None')
 
     return None
 
 
-def not_empty(value, allow_empty = False):
+@disable_on_env
+def not_empty(value,
+              allow_empty = False,
+              **kwargs):
     """Validate that ``value`` is not empty.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is empty. If ``False``, raises a :class:`ValueError <python:ValueError>`
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     """
     if not value and allow_empty:
         return None
     elif not value:
-        raise ValueError('value was empty')
+        raise errors.EmptyValueError('value was empty')
 
     return value
 
 
+@disable_on_env
 def variable_name(value,
-                  allow_empty = False):
+                  allow_empty = False,
+                  **kwargs):
     """Validate that the value is a valid Python variable name.
 
     .. caution::
@@ -287,33 +335,38 @@ def variable_name(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value`` is empty.
-      If  ``False``, raises a :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`str <python:str>` or :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value``
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     try:
         parse('%s = None' % value)
     except (SyntaxError, ValueError, TypeError):
-        raise ValueError('value (%s) is not a valid variable name' % value)
+        raise errors.InvalidVariableNameError(
+            'value (%s) is not a valid variable name' % value
+        )
 
     return value
 
 
+@disable_on_env
 def dict(value,
          allow_empty = False,
-         json_serializer = None):
+         json_serializer = None,
+         **kwargs):
     """Validate that ``value`` is a :class:`dict <python:dict>`.
 
     .. hint::
@@ -327,9 +380,10 @@ def dict(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param json_serializer: The JSON encoder/decoder to use to deserialize a
@@ -340,12 +394,15 @@ def dict(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`dict <python:dict>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a :class:`dict <python:dict>`
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`dict <python:dict>`
+    :raises NotADictError: if ``value`` is not a :class:`dict <python:dict>`
+
     """
     original_value = value
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
@@ -356,13 +413,15 @@ def dict(value,
         try:
             value = json_serializer.loads(value)
         except Exception:
-            raise ValueError('value (%s) cannot be coerced to a dict)' % original_value)
+            raise errors.CannotCoerceError(
+                'value (%s) cannot be coerced to a dict' % original_value
+            )
 
         value = dict(value,
                      json_serializer = json_serializer)
 
     if not isinstance(value, dict_):
-        raise ValueError('value (%s) is not a dict' % original_value)
+        raise errors.NotADictError('value (%s) is not a dict' % original_value)
 
     return value
 
@@ -370,10 +429,12 @@ def dict(value,
 ## DATE / TIME
 
 
+@disable_on_env
 def date(value,
          allow_empty = False,
          minimum = None,
-         maximum = None):
+         maximum = None,
+         **kwargs):
     """Validate that ``value`` is a valid date.
 
     :param value: The value to validate.
@@ -381,7 +442,8 @@ def date(value,
       / :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is empty. If ``False``, raises a :class:`ValueError <python:ValueError>`
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -399,34 +461,40 @@ def date(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid value type or
-      :class:`None <python:None>`
-    :raises ValueError: if ``minimum`` is supplied but ``value`` occurs before ``minimum``
-    :raises ValueError: if ``maximum`` is supplied but ``value`` occurs after ``minimum``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`date <python:datetime.date>` and  and is not :class:`None <python:None>`
+    :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs before
+      ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs after
+      ``maximum``
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
-    minimum = date(minimum, allow_empty = True)
-    maximum = date(maximum, allow_empty = True)
+    minimum = date(minimum, allow_empty = True, force_run = True)               # pylint: disable=E1123
+    maximum = date(maximum, allow_empty = True, force_run = True)               # pylint: disable=E1123
 
     if not isinstance(value, date_types):
-        raise ValueError('value must be a date object, datetime object, '
-                         'ISO 8601-formatted string, '
-                         'or POSIX timestamp')
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp, but was %s' % (value, type(value))
+        )
     elif isinstance(value, datetime_.datetime):
         value = value.date()
     elif isinstance(value, timestamp_types):
         try:
             value = datetime_.date.fromtimestamp(value)
         except ValueError:
-            raise ValueError('value must be a date object, datetime object, '
-                             'ISO 8601-formatted string, '
-                             'or POSIX timestamp')
+            raise errors.CannotCoerceError(
+                'value (%s) must be a date object, datetime object, '
+                'ISO 8601-formatted string, '
+                'or POSIX timestamp, but was %s' % (value, type(value))
+            )
     elif isinstance(value, str):
         try:
             value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
@@ -438,31 +506,43 @@ def date(value,
                 value = value.split('T')[0]
 
             if len(value) != 10:
-                raise ValueError('value must be a date object, datetime object, '
-                                 'ISO 8601-formatted string, '
-                                 'or POSIX timestamp')
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, datetime object, '
+                    'ISO 8601-formatted string, '
+                    'or POSIX timestamp, but was %s' % (value, type(value))
+                )
             try:
                 year = int(value[:4])
                 month = int(value[5:7])
                 day = int(value[-2:])
                 value = datetime_.date(year, month, day)
             except (ValueError, TypeError):
-                raise ValueError('value must be a date object, datetime object, '
-                                 'ISO 8601-formatted string, '
-                                 'or POSIX timestamp')
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, datetime object, '
+                    'ISO 8601-formatted string, '
+                    'or POSIX timestamp, but was %s' % (value, type(value))
+                )
 
     if minimum and value and value < minimum:
-        raise ValueError('value (%s) is before the minimum given' % value.isoformat())
+        raise errors.MinimumValueError(
+            'value (%s) is before the minimum given (%s)' % (value.isoformat(),
+                                                             minimum.isoformat())
+        )
     if maximum and value and value > maximum:
-        raise ValueError('value (%s) is after the maximum given' % value.isoformat())
+        raise errors.MaximumValueError(
+            'value (%s) is after the maximum given (%s)' % (value.isoformat(),
+                                                            maximum.isoformat())
+        )
 
     return value
 
 
+@disable_on_env
 def datetime(value,
              allow_empty = False,
              minimum = None,
-             maximum = None):
+             maximum = None,
+             **kwargs):
     """Validate that ``value`` is a valid datetime.
 
     .. caution::
@@ -474,9 +554,10 @@ def datetime(value,
     :type value: :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>`
       / :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
@@ -493,31 +574,42 @@ def datetime(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`datetime <python:datetime.datetime>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``minimum`` is supplied but ``value`` occurs before ``minimum``
-    :raises ValueError: if ``maximum`` is supplied but ``value`` occurs after ``minimum``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`datetime <python:datetime.datetime>` value and is not
+      :class:`None <python:None>`
+    :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs
+      before ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs
+      after ``minimum``
 
     """
     # pylint: disable=too-many-branches
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
-    minimum = datetime(minimum, allow_empty = True)
-    maximum = datetime(maximum, allow_empty = True)
+    minimum = datetime(minimum, allow_empty = True, force_run = True)           # pylint: disable=E1123
+    maximum = datetime(maximum, allow_empty = True, force_run = True)           # pylint: disable=E1123
 
     if not isinstance(value, datetime_types):
-        raise ValueError('value must be a date object, datetime object, '
-                         'ISO 8601-formatted string, '
-                         'or POSIX timestamp')
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp, but was %s' % (value,
+                                                type(value))
+        )
     elif isinstance(value, timestamp_types):
         try:
             value = datetime_.datetime.fromtimestamp(value)
         except ValueError:
-            raise ValueError('value must be a date object, datetime object, '
-                             'ISO 8601-formatted string, '
-                             'or POSIX timestamp')
+            raise errors.CannotCoerceError(
+                'value (%s) must be a date object, datetime object, '
+                'ISO 8601-formatted string, '
+                'or POSIX timestamp, but was %s' % (value,
+                                                    type(value))
+            )
     elif isinstance(value, str):
         try:
             if 'T' in value:
@@ -557,17 +649,25 @@ def datetime(value,
                                    0)
 
     if minimum and value and value < minimum:
-        raise ValueError('value (%s) is before the minimum given' % value.isoformat())
+        raise errors.MinimumValueError(
+            'value (%s) is before the minimum given (%s)' % (value.isoformat(),
+                                                             minimum.isoformat())
+        )
     if maximum and value and value > maximum:
-        raise ValueError('value (%s) is after the maximum given' % value.isoformat())
+        raise errors.MaximumValueError(
+            'value (%s) is after the maximum given (%s)' % (value.isoformat(),
+                                                            maximum.isoformat())
+        )
 
     return value
 
 
+@disable_on_env
 def time(value,
          allow_empty = False,
          minimum = None,
-         maximum = None):
+         maximum = None,
+         **kwargs):
     """Validate that ``value`` is a valid :class:`time <python:datetime.time>`.
 
     .. caution::
@@ -582,9 +682,10 @@ def time(value,
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
       :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
@@ -603,11 +704,13 @@ def time(value,
     :returns: ``value`` in UTC time / :class:`None <python:None>`
     :rtype: :class:`time <python:datetime.time>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid value type or
-      :class:`None <python:None>`
-    :raises ValueError: if ``minimum`` is supplied but ``value`` occurs before ``minimum``
-    :raises ValueError: if ``maximum`` is supplied but ``value`` occurs after ``minimum``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`time <python:datetime.time>` and is not :class:`None <python:None>`
+    :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs
+      before ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs
+      after ``minimum``
 
     """
     # pylint: disable=too-many-branches
@@ -615,33 +718,39 @@ def time(value,
         if isinstance(value, datetime_.time):
             pass
         else:
-            raise ValueError('value cannot be empty')
+            raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         if not isinstance(value, datetime_.time):
             return None
 
-    minimum = time(minimum, allow_empty = True)
-    maximum = time(maximum, allow_empty = True)
+    minimum = time(minimum, allow_empty = True, force_run = True)               # pylint: disable=E1123
+    maximum = time(maximum, allow_empty = True, force_run = True)               # pylint: disable=E1123
 
     if not isinstance(value, time_types):
-        raise ValueError('value must be a datetime object, '
-                         'ISO 8601-formatted string, '
-                         'or POSIX timestamp')
+        raise errors.CannotCoerceError(
+            'value (%s) must be a datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp, but was %s' % (value,
+                                                type(value))
+        )
     elif isinstance(value, datetime_.datetime):
         value = value.time()
     elif isinstance(value, timestamp_types):
         try:
-            datetime_value = datetime(value)
+            datetime_value = datetime(value, force_run = True)                  # pylint: disable=E1123
             value = datetime_value.time()
         except ValueError:
-            raise ValueError('value must be a datetime object, '
-                             'ISO 8601-formatted string, '
-                             'or POSIX timestamp')
+            raise errors.CannotCoerceError(
+                'value (%s) must be a datetime object, '
+                'ISO 8601-formatted string, '
+                'or POSIX timestamp, but was %s' % (value,
+                                                    type(value))
+            )
     elif isinstance(value, basestring):
         is_value_calculated = False
         if len(value) > 10:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 value = datetime_value.time()
                 is_value_calculated = True
             except ValueError:
@@ -675,9 +784,10 @@ def time(value,
                 else:
                     microseconds = 0
 
-                utc_offset = timezone(utc_offset,
+                utc_offset = timezone(utc_offset,                               # pylint: disable=E1123
                                       allow_empty = True,
-                                      positive = is_offset_positive)
+                                      positive = is_offset_positive,
+                                      force_run = True)
 
                 value = datetime_.time(hour = hour,
                                        minute = minutes,
@@ -685,30 +795,41 @@ def time(value,
                                        microsecond = microseconds,
                                        tzinfo = utc_offset)
             except (ValueError, TypeError, IndexError):
-                raise ValueError('value must be a date object, datetime object, '
-                                 'ISO 8601-formatted string, '
-                                 'or POSIX timestamp')
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a datetime object, '
+                    'ISO 8601-formatted string, '
+                    'or POSIX timestamp, but was %s' % (value,
+                                                        type(value))
+                )
 
         if value is not None:
             value = value.replace(tzinfo = None)
 
     if minimum is not None and value and value < minimum:
-        raise ValueError('value (%s) is before the minimum given' % value.isoformat())
+        raise errors.MinimumValueError(
+            'value (%s) is before the minimum given (%s)' % (value.isoformat(),
+                                                             minimum.isoformat())
+        )
     if maximum is not None and value and value > maximum:
-        raise ValueError('value (%s) is after the maximum given' % value.isoformat())
+        raise errors.MaximumValueError(
+            'value (%s) is after the maximum given (%s)' % (value.isoformat(),
+                                                            maximum.isoformat())
+        )
 
     return value
 
 
+@disable_on_env
 def timezone(value,
              allow_empty = False,
-             positive = True):
+             positive = True,
+             **kwargs):
     """Validate that ``value`` is a valid :class:`tzinfo <python:datetime.tzinfo>`.
 
     .. caution::
 
-      This does **not** validate whether the value is a timezone that actually
-      exists, nor can it resolve timzone names (e.g. ``'Eastern'`` or ``'CET'``).
+      This does **not** verify whether the value is a timezone that actually
+      exists, nor can it resolve timezone names (e.g. ``'Eastern'`` or ``'CET'``).
 
       For that kind of functionality, we recommend you utilize:
       `pytz <https://pypi.python.org/pypi/pytz>`_
@@ -717,9 +838,10 @@ def timezone(value,
     :type value: :class:`str <python:str>` / :class:`tzinfo <python:datetime.tzinfo>`
       / numeric / :class:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty. If ``False``, raises a :class:`ValueError <python:ValueError>` if
-      ``value`` is empty. Defaults to ``False``.
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param positive: Indicates whether the ``value`` is positive or negative
@@ -729,23 +851,30 @@ def timezone(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`tzinfo <python:datetime.tzinfo>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid value type or
-      :class:`None <python:None>`
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to
+      :class:`tzinfo <python:datetime.tzinfo>` and is not :class:`None <python:None>`
+    :raises PositiveOffsetMismatchError: if ``positive`` is ``True``, but the offset
+      indicated by ``value`` is actually negative
+    :raises NegativeOffsetMismatchError: if ``positive`` is ``False``, but the offset
+      indicated by ``value`` is actually positive
 
     """
     # pylint: disable=too-many-branches
     original_value = value
 
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, tzinfo_types):
-        raise ValueError('value must be a tzinfo, '
-                         'UTC offset in seconds expressed as a number, '
-                         'UTC offset expressed as string of form +HH:MM')
+        raise errors.CannotCoerceError(
+            'value (%s) must be a tzinfo, '
+            'UTC offset in seconds expressed as a number, '
+            'UTC offset expressed as string of form +HH:MM, '
+            'but was %s' % (value, type(value))
+        )
     elif isinstance(value, datetime_.datetime):
         value = value.tzinfo
     elif isinstance(value, datetime_.date):
@@ -757,25 +886,32 @@ def timezone(value,
     elif isinstance(value, str):
         if '+' not in value and '-' not in value:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 return datetime_value.tzinfo
-            except ValueError:
-                raise ValueError('value must be a tzinfo, '
-                                 'UTC offset in seconds expressed as a number, '
-                                 'UTC offset expressed as string of form +HH:MM')
+            except TypeError:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a tzinfo, '
+                    'UTC offset in seconds expressed as a number, '
+                    'UTC offset expressed as string of form +HH:MM, '
+                    'but was %s' % (value, type(value))
+                )
         elif '-' in value:
             try:
-                datetime_value = datetime(value)
+                datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
                 return datetime_value.tzinfo
-            except ValueError:
+            except TypeError:
                 pass
 
         if '+' in value and not positive:
-            raise ValueError('expected a negative UTC offset but value is positive')
+            raise errors.NegativeOffsetMismatchError(
+                'expected a negative UTC offset but value is positive'
+            )
         elif '-' in value and positive and len(value) == 6:
             positive = False
         elif '-' in value and positive:
-            raise ValueError('expected a positive UTC offset but value is negative')
+            raise errors.PositiveOffsetMismatchError(
+                'expected a positive UTC offset but value is negative'
+            )
 
         if '+' in value:
             value = value[value.find('+'):]
@@ -786,9 +922,12 @@ def timezone(value,
 
         offset_components = value.split(':')
         if len(offset_components) != 2:
-            raise ValueError('value must be a tzinfo, '
-                             'UTC offset in seconds expressed as a number, '
-                             'UTC offset expressed as string of form +HH:MM')
+            raise errors.CannotCoerceError(
+                'value (%s) must be a tzinfo, '
+                'UTC offset in seconds expressed as a number, '
+                'UTC offset expressed as string of form +HH:MM, '
+                'but was %s' % (value, type(value))
+            )
         hour = int(offset_components[0])
         minutes = int(offset_components[1])
 
@@ -812,7 +951,9 @@ def timezone(value,
             try:
                 value = TimeZone(offset)
             except ValueError:
-                raise ValueError('value (%s) cannot exceed +/- 24h' % original_value)
+                raise errors.UTCOffsetError(
+                    'value (%s) cannot exceed +/- 24h' % original_value
+                )
         else:
             raise NotImplementedError()
 
@@ -821,17 +962,20 @@ def timezone(value,
 
 ## NUMBERS
 
+@disable_on_env
 def numeric(value,
             allow_empty = False,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Validate that ``value`` is a numeric value.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is :class:`None <python:None>`. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
+      is :class:`None <python:None>`. If ``False``, raises an
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -845,12 +989,13 @@ def numeric(value,
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
       ``allow_empty`` is ``False``
-    :raises ValueError: if ``minimum`` is supplied and ``value`` is less than the
-      ``minimum``
-    :raises ValueError: if ``maximum`` is supplied and ``value`` is more than the
-      ``maximum``
+    :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
+      than the ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied and ``value`` is more
+      than the ``maximum``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a numeric form
 
     """
     if maximum is None:
@@ -863,38 +1008,50 @@ def numeric(value,
         minimum = numeric(minimum)
 
     if value is None and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif value is not None:
         if isinstance(value, str):
             try:
                 value = float_(value)
             except (ValueError, TypeError):
-                raise ValueError('value cannot be coerced to a numeric form')
+                raise errors.CannotCoerceError(
+                    'value (%s) cannot be coerced to a numeric form' % value
+                )
         elif not isinstance(value, numeric_types):
-            raise ValueError('value is not numeric')
+            raise errors.CannotCoerceError(
+                'value (%s) is not a numeric type, was %s' % (value,
+                                                              type(value))
+            )
 
     if value is not None and value > maximum:
-        raise ValueError('value (%s) exceeds maximum (%s)' % (value, maximum))
+        raise errors.MaximumValueError(
+            'value (%s) exceeds maximum (%s)' % (value, maximum)
+        )
 
     if value is not None and value < minimum:
-        raise ValueError('value (%s) less than minimum (%s)' % (value, minimum))
+        raise errors.MinimumValueError(
+            'value (%s) less than minimum (%s)' % (value, minimum)
+        )
 
     return value
 
 
+@disable_on_env
 def integer(value,
             allow_empty = False,
             coerce_value = False,
             minimum = None,
             maximum = None,
-            base = 10):
+            base = 10,
+            **kwargs):
     """Validate that ``value`` is an :class:`int <python:int>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -920,18 +1077,23 @@ def integer(value,
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
       ``allow_empty`` is ``False``
-    :raises ValueError: if ``minimum`` is supplied and ``value`` is less than the
-      ``minimum``
-    :raises ValueError: if ``maximum`` is supplied and ``value`` is more than the
-      ``maximum``
+    :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
+      than the ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied and ``value`` is more
+      than the ``maximum``
+    :raises NotAnIntegerError: if ``coerce_value`` is ``False``, and ``value``
+      is not an integer
+    :raises CannotCoerceError: if ``value`` cannot be coerced to an
+      :class:`int <python:int>`
 
     """
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = allow_empty,
                     minimum = minimum,
-                    maximum = maximum)
+                    maximum = maximum,
+                    force_run = True)
 
     if value is not None and hasattr(value, 'is_integer'):
         if value.is_integer():
@@ -947,91 +1109,123 @@ def integer(value,
         else:
             raise NotImplementedError('Python %s not supported' % os.sys.version)
     elif value is not None and not isinstance(value, integer_types):
-        raise ValueError('value (%s) is not an integer' % value)
+        raise errors.NotAnIntegerError('value (%s) is not an integer-type, '
+                                       'is a %s'% (value, type(value))
+                                      )
 
     return value
 
 
+@disable_on_env
 def float(value,
           allow_empty = False,
           minimum = None,
-          maximum = None):
+          maximum = None,
+          **kwargs):
     """Validate that ``value`` is a :class:`float <python:float>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`float <python:float>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and ``allow_empty``
-      is ``False``
-    :raises ValueError: if ``minimum`` is supplied and ``value`` is less than the
-      ``minimum``
-    :raises ValueError: if ``maximum`` is supplied and ``value`` is more than the
-      ``maximum``
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+      ``allow_empty`` is ``False``
+    :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
+      than the ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied and ``value`` is more
+      than the ``maximum``
+    :raises CannotCoerceError: if unable to coerce ``value`` to a
+      :class:`float <python:float>`
 
     """
-    value = _numeric_coercion(value,
-                              coercion_function = float_,
-                              allow_empty = allow_empty,
-                              minimum = minimum,
-                              maximum = maximum)
+    try:
+        value = _numeric_coercion(value,
+                                  coercion_function = float_,
+                                  allow_empty = allow_empty,
+                                  minimum = minimum,
+                                  maximum = maximum)
+    except (errors.EmptyValueError,
+            errors.CannotCoerceError,
+            errors.MinimumValueError,
+            errors.MaximumValueError) as error:
+        raise error
+    except Exception as error:
+        raise errors.CannotCoerceError('unable to coerce value (%s) to float, '
+                                       'for an unknown reason - please see '
+                                       'stack trace' % value)
 
     return value
 
 
+@disable_on_env
 def fraction(value,
              allow_empty = False,
              minimum = None,
-             maximum = None):
+             maximum = None,
+             **kwargs):
     """Validate that ``value`` is a :class:`Fraction <python:fractions.Fraction>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`Fraction <python:fractions.Fraction>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and ``allow_empty``
-      is ``False``
-    :raises ValueError: if ``minimum`` is supplied and ``value`` is less than the
-      ``minimum``
-    :raises ValueError: if ``maximum`` is supplied and ``value`` is more than the
-      ``maximum``
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+      ``allow_empty`` is ``False``
+    :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
+      than the ``minimum``
+    :raises MaximumValueError: if ``maximum`` is supplied and ``value`` is more
+      than the ``maximum``
+    :raises CannotCoerceError: if unable to coerce ``value`` to a
+      :class:`Fraction <python:fractions.Fraction>`
 
     """
-    value = _numeric_coercion(value,
-                              coercion_function = fractions.Fraction,
-                              allow_empty = allow_empty,
-                              minimum = minimum,
-                              maximum = maximum)
+    try:
+        value = _numeric_coercion(value,
+                                  coercion_function = fractions.Fraction,
+                                  allow_empty = allow_empty,
+                                  minimum = minimum,
+                                  maximum = maximum)
+    except (errors.EmptyValueError,
+            errors.CannotCoerceError,
+            errors.MinimumValueError,
+            errors.MaximumValueError) as error:
+        raise error
+    except Exception as error:
+        raise errors.CannotCoerceError('unable to coerce value (%s) to Fraction, '
+                                       'for an unknown reason - please see '
+                                       'stack trace' % value)
 
     return value
 
 
+@disable_on_env
 def decimal(value,
             allow_empty = False,
             minimum = None,
-            maximum = None):
+            maximum = None,
+            **kwargs):
     """Validate that ``value`` is a :class:`Decimal <python:decimal.Decimal>`.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
       is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is greater than or
@@ -1045,34 +1239,41 @@ def decimal(value,
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`Decimal <python:decimal.Decimal>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and ``allow_empty``
-      is ``False``
-    :raises ValueError: if ``minimum`` is supplied and ``value`` is less than the
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+      ``allow_empty`` is ``False``
+    :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less than the
       ``minimum``
-    :raises ValueError: if ``maximum`` is supplied and ``value`` is more than the
+    :raises MaximumValueError: if ``maximum`` is supplied and ``value`` is more than the
       ``maximum``
+    :raises CannotCoerceError: if unable to coerce ``value`` to a
+      :class:`Decimal <python:decimal.Decimal>`
 
     """
     if value is None and allow_empty:
         return None
     elif value is None:
-        raise ValueError('value cannot be None')
+        raise errors.EmptyValueError('value cannot be None')
 
     if isinstance(value, str):
         try:
             value = decimal_.Decimal(value.strip())
         except decimal_.InvalidOperation:
-            raise ValueError('value cannot be converted to a Decimal')
+            raise errors.CannotCoerceError(
+                'value (%s) cannot be converted to a Decimal' % value
+            )
     elif isinstance(value, fractions.Fraction):
         try:
-            value = float(value)                                                # pylint: disable=R0204
+            value = float(value, force_run = True)                              # pylint: disable=R0204, E1123
         except ValueError:
-            raise ValueError('value cannot be converted to a Decimal')
+            raise errors.CannotCoerceError(
+                'value (%s) cannot be converted to a Decimal' % value
+            )
 
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = False,
                     maximum = maximum,
-                    minimum = minimum)
+                    minimum = minimum,
+                    force_run = True)
 
     if not isinstance(value, decimal_.Decimal):
         value = decimal_.Decimal(value)
@@ -1095,135 +1296,156 @@ def _numeric_coercion(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is :class:`None <python:None>`. If  ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is :class:`None <python:None>`.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
+      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: the type returned by ``coercion_function``
 
-    :raises ValueError: if ``coercion_function`` is empty
-    :raises ValueError: if ``value`` is :class:`None <python:None>` and ``allow_empty``
-      is ``False``
-    :raises ValueError: if ``coercion_function`` raises an exception
+    :raises CoercionFunctionEmptyError: if ``coercion_function`` is empty
+    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+      ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``coercion_function`` raises an
+      :class:`ValueError <python:ValueError>`, :class:`TypeError <python:TypeError>`,
+      :class:`AttributeError <python:AttributeError>`,
+      :class:`IndexError <python:IndexError>, or
+      :class:`SyntaxError <python:SyntaxError>`
 
     """
     if coercion_function is None:
-        raise ValueError('coercion_function cannot be empty')
+        raise errors.CoercionFunctionEmptyError('coercion_function cannot be empty')
     elif not hasattr(coercion_function, '__call__'):
-        raise ValueError('coercion_function must be callable')
+        raise errors.NotCallableError('coercion_function must be callable')
 
-    value = numeric(value,
+    value = numeric(value,                                                      # pylint: disable=E1123
                     allow_empty = allow_empty,
                     minimum = minimum,
-                    maximum = maximum)
+                    maximum = maximum,
+                    force_run = True)
 
     if value is not None:
         try:
             value = coercion_function(value)
-        except (ValueError, TypeError, AttributeError, SyntaxError):
-            raise ValueError('cannot coerce value (%s) to desired type' % value)
+        except (ValueError, TypeError, AttributeError, IndexError, SyntaxError):
+            raise errors.CannotCoerceError(
+                'cannot coerce value (%s) to desired type' % value
+            )
 
     return value
 
 
 ## FILE-RELATED
 
+@disable_on_env
 def bytesIO(value,
-            allow_empty = False):
+            allow_empty = False,
+            **kwargs):
     """Validate that ``value`` is a :class:`BytesIO <python:io.BytesIO>` object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`StringIO <python:io.StringIO>` / :class:`None <python:None>`
+    :rtype: :class:`BytesIO <python:io.BytesIO>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises NotBytesIOError: if ``value`` is not a :class:`BytesIO <python:io.BytesIO>`
+      object.
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, io.BytesIO):
-        raise ValueError('value is not a BytesIO')
+        raise errors.NotBytesIOError('value (%s) is not a BytesIO, '
+                                     'is a %s' % (value, type(value)))
 
     return value
 
 
+@disable_on_env
 def stringIO(value,
-             allow_empty = False):
+             allow_empty = False,
+             **kwargs):
     """Validate that ``value`` is a :class:`StringIO <python:io.StringIO>` object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`StringIO <python:io.StringIO>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises NotStringIOError: if ``value`` is not a :class:`StringIO <python:io.StringIO>`
+      object
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, io.StringIO):
-        raise ValueError('value is not an io.StringIO object')
+        raise ValueError('value (%s) is not an io.StringIO object, '
+                         'is a %s' % (value, type(value)))
 
     return value
 
 
+@disable_on_env
 def path(value,
-         allow_empty = False):
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid path-like object.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The path represented by ``value``.
     :rtype: Path-like object / :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value`` is empty
-    :raises ValueError: if ``value`` is not a valid path
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value`` is empty
+    :raises NotPathlikeError: if ``value`` is not a valid path-like object
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if hasattr(os, 'PathLike'):
         if not isinstance(value, (str, bytes, int, os.PathLike)):                    # pylint: disable=E1101
-            raise ValueError('value (%s) is not a valid path' % value)
+            raise errors.NotPathlikeError('value (%s) is path-like' % value)
     else:
         if not isinstance(value, int):
             try:
                 os.path.exists(value)
             except TypeError:
-                raise ValueError('value (%s) is not a valid path' % value)
+                raise errors.NotPathlikeError('value (%s) is not path-like' % value)
 
     return value
 
 
+@disable_on_env
 def path_exists(value,
-                allow_empty = False):
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a path-like object that exists on the local
     filesystem.
 
@@ -1231,67 +1453,73 @@ def path_exists(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
     :rtype: Path-like object / :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value``
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
-    :raises IOError: if ``value`` does not exist
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
-    value = path(value)
+    value = path(value, force_run = True)                                       # pylint: disable=E1123
 
     if not os.path.exists(value):
-        raise IOError('value (%s) not found' % value)
+        raise errors.PathExistsError('value (%s) not found' % value)
 
     return value
 
 
+@disable_on_env
 def file_exists(value,
-                allow_empty = False):
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a valid file that exists on the local filesystem.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
     :rtype: Path-like object / :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value``
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
-    :raises IOError: if ``value`` does not exist on the local filesystem
-    :raises ValueError: if ``value`` is not a valid file
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist on the local filesystem
+    :raises NotAFileError: if ``value`` is not a valid file
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
-    value = path_exists(value)
+    value = path_exists(value, force_run = True)                                # pylint: disable=E1123
 
     if not os.path.isfile(value):
-        raise ValueError('value (%s) is not a file')
+        raise errors.NotAFileError('value (%s) is not a file')
 
     return value
 
 
+@disable_on_env
 def directory_exists(value,
-                     allow_empty = False):
+                     allow_empty = False,
+                     **kwargs):
     """Validate that ``value`` is a valid directory that exists on the local
     filesystem.
 
@@ -1299,72 +1527,435 @@ def directory_exists(value,
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
     :rtype: Path-like object / :class:`None <python:None>`
 
-    :raises ValueError: if ``allow_empty`` is ``False`` and ``value``
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
-    :raises IOError: if ``value`` does not exist on the local filesystem
-    :raises ValueError: if ``value`` is not a valid directory
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist on the local filesystem
+    :raises NotADirectoryError: if ``value`` is not a valid directory
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
-    value = path_exists(value)
+    value = path_exists(value, force_run = True)                                # pylint: disable=E1123
 
     if not os.path.isdir(value):
-        raise ValueError('value (%s) is not a directory')
+        raise errors.NotADirectoryError('value (%s) is not a directory' % value)
+
+    return value
+
+
+@disable_on_env
+def readable(value,
+             allow_empty = False,
+             **kwargs):
+    """Validate that ``value`` is a path to a readable file.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the readability of a file *before* attempting to read it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when reading from a file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'r') as file_object:
+                # read from file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
+    :param value: The path to a file on the local filesystem whose readability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Validated path-like object or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises PathExistsError: if ``value`` does not exist on the local filesystem
+    :raises NotAFileError: if ``value`` is not a valid file
+    :raises NotReadableError: if ``value`` cannot be opened for reading
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = file_exists(value, force_run = True)                                # pylint: disable=E1123
+
+    try:
+        with open(value, mode='r'):
+            pass
+    except (OSError, IOError):
+        raise errors.NotReadableError('file at %s could not be opened for '
+                                      'reading' % value)
+
+    return value
+
+@disable_on_env
+def writeable(value,
+              allow_empty = False,
+              **kwargs):
+    """Validate that ``value`` is a path to a writeable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the writability of a file *before* attempting to write to it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      write to the file using a ``try ... except`` block:
+
+      .. code-block:: python
+
+        try:
+            with open('path/to/filename.txt', mode = 'a') as file_object:
+                # write to file here
+        except (OSError, IOError) as error:
+            # Handle an error if unable to write.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is writeable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
+
+    :param value: The path to a file on the local filesystem whose writeability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Validated absolute path or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises NotImplementedError: if used on a Windows system
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises NotWriteableError: if ``value`` cannot be opened for writing
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = path(value, force_run = True)
+
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
+
+    is_valid = os.access(value, mode = os.W_OK)
+
+    if not is_valid:
+        raise errors.NotWriteableError('writing not allowed for file at %s' % value)
+
+    return value
+
+@disable_on_env
+def executable(value,
+               allow_empty = False,
+               **kwargs):
+    """Validate that ``value`` is a path to an executable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the executability of a file *before* attempting to execute it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      execute the file using a ``try ... except`` block.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is executable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
+
+    :param value: The path to a file on the local filesystem whose writeability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Validated absolute path or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises NotImplementedError: if used on a Windows system
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises NotAFileError: if ``value`` does not exist on the local file system
+    :raises NotExecutableError: if ``value`` cannot be executed
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = file_exists(value, force_run = True)
+
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
+
+    is_valid = os.access(value, mode = os.X_OK)
+
+    if not is_valid:
+        raise errors.NotExecutableError('execution not allowed for file at %s' % value)
 
     return value
 
 
 ## INTERNET-RELATED
 
-def email(value, allow_empty = False):
+@disable_on_env
+def email(value,
+          allow_empty = False,
+          **kwargs):
     """Validate that ``value`` is a valid email address.
+
+    .. note::
+
+      Email address validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 5322 <https://tools.ietf.org/html/rfc5322>`_ and uses a combination of
+      string parsing and regular expressions.
+
+      String parsing in particular is used to validate certain *highly unusual*
+      but still valid email patterns, including the use of escaped text and
+      comments within an email address' local address (the user name part).
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`None <python:None>`
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`str <python:str>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid email address or
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
+      :class:`None <python:None>`
+    :raises InvalidEmailError: if ``value`` is not a valid email address or
       empty with ``allow_empty`` set to ``True``
     """
+    # pylint: disable=too-many-branches,too-many-statements,R0914
+
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, basestring):
-        raise ValueError('value must be a valid string')
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
 
-    value = value.lower()
+    if '@' not in value:
+        raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
+    if '(' in value and ')' in value:
+        open_parentheses = value.find('(')
+        close_parentheses = value.find(')') + 1
 
-    is_valid = EMAIL_REGEX.match(value)
+        if close_parentheses < open_parentheses:
+            raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                           'address' % value)
 
-    if not is_valid:
-        raise ValueError('value must be a valid email address')
+        commented_value = value[open_parentheses:close_parentheses]
+        value = value.replace(commented_value, '')
+    elif '(' in value:
+        raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
+    elif ')' in value:
+        raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
+
+    if '<' in value or '>' in value:
+        lt_position = value.find('<')
+        gt_position = value.find('>')
+        first_quote_position = -1
+        second_quote_position = -1
+
+        if lt_position >= 0:
+            first_quote_position = value.find('"', 0, lt_position)
+        if gt_position >= 0:
+            second_quote_position = value.find('"', gt_position)
+
+        if first_quote_position < 0 or second_quote_position < 0:
+            raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                           'address' % value)
+
+    at_count = value.count('@')
+    if at_count > 1:
+        last_at_position = 0
+        last_quote_position = 0
+        for x in range(0, at_count):                                            # pylint: disable=W0612
+            at_position = value.find('@', last_at_position + 1)
+            if at_position >= 0:
+                first_quote_position = value.find('"',
+                                                  last_quote_position,
+                                                  at_position)
+                second_quote_position = value.find('"',
+                                                   first_quote_position)
+                if first_quote_position < 0 or second_quote_position < 0:
+                    raise errors.InvalidEmailError(
+                        'value (%s) is not a valid email address' % value
+                    )
+            last_at_position = at_position
+            last_quote_position = second_quote_position
+
+    split_values = value.split('@')
+    if len(split_values) < 2:
+        raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
+
+    local_value = ''.join(split_values[:-1])
+    domain_value = split_values[-1]
+    is_domain = False
+    is_ip = False
+    try:
+        if domain_value.startswith('[') and domain_value.endswith(']'):
+            domain_value = domain_value[1:-1]
+        domain(domain_value)
+        is_domain = True
+    except ValueError:
+        is_domain = False
+
+    if not is_domain:
+        try:
+            ip_address(domain_value, force_run = True)                          # pylint: disable=E1123
+            is_ip = True
+        except ValueError:
+            is_ip = False
+
+    if not is_domain and is_ip:
+        try:
+            email(local_value + '@test.com', force_run = True)                  # pylint: disable=E1123
+        except ValueError:
+            raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                           'address' % value)
+
+        return value
+    elif not is_domain:
+        raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
+    else:
+        is_valid = EMAIL_REGEX.search(value)
+
+        if not is_valid:
+            raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                           'address' % value)
+
+        matched_string = is_valid.group(0)
+        position = value.find(matched_string)
+        if position > 0:
+            prefix = value[:position]
+            if prefix[0] in string_.punctuation:
+                raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                               'address' % value)
+            if '..' in prefix:
+                raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                               'address' % value)
+
+        end_of_match = position + len(matched_string)
+        suffix = value[end_of_match:]
+        if suffix:
+            raise errors.InvalidEmailError('value (%s) is not a valid email '
+                                           'address' % value)
 
     return value
 
 
-def url(value, allow_empty = False):
+@disable_on_env
+def url(value,
+        allow_empty = False,
+        **kwargs):
     """Validate that ``value`` is a valid URL.
 
     :param value: The value to validate.
@@ -1372,37 +1963,133 @@ def url(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`str <python:str>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid URL or
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
+      :class:`None <python:None>`
+    :raises InvalidURLError: if ``value`` is not a valid URL or
       empty with ``allow_empty`` set to ``True``
 
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, basestring):
-        raise ValueError('value must be a valid string')
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
 
     value = value.lower()
 
     is_valid = URL_REGEX.match(value)
 
     if not is_valid:
-        raise ValueError('value must be a valid URL')
+        raise errors.InvalidURLError('value (%s) is not a valid URL' % value)
 
     return value
 
 
-def ip_address(value, allow_empty = False):
+@disable_on_env
+def domain(value,
+           allow_empty = False,
+           **kwargs):
+    """Validate that ``value`` is a valid domain name.
+
+    .. caution::
+
+      This validator does not verify that ``value`` **exists** as a domain. It
+      merely verifies that its contents *might* exist as a domain.
+
+    .. note::
+
+      This validator checks to validate that ``value`` resembles a valid
+      domain name. It is - generally - compliant with
+      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_, however it diverges
+      in a number of key ways:
+
+        * Including authentication (e.g. ``username:password@domain.dev``) will
+          fail validation.
+        * Including a path (e.g. ``domain.dev/path/to/file``) will fail validation.
+        * Including a port (e.g. ``domain.dev:8080``) will fail validation.
+
+      If you are hoping to validate a more complete URL, we recommend that you
+      see :func:`url <validator_collection.validators.url>`.
+
+    .. hint::
+
+      Leading and trailing whitespace will be automatically stripped.
+
+    :param value: The value to validate.
+    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: ``value`` / :class:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
+      :class:`None <python:None>`
+    :raises InvalidDomainError: if ``value`` is not a valid domain name or
+      empty with ``allow_empty`` set to ``True``
+    :raises SlashInDomainError: if ``value`` contains a slash or backslash
+    :raises AtInDomainError: if ``value`` contains an ``@`` symbol
+    :raises ColonInDomainError: if ``value`` contains a ``:`` symbol
+    :raises WhitespaceInDomainError: if ``value`` contains whitespace
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    if not isinstance(value, basestring):
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
+
+    if '/' in value:
+        raise errors.SlashInDomainError('valid domain name cannot contain "/"')
+    if '\\' in value:
+        raise errors.SlashInDomainError('valid domain name cannot contain "\\"')
+    if '@' in value:
+        raise errors.AtInDomainError('valid domain name cannot contain "@"')
+    if ':' in value:
+        raise errors.ColonInDomainError('valid domain name cannot contain ":"')
+
+    value = value.strip().lower()
+
+    for item in string_.whitespace:
+        if item in value:
+            raise errors.WhitespaceInDomainError('valid domain name cannot contain '
+                                                 'whitespace')
+
+    is_valid = DOMAIN_REGEX.match(value)
+
+    if not is_valid:
+        with_prefix = 'http://' + value
+        try:
+            url(with_prefix, force_run = True)                                  # pylint: disable=E1123
+        except ValueError:
+            raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
+
+    return value
+
+
+@disable_on_env
+def ip_address(value,
+               allow_empty = False,
+               **kwargs):
     """Validate that ``value`` is a valid IP address.
 
     .. note::
@@ -1417,36 +2104,39 @@ def ip_address(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid IP address or empty with
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises InvalidIPAddressError: if ``value`` is not a valid IP address or empty with
       ``allow_empty`` set to ``True``
+
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     try:
-        value = ipv6(value)
+        value = ipv6(value, force_run = True)                                   # pylint: disable=E1123
         ipv6_failed = False
     except ValueError:
         ipv6_failed = True
 
     if ipv6_failed:
         try:
-            value = ipv4(value)
+            value = ipv4(value, force_run = True)                               # pylint: disable=E1123
         except ValueError:
-            raise ValueError('value (%s) is not a valid IPv6 or IPv4 address')
+            raise errors.InvalidIPAddressError('value (%s) is not a valid IPv6 or '
+                                               'IPv4 address' % value)
 
     return value
 
 
+@disable_on_env
 def ipv4(value, allow_empty = False):
     """Validate that ``value`` is a valid IP version 4 address.
 
@@ -1454,28 +2144,28 @@ def ipv4(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid IP version 4 address or
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises InvalidIPAddressError: if ``value`` is not a valid IP version 4 address or
       empty with ``allow_empty`` set to ``True``
     """
     if not value and allow_empty is False:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     try:
         components = value.split('.')
     except AttributeError:
-        raise ValueError('value (%s) is not a valid ipv4' % value)
+        raise errors.InvalidIPAddressError('value (%s) is not a valid ipv4' % value)
 
     if len(components) != 4 or not all(x.isdigit() for x in components):
-        raise ValueError('value (%s) is not a valid ipv4' % value)
+        raise errors.InvalidIPAddressError('value (%s) is not a valid ipv4' % value)
 
     for x in components:
         try:
@@ -1483,47 +2173,54 @@ def ipv4(value, allow_empty = False):
                         minimum = 0,
                         maximum = 255)
         except ValueError:
-            raise ValueError('value (%s) is not a valid ipv4' % value)
+            raise errors.InvalidIPAddressError('value (%s) is not a valid ipv4' % value)
 
     return value
 
 
-def ipv6(value, allow_empty = False):
+@disable_on_env
+def ipv6(value,
+         allow_empty = False,
+         **kwargs):
     """Validate that ``value`` is a valid IP address version 6.
 
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid IP version 6 address or
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises InvalidIPAddressError: if ``value`` is not a valid IP version 6 address or
       empty with ``allow_empty`` is not set to ``True``
+
     """
     if not value and allow_empty is False:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, str):
-        raise ValueError('value (%s) is not a valid ipv6' % value)
+        raise errors.InvalidIPAddressError('value (%s) is not a valid ipv6' % value)
 
-    value = value.lower()
+    value = value.lower().strip()
 
     is_valid = IPV6_REGEX.match(value)
 
     if not is_valid:
-        raise ValueError('value (%s) is not a valid ipv6' % value)
+        raise errors.InvalidIPAddressError('value (%s) is not a valid ipv6' % value)
 
     return value
 
 
-def mac_address(value, allow_empty = False):
+@disable_on_env
+def mac_address(value,
+                allow_empty = False,
+                **kwargs):
     """Validate that ``value`` is a valid MAC address.
 
     :param value: The value to validate.
@@ -1531,31 +2228,38 @@ def mac_address(value, allow_empty = False):
 
     :param allow_empty: If ``True``, returns :class:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
-      :class:`ValueError <python:ValueError>` if ``value`` is empty.
-      Defaults to ``False``.
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`str <python:str>` / :class:`None <python:None>`
 
-    :raises ValueError: if ``value`` is empty and ``allow_empty`` is ``False``
-    :raises ValueError: if ``value`` is not a valid MAC address or empty with
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a valid :class:`str <python:str>`
+      or string-like object
+    :raises InvalidMACAddressError: if ``value`` is not a valid MAC address or empty with
       ``allow_empty`` set to ``True``
+
     """
     if not value and not allow_empty:
-        raise ValueError('value cannot be empty')
+        raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
 
     if not isinstance(value, basestring):
-        raise ValueError('value must be a valid string')
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
 
     if '-' in value:
         value = value.replace('-', ':')
 
+    value = value.lower().strip()
+
     is_valid = MAC_ADDRESS_REGEX.match(value)
 
     if not is_valid:
-        raise ValueError('value (%s) is not a valid MAC address' % value)
+        raise errors.InvalidMACAddressError('value (%s) is not a valid MAC '
+                                            'address' % value)
 
     return value

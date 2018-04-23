@@ -32,8 +32,10 @@ Validator Collection
   Home <self>
   Validator Reference <validators>
   Checker Reference <checkers>
+  Error Reference <errors>
   Contributor Guide <contributing>
   Testing Reference <testing>
+  Release History <history>
   Glossary <glossary>
 
 The **Validator Collection** is a Python library that provides more than 60
@@ -87,7 +89,7 @@ much identical. Here's how it works:
 
 .. code-block:: python
 
-  from validator_collection import validators, checkers
+  from validator_collection import validators, checkers, errors
 
   email_address = validators.email('test@domain.dev')
   # The value of email_address will now be "test@domain.dev"
@@ -95,8 +97,13 @@ much identical. Here's how it works:
   email_address = validators.email('this-is-an-invalid-email')
   # Will raise a ValueError
 
-  email_address = validators.email(None)
-  # Will raise a ValueError
+  try:
+      email_address = validators.email(None)
+      # Will raise an EmptyValueError
+  except errors.EmptyValueError:
+      # Handling logic goes here
+  except errors.InvalidEmailError:
+      # More handlign logic goes here
 
   email_address = validators.email(None, allow_empty = True)
   # The value of email_address will now be None
@@ -120,91 +127,15 @@ two flavors: a :term:`validator` and a :term:`checker`.
 
 Using Validators
 ==================
-A validator does what it says on the tin: It validates that an input value is
-what you think it should be, and returns its valid form.
 
-Each validator is expressed as the name of the thing being validated, for example
-:func:`email() <validator_collection.validators.email>`.
-
-Each validator accepts a value as its first argument, and an optional ``allow_empty``
-boolean as its second argument. For example:
-
-.. code-block:: python
-
-  email_address = validators.email(value, allow_empty = True)
-
-If the value you're validating validates successfully, it will be returned. If
-the value you're validating needs to be coerced to a different type, the
-validator will try to do that. So for example:
-
-.. code-block:: python
-
-  validators.integer(1)
-  validators.integer('1')
-
-will both return an ``int`` of ``1``.
-
-If the value you're validating is empty/falsey and ``allow_empty`` is ``False``,
-then the validator will raise a :class:`ValueError` exception. If ``allow_empty``
-is ``True``, then an empty/falsey input value will be converted to a :class:`None <python:None>`
-value.
-
-.. caution::
-
-  By default, ``allow_empty`` is always set to ``False``.
-
-If the value you're validating fails its validation for some reason, the validator
-may raise different exceptions depending on the reason. In most cases, this will
-be a :class:`ValueError` though it can sometimes be a :class:`TypeError`, or an
-:class:`AttributeError`, etc. For specifics on each validator's likely exceptions
-and what can cause them, please review the :doc:`Validator Reference <validators>`.
-
-.. hint::
-
-  Some validators (particularly numeric ones like
-  :func:`integer <validator_collection.validators.integer>`) have additional
-  options which are used to make sure the value meets criteria that you set for
-  it. These options are always included as keyword arguments *after* the
-  ``allow_empty`` argument, and are documented for each validator below.
+.. include:: _using_validators.rst
 
 .. _checkers-explained:
 
 Using Checkers
 ================
 
-Likewise, a :term:`checker` is what it sounds like: It checks that an input value
-is what you expect it to be, and tells you ``True``/``False`` whether it is or not.
-
-.. important::
-
-  Checkers do *not* verify or convert object types. You can think of a checker as
-  a tool that tells you whether its corresponding :ref:`validator <validators-explained>`
-  would fail. See :ref:`Best Practices <best-practices>` for tips and tricks on
-  using the two together.
-
-Each checker is expressed as the name of the thing being validated, prefixed by
-``is_``. So the checker for an email address is
-:func:`is_email() <validator_collection.checkers.is_email>` and the checker
-for an integer is :func:`is_integer() <validator_collection.checkers.is_integer>`.
-
-Checkers take the input value you want to check as their first (and often only)
-positional argumet. If the input value validates, they will return ``True``. Unlike
-:ref:`validators <validators-explained>`, checkers will not raise an exception if
-validation fails. They will instead return ``False``.
-
-.. hint::
-
-  If you need to know *why* a given value failed to validate, use the validator
-  instead.
-
-.. hint::
-
-  Some checkers (particularly numeric ones like
-  :func:`is_integer <validator_collection.checkers.is_integer>`) have additional
-  options which are used to make sure the value meets criteria that you set for
-  it. These options are always *optional* and are included as keyword arguments
-  *after* the input value argument. For details, please see the
-  :doc:`Checker Reference <checkers>`.
+.. include:: _using_checkers.rst
 
 .. _best-practices:
 
@@ -277,7 +208,8 @@ possible. If it is, then it calls the
 :func:`integer() <validator_collection.validators.integer>` validator to coerce
 ``value`` to a whole number.
 
-If it can't coerce ``value`` to a whole number? It raises a :class:`ValueError`.
+If it can't coerce ``value`` to a whole number? It raises a
+:class:`ValueError <python:ValueError>`.
 
 
 Confident Approach: try ... except
@@ -302,13 +234,15 @@ Here's an example:
 
 .. code-block:: python
 
-  from validator_collection import validators
+  from validator_collection import validators, errors
 
   def some_function(value):
       try:
-        email_address = validators.email(value, allow_empty = False)
-      except ValueError:
-        # handle the error here
+          email_address = validators.email(value, allow_empty = False)
+      except errors.InvalidEmailError as error:
+          # handle the error here
+      except ValueError as error:
+          # handle other ValueErrors here
 
       # do something with your new email address value
 

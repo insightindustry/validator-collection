@@ -14,6 +14,8 @@ import decimal
 import fractions
 import io
 import os
+import random
+import sys
 import uuid
 from datetime import datetime, date, time, tzinfo, timedelta
 
@@ -47,7 +49,7 @@ def test_dict(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.dict(value, allow_empty = allow_empty)
 
 
@@ -93,7 +95,7 @@ def test_string(value,
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.string(value,
                                           allow_empty = allow_empty,
                                           coerce_value = coerce_value,
@@ -160,7 +162,7 @@ def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.iterable(value,
                                             allow_empty = allow_empty,
                                             minimum_length = minimum_length,
@@ -212,7 +214,7 @@ def test_none(value, fails, allow_empty):
                                     allow_empty = allow_empty)
         assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.none(value,
                                         allow_empty = allow_empty)
 
@@ -242,7 +244,7 @@ def test_variable_name(value, fails, allow_empty):
         else:
             assert validated is not None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.variable_name(value,
                                                  allow_empty = allow_empty)
 
@@ -429,7 +431,7 @@ def test_time(value, fails, allow_empty, minimum,  maximum):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.time(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
@@ -490,7 +492,7 @@ def test_timezone(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.timezone(value,
                                         allow_empty = allow_empty)
 
@@ -569,7 +571,7 @@ def test_integer(value, fails, allow_empty, coerce_value, minimum, maximum, expe
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.integer(value,
                                            allow_empty = allow_empty,
                                            coerce_value = coerce_value,
@@ -826,6 +828,162 @@ def test_directory_exists(value, fails, allow_empty):
             validated = validators.directory_exists(value, allow_empty = allow_empty)
 
 
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    (None, False, True),
+
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_readable(fs, value, fails, allow_empty):
+    """Test validators.readable()"""
+    if value:
+        fs.create_file(value)
+
+    if not fails:
+        validated = validators.readable(value,
+                                        allow_empty = allow_empty)
+
+        if value:
+            assert validated is not None
+        else:
+            assert value is None
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            real_uid = os.getuid()
+            real_gid = os.getgid()
+            fake_uid = real_uid
+            fake_gid = real_gid
+            while fake_uid == real_uid:
+                fake_uid = int(random.random() * 100)
+
+            while fake_gid == real_gid:
+                fake_gid = int(random.random() * 100)
+
+            os.chown(value, fake_uid, fake_gid)
+            os.chmod(value, 0o027)
+
+        with pytest.raises((IOError, ValueError)):
+            validated = validators.readable(value,
+                                            allow_empty = allow_empty)
+
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        if not value:
+            with pytest.raises((IOError, ValueError)):
+                validated = validators.readable(value,
+                                                allow_empty = allow_empty)
+    else:
+        raise NotImplementedError('platform is not supported')
+
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    (None, False, True),
+
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_writeable(fs, value, fails, allow_empty):
+    """Test validators.readable()"""
+    if sys.platform in ['win32', 'cygwin'] and value:
+        fails = True
+
+    if value:
+        fs.create_file(value)
+
+    if not fails:
+        validated = validators.writeable(value,
+                                         allow_empty = allow_empty)
+
+        if value:
+            assert validated is not None
+        else:
+            assert value is None
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            real_uid = os.getuid()
+            real_gid = os.getgid()
+            fake_uid = real_uid
+            fake_gid = real_gid
+            while fake_uid == real_uid:
+                fake_uid = int(random.random() * 100)
+
+            while fake_gid == real_gid:
+                fake_gid = int(random.random() * 100)
+
+            dirname = os.path.dirname(value)
+            os.chown(value, fake_uid, fake_gid)
+            os.chown(dirname, fake_uid, fake_gid)
+            os.chmod(dirname, 0o0444)
+            os.chmod(value, 0o0444)
+
+        with pytest.raises((IOError, ValueError)):
+            validated = validators.writeable(value,
+                                             allow_empty = allow_empty)
+
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        with pytest.raises((IOError, ValueError, NotImplementedError)):
+            validated = validators.writeable(value,
+                                             allow_empty = allow_empty)
+    else:
+        raise NotImplementedError('platform is not supported')
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    ('/var/data/xx1.txt', False, False),
+    (None, False, True),
+
+    ('/var/data/xx1.txt', True, False),
+    (None, True, False),
+])
+def test_executable(fs, value, fails, allow_empty):
+    """Test validators.executable()"""
+    if sys.platform in ['win32', 'cygwin'] and value:
+        fails = True
+
+    if value:
+        fs.create_file(value)
+
+    if not fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            os.chmod(value, 0o0777)
+
+        validated = validators.executable(value,
+                                          allow_empty = allow_empty)
+
+        if value:
+            assert validated is not None
+        else:
+            assert value is None
+    elif fails and sys.platform in ['linux', 'linux2', 'darwin']:
+        if value:
+            real_uid = os.getuid()
+            real_gid = os.getgid()
+            fake_uid = real_uid
+            fake_gid = real_gid
+            while fake_uid == real_uid:
+                fake_uid = int(random.random() * 100)
+
+            while fake_gid == real_gid:
+                fake_gid = int(random.random() * 100)
+
+            dirname = os.path.dirname(value)
+            os.chown(value, fake_uid, fake_gid)
+            os.chown(dirname, fake_uid, fake_gid)
+            os.chmod(dirname, 0o0444)
+            os.chmod(value, 0o0444)
+
+        with pytest.raises((IOError, ValueError)):
+            validated = validators.executable(value,
+                                              allow_empty = allow_empty)
+
+    elif fails and sys.platform in ['win32', 'cygwin']:
+        with pytest.raises((IOError, ValueError, NotImplementedError)):
+            validated = validators.executable(value,
+                                              allow_empty = allow_empty)
+    else:
+        raise NotImplementedError('platform is not supported')
+
+
 ## INTERNET-RELATED
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
@@ -917,8 +1075,91 @@ def test_url(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             value = validators.url(value, allow_empty = allow_empty)
+
+
+@pytest.mark.parametrize('value, fails, allow_empty', [
+    (u"foo.com", False, False),
+    (u"www.example.com", False, False),
+    (u"✪df.ws", False, False),
+    (u"142.42.1.1", False, False),
+    (u"➡.ws", False, False),
+    (u"⌘.ws", False, False),
+    (u"☺.damowmow.com", False, False),
+    (u"j.mp", False, False),
+    (u"مثال.إختبار", False, False),
+    (u"例子.测试", False, False),
+    (u"उदाहरण.परीक्षा", False, False),
+    (u"1337.net", False, False),
+    (u"a.b-c.de", False, False),
+    (u"a.b--c.de", False, False),
+    (u"a.b--c.de/", True, False),
+    (u"223.255.255.254", False, False),
+    (u" shouldfail.com", False, False),
+
+    (u"foo.com/blah_blah", True, False),
+    (u"foo.com/blah_blah/", True, False),
+    (u"www.example.com/wpstyle/?p=364", True, False),
+    (u"✪df.ws/123", True, False),
+    (u"userid:password@example.com:8080", True, False),
+    (u"userid@example.com", True, False),
+    (u"userid:password@example.com", True, False),
+    (u"142.42.1.1/", True, False),
+    (u"142.42.1.1:8080/", True, False),
+    (u"➡.ws/䨹", True, False),
+    (u"⌘.ws/", True, False),
+    (u"code.google.com/events/#&product=browser", True, False),
+    (u"-.~_!$&'()*+,;=:%40:80%2f::::::@example.com", True, False),
+    (u"", True, False),
+    (None, True, False),
+    (u"", True, False),
+    (u".", True, False),
+    (u"..", True, False),
+    (u"../", True, False),
+    (u"?", True, False),
+    (u"??", True, False),
+    (u"??/", True, False),
+    (u"#", True, False),
+    (u"##", True, False),
+    (u"##/", True, False),
+    (u"foo.bar?q=Spaces should be encoded", True, False),
+    (u"//", True, False),
+    (u"//a", True, False),
+    (u"///a", True, False),
+    (u"///", True, False),
+    (u"/a", True, False),
+    (u"rdar://1234", True, False),
+    (u"h://test", True, False),
+    (u":// should fail", True, False),
+    (u"foo.bar/foo(bar)baz quux", True, False),
+    (u"foo.bar/", True, False),
+    (u"-error-.invalid/", True, False),
+    (u"-a.b.co", True, False),
+    (u"a.b-.co", True, False),
+    (u"0.0.0.0", True, False),
+    (u"10.1.1.0", True, False),
+    (u"10.1.1.255", True, False),
+    (u"224.1.1.1", True, False),
+    (u"1.1.1.1.1", True, False),
+    (u"123.123.123", True, False),
+    (u"3628126748", True, False),
+    (u".www.foo.bar/", True, False),
+    (u"www.foo.bar./", True, False),
+    (u".www.foo.bar./", True, False),
+    (u"10.1.1.1", True, False),
+])
+def test_domain(value, fails, allow_empty):
+    """Test the domain validator."""
+    if not fails:
+        validated = validators.domain(value, allow_empty = allow_empty)
+        if value:
+            assert isinstance(validated, basestring)
+        else:
+            assert validated is None
+    else:
+        with pytest.raises((ValueError, TypeError)):
+            value = validators.domain(value, allow_empty = allow_empty)
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [
@@ -929,7 +1170,52 @@ def test_url(value, fails, allow_empty):
     ('', True, False),
     ('', False, True),
     (None, True, False),
-    (None, False, True)
+    (None, False, True),
+
+    ('email@example.com', False, False),
+    ('firstname.lastname@example.com', False, False),
+    ('email@subdomain.example.com', False, False),
+    ('firstname+lastname@example.com', False, False),
+    ('email@123.123.123.123', False, False),
+    ('email@[123.123.123.123]', False, False),
+    ('"email"@example.com', False, False),
+    ('1234567890@example.com', False, False),
+    ('email@example-one.com', False, False),
+    ('_______@example.com', False, False),
+    ('email@example.name', False, False),
+    ('email@example.museum', False, False),
+    ('email@example.co.jp', False, False),
+    ('firstname-lastname@example.com', False, False),
+    ('email@example.web', False, False),
+    ('email+tag@example.com', False, False),
+    ('test(comment)@test.com', False, False),
+
+    ('much."more\\ unusual"@example.com', False, False),
+    ('very.unusual."@".unusual.com@example.com', False, False),
+    ('very."(),:;<>[]".VERY."very@\\ "very".unusual@strange.example.com', False, False),
+    ('Joe.Smith."<".email.">".test@example.com', False, False),
+
+    ('plainaddress', True, False),
+    ('#@%^%#$@#$@#.com', True, False),
+    ('@example.com', True, False),
+    ('Joe Smith <email@example.com>', True, False),
+    ('Joe Smith <email@example.com', True, False),
+    ('Joe Smith email@example.com>', True, False),
+    ('email.example.com', True, False),
+    ('email@example@example.com', True, False),
+    ('.email@example.com', True, False),
+    ('email.@example.com', True, False),
+    ('email..email@example.com', True, False),
+    ('あいうえお@example.com', True, False),
+    ('email@example.com (Joe Smith)', True, False),
+    ('email@example', True, False),
+    ('email@-example.com', True, False),
+    ('email@111.222.333.44444', True, False),
+    ('email@example..com', True, False),
+    ('Abc..123@example.com', True, False),
+    ('test(bad-comment@test.com', True, False),
+    ('testbad-comment)goeshere@test.com', True, False),
+
 ])
 def test_email(value, fails, allow_empty):
     """Does validate_email_address() return a correct value?"""
@@ -995,7 +1281,7 @@ def test_ip_address(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ip_address(value, allow_empty = allow_empty)
 
 
@@ -1025,7 +1311,7 @@ def test_ipv4(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ipv4(value, allow_empty = allow_empty)
 
 
@@ -1063,7 +1349,7 @@ def test_ipv6(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.ipv6(value, allow_empty = allow_empty)
 
 
@@ -1099,5 +1385,5 @@ def test_mac_address(value, fails, allow_empty):
         else:
             assert validated is None
     else:
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             validated = validators.mac_address(value, allow_empty = allow_empty)
