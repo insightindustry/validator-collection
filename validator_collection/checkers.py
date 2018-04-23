@@ -969,7 +969,6 @@ def is_readable(value, **kwargs):
 
 @disable_checker_on_env
 def is_writeable(value,
-                 mode = 'a',
                  **kwargs):
     """Indicate whether ``value`` is a writeable file.
 
@@ -1021,11 +1020,6 @@ def is_writeable(value,
     :param value: The value to evaluate.
     :type value: Path-like object
 
-    :param mode: The mode in which the file should be opened using the
-      :func:`open() <python:open>` function. Defaults to ``a`` (open for appending)
-    :type mode: :class:`str <python:str>` with acceptable values for
-      :func:`open() <python:open>`
-
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
 
@@ -1036,12 +1030,74 @@ def is_writeable(value,
 
     try:
         validators.writeable(value,
-                             mode = mode,
+                             allow_empty = False,
                              **kwargs)
     except Exception:
         return False
 
     return True
+
+@disable_checker_on_env
+def is_executable(value,
+                  **kwargs):
+    """Indicate whether ``value`` is an executable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the writability of a file *before* attempting to execute it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      execute the file using a ``try ... except`` block.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is writeable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
+
+    :param value: The value to evaluate.
+    :type value: Path-like object
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+
+    :raises NotImplementedError: if called on a Windows system
+    """
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
+
+    try:
+        validators.executable(value,
+                              **kwargs)
+    except Exception:
+        return False
+
+    return True
+
 
 ## INTERNET-RELATED
 

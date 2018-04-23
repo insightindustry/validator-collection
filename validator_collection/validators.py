@@ -1708,6 +1708,88 @@ def writeable(value,
 
     return value
 
+@disable_on_env
+def executable(value,
+               allow_empty = False,
+               **kwargs):
+    """Validate that ``value`` is a path to an executable file.
+
+    .. caution::
+
+      This validator does **NOT** work correctly on a Windows file system. This
+      is due to the vagaries of how Windows manages its file system and the
+      various ways in which it can manage file permission.
+
+      If called on a Windows file system, this validator will raise
+      :class:`NotImplementedError() <python:NotImplementedError>`.
+
+    .. caution::
+
+      **Use of this validator is an anti-pattern and should be used with caution.**
+
+      Validating the executability of a file *before* attempting to execute it
+      exposes your code to a bug called
+      `TOCTOU <https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>`_.
+
+      This particular class of bug can expose your code to **security vulnerabilities**
+      and so this validator should only be used if you are an advanced user.
+
+      A better pattern to use when writing to file is to apply the principle of
+      EAFP ("easier to ask forgiveness than permission"), and simply attempt to
+      execute the file using a ``try ... except`` block.
+
+    .. note::
+
+      This validator relies on :func:`os.access() <python:os.access>` to check
+      whether ``value`` is executable. This function has certain limitations,
+      most especially that:
+
+      * It will **ignore** file-locking (yielding a false-positive) if the file
+        is locked.
+      * It focuses on *local operating system permissions*, which means if trying
+        to access a path over a network you might get a false positive or false
+        negative (because network paths may have more complicated authentication
+        methods).
+
+    :param value: The path to a file on the local filesystem whose writeability
+      is to be validated.
+    :type value: Path-like object
+
+    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Validated absolute path or :class:`None <python:None>`
+    :rtype: Path-like object or :class:`None <python:None>`
+
+    :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
+      is empty
+    :raises NotImplementedError: if used on a Windows system
+    :raises NotPathlikeError: if ``value`` is not a path-like object
+    :raises NotAFileError: if ``value`` does not exist on the local file system
+    :raises NotExecutableError: if ``value`` cannot be executed
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = file_exists(value, force_run = True)
+
+    if sys.platform in ['win32', 'cygwin']:
+        raise NotImplementedError('not supported on Windows')
+
+    is_valid = os.access(value, mode = os.X_OK)
+
+    if not is_valid:
+        raise errors.NotExecutableError('execution not allowed for file at %s' % value)
+
+    return value
+
+
 ## INTERNET-RELATED
 
 @disable_on_env

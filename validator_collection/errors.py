@@ -309,3 +309,10 @@ class NotWriteableError(IOError):
     **INHERITS FROM:** :class:`IOError <python:IOError>`
     """
     pass
+
+class NotExecutableError(IOError):
+    """Exception raised when a path is not executable.
+
+    **INHERITS FROM:** :class:`IOError <python:IOError>`
+    """
+    pass
