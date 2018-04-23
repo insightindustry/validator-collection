@@ -1,6 +1,6 @@
 -----------
 
-Release 1.1.0 (in development)
+Release 1.1.0 (released April 23, 2018)
 ==========================================
 
 Features Added
