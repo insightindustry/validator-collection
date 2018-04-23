@@ -723,18 +723,19 @@ def test_is_readable(fs, value, fails, allow_empty):
         fs.create_file(value)
 
     if fails and sys.platform in ['linux', 'linux2', 'darwin']:
-        real_uid = os.getuid()
-        real_gid = os.getgid()
-        fake_uid = real_uid
-        fake_gid = real_gid
-        while fake_uid == real_uid:
-            fake_uid = int(random.random() * 100)
+        if value:
+            real_uid = os.getuid()
+            real_gid = os.getgid()
+            fake_uid = real_uid
+            fake_gid = real_gid
+            while fake_uid == real_uid:
+                fake_uid = int(random.random() * 100)
 
-        while fake_gid == real_gid:
-            fake_gid = int(random.random() * 100)
+            while fake_gid == real_gid:
+                fake_gid = int(random.random() * 100)
 
-        os.chown(value, fake_uid, fake_gid)
-        os.chmod(value, 0o027)
+            os.chown(value, fake_uid, fake_gid)
+            os.chmod(value, 0o027)
     elif fails and sys.platform in ['win32', 'cygwin']:
         expects = bool(value)
 
