@@ -147,7 +147,7 @@ Documentation Conventions
 ----------------------------
 
 We are very big believers in documentation (maybe you can tell). To document
-the **PDF Layer Extractor** we rely on several tools:
+the **Validator Collection** we rely on several tools:
 
 `Sphinx`_
 ^^^^^^^^^^^
