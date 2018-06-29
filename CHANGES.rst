@@ -1,4 +1,11 @@
 -----------
+Release 1.1.1 (forthcoming)
+==============================
+
+Bugs Fixed
+------------
+
+* #11: Removed legacy print statements.
 
 Release 1.1.0 (released April 23, 2018)
 ==========================================

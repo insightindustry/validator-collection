@@ -168,12 +168,9 @@ def are_dicts_equivalent(*args, **kwargs):
 
         for key in item:
             if key not in first_item:
-                print('key not in first item')
                 return False
 
             if not are_equivalent(item[key], first_item[key]):
-                print(item[key])
-                print(first_item[key])
                 return False
 
         for key in first_item:
