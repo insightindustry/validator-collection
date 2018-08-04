@@ -434,6 +434,7 @@ def date(value,
          allow_empty = False,
          minimum = None,
          maximum = None,
+         coerce_value = True,
          **kwargs):
     """Validate that ``value`` is a valid date.
 
@@ -458,12 +459,17 @@ def date(value,
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
       / :class:`None <python:None>`
 
+    :param coerce_value: If ``True``, will attempt to coerce ``value`` to a
+      :class:`date <python:datetime.date>` if it is a timestamp value. If ``False``,
+      will not.
+    :type coerce_value: :class:`bool <python:bool>`
+
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`date <python:datetime.date>` / :class:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
-      :class:`date <python:datetime.date>` and  and is not :class:`None <python:None>`
+      :class:`date <python:datetime.date>` and is not :class:`None <python:None>`
     :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs before
       ``minimum``
     :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs after
@@ -484,9 +490,15 @@ def date(value,
             'ISO 8601-formatted string, '
             'or POSIX timestamp, but was %s' % (value, type(value))
         )
-    elif isinstance(value, datetime_.datetime):
+    elif isinstance(value, datetime_.datetime) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, or '
+            'ISO 8601-formatted string, '
+            'but was %s' % (value, type(value))
+        )
+    elif isinstance(value, datetime_.datetime) and coerce_value:
         value = value.date()
-    elif isinstance(value, timestamp_types):
+    elif isinstance(value, timestamp_types) and coerce_value:
         try:
             value = datetime_.date.fromtimestamp(value)
         except ValueError:
@@ -498,8 +510,21 @@ def date(value,
     elif isinstance(value, str):
         try:
             value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
-            value = value.date()
+            if coerce_value:
+                value = value.date()
+            else:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, '
+                    'ISO 8601-formatted string, '
+                    'or POSIX timestamp, but was %s' % (value, type(value))
+                )
         except ValueError:
+            if len(value) > 10 and not coerce_value:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, or '
+                    'ISO 8601-formatted string, '
+                    'but was %s' % (value, type(value))
+                )
             if ' ' in value:
                 value = value.split(' ')[0]
             if 'T' in value:
@@ -522,6 +547,13 @@ def date(value,
                     'ISO 8601-formatted string, '
                     'or POSIX timestamp, but was %s' % (value, type(value))
                 )
+    elif isinstance(value, numeric_types) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, or '
+            'ISO 8601-formatted string, '
+            'but was %s' % (value, type(value))
+        )
+
 
     if minimum and value and value < minimum:
         raise errors.MinimumValueError(
