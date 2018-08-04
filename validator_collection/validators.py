@@ -476,6 +476,7 @@ def date(value,
       ``maximum``
 
     """
+    # pylint: disable=too-many-branches
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
@@ -727,6 +728,7 @@ def time(value,
          allow_empty = False,
          minimum = None,
          maximum = None,
+         coerce_value = True,
          **kwargs):
     """Validate that ``value`` is a valid :class:`time <python:datetime.time>`.
 
@@ -761,6 +763,11 @@ def time(value,
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
       :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
 
+    :param coerce_value: If ``True``, will attempt to coerce/extract a
+      :class:`time <python:datetime.time>` from ``value``. If ``False``, will only
+      respect direct representations of time. Defaults to ``True``.
+    :type coerce_value: :class:`bool <python:bool>`
+
     :returns: ``value`` in UTC time / :class:`None <python:None>`
     :rtype: :class:`time <python:datetime.time>` / :class:`None <python:None>`
 
@@ -793,12 +800,27 @@ def time(value,
             'or POSIX timestamp, but was %s' % (value,
                                                 type(value))
         )
-    elif isinstance(value, datetime_.datetime):
+    elif isinstance(value, datetime_.datetime) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp, but was %s' % (value,
+                                                type(value))
+        )
+    elif isinstance(value, datetime_.datetime) and coerce_value:
         value = value.time()
     elif isinstance(value, timestamp_types):
         try:
             datetime_value = datetime(value, force_run = True)                  # pylint: disable=E1123
-            value = datetime_value.time()
+            if coerce_value:
+                value = datetime_value.time()
+            else:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a time object, '
+                    'ISO 8601-formatted string, '
+                    'but was %s' % (value,
+                                    type(value))
+                )
         except ValueError:
             raise errors.CannotCoerceError(
                 'value (%s) must be a datetime object, '
@@ -811,7 +833,15 @@ def time(value,
         if len(value) > 10:
             try:
                 datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
-                value = datetime_value.time()
+                if coerce_value:
+                    value = datetime_value.time()
+                else:
+                    raise errors.CannotCoerceError(
+                        'value (%s) must be a time object, '
+                        'ISO 8601-formatted string, '
+                        'but was %s' % (value,
+                                        type(value))
+                    )
                 is_value_calculated = True
             except ValueError:
                 pass
