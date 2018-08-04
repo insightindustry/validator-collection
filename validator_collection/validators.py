@@ -542,6 +542,7 @@ def datetime(value,
              allow_empty = False,
              minimum = None,
              maximum = None,
+             coerce_value = True,
              **kwargs):
     """Validate that ``value`` is a valid datetime.
 
@@ -570,6 +571,11 @@ def datetime(value,
     :type maximum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>` /
       :class:`None <python:None>`
+
+    :param coerce_value: If ``True``, will coerce dates to
+      :class:`datetime <python:datetime.datetime>` objects with times of 00:00:00. If ``False``, will error
+      if ``value`` is not an unambiguous timestamp. Defaults to ``True``.
+    :type coerce_value: :class:`bool <python:bool>`
 
     :returns: ``value`` / :class:`None <python:None>`
     :rtype: :class:`datetime <python:datetime.datetime>` / :class:`None <python:None>`
@@ -600,7 +606,7 @@ def datetime(value,
             'or POSIX timestamp, but was %s' % (value,
                                                 type(value))
         )
-    elif isinstance(value, timestamp_types):
+    elif isinstance(value, timestamp_types) and coerce_value:
         try:
             value = datetime_.datetime.fromtimestamp(value)
         except ValueError:
@@ -637,16 +643,38 @@ def datetime(value,
                             value = datetime_.datetime.strptime(value,
                                                                 '%Y/%m/%d %H:%M:%S')
                     except ValueError:
-                        value = date(value)
+                        if coerce_value:
+                            value = date(value)
+                        else:
+                            raise errors.CannotCoerceError(
+                                'value (%s) must be a datetime object, '
+                                'ISO 8601-formatted string, '
+                                'or POSIX timestamp' % value
+                            )
+    elif isinstance(value, numeric_types) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp' % value
+        )
+
 
     if isinstance(value, datetime_.date) and not isinstance(value, datetime_.datetime):
-        value = datetime_.datetime(value.year,                                  # pylint: disable=R0204
-                                   value.month,
-                                   value.day,
-                                   0,
-                                   0,
-                                   0,
-                                   0)
+        if coerce_value:
+            value = datetime_.datetime(value.year,                                  # pylint: disable=R0204
+                                       value.month,
+                                       value.day,
+                                       0,
+                                       0,
+                                       0,
+                                       0)
+        else:
+            raise errors.CannotCoerceError(
+                'value (%s) must be a datetime object, '
+                'ISO 8601-formatted string, '
+                'or POSIX timestamp' % value
+            )
+
 
     if minimum and value and value < minimum:
         raise errors.MinimumValueError(
