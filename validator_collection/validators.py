@@ -93,15 +93,15 @@ def uuid(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: ``value`` coerced to a :class:`UUID <python:uuid.UUID>` object /
-      :class:`None <python:None>`
-    :rtype: :class:`UUID <python:uuid.UUID>` / :class:`None <python:None>`
+      :obj:`None <python:None>`
+    :rtype: :class:`UUID <python:uuid.UUID>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
@@ -135,9 +135,9 @@ def string(value,
     """Validate that ``value`` is a valid string.
 
     :param value: The value to validate.
-    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+    :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
       is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
       ``value`` is empty. Defaults to ``False``.
@@ -160,8 +160,8 @@ def string(value,
       ``minimum_length``, pad the value with spaces. Defaults to ``False``.
     :type whitespace_padding: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a valid string and ``coerce_value``
@@ -212,7 +212,7 @@ def iterable(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
       is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
       ``value`` is empty. Defaults to ``False``.
@@ -231,12 +231,12 @@ def iterable(value,
       needed to be valid.
     :type maximum_length: :class:`int <python:int>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: iterable / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: iterable / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises NotAnIterableError: if ``value`` is not a valid iterable or
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     :raises MinimumLengthError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
@@ -271,20 +271,20 @@ def iterable(value,
 def none(value,
          allow_empty = False,
          **kwargs):
-    """Validate that ``value`` is :class:`None <python:None>`.
+    """Validate that ``value`` is :obj:`None <python:None>`.
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is empty but **not** :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
+      is empty but **not** :obj:`None <python:None>`. If  ``False``, raises a
       :class:`NotNoneError` if ``value`` is empty but **not**
-      :class:`None <python:None>`. Defaults to ``False``.
+      :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: :class:`None <python:None>`
+    :returns: :obj:`None <python:None>`
 
     :raises NotNoneError: if ``allow_empty`` is ``False`` and ``value`` is empty
-      but **not** :class:`None <python:None>` and
+      but **not** :obj:`None <python:None>` and
 
     """
     if value is not None and not value and allow_empty:
@@ -303,13 +303,13 @@ def not_empty(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     """
@@ -335,14 +335,14 @@ def variable_name(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` or :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` or :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -380,7 +380,7 @@ def dict(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
@@ -391,8 +391,8 @@ def dict(value,
       :class:`json <python:json>` encoder/decoder.
     :type json_serializer: callable
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`dict <python:dict>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`dict <python:dict>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
@@ -434,14 +434,15 @@ def date(value,
          allow_empty = False,
          minimum = None,
          maximum = None,
+         coerce_value = True,
          **kwargs):
     """Validate that ``value`` is a valid date.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>`
-      / :class:`date <python:datetime.date>` / :class:`None <python:None>`
+      / :class:`date <python:datetime.date>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
@@ -450,26 +451,32 @@ def date(value,
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
     :type minimum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`date <python:datetime.date>` / :class:`None <python:None>`
+    :param coerce_value: If ``True``, will attempt to coerce ``value`` to a
+      :class:`date <python:datetime.date>` if it is a timestamp value. If ``False``,
+      will not.
+    :type coerce_value: :class:`bool <python:bool>`
+
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`date <python:datetime.date>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
-      :class:`date <python:datetime.date>` and  and is not :class:`None <python:None>`
+      :class:`date <python:datetime.date>` and is not :obj:`None <python:None>`
     :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs before
       ``minimum``
     :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs after
       ``maximum``
 
     """
+    # pylint: disable=too-many-branches
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
@@ -484,9 +491,15 @@ def date(value,
             'ISO 8601-formatted string, '
             'or POSIX timestamp, but was %s' % (value, type(value))
         )
-    elif isinstance(value, datetime_.datetime):
+    elif isinstance(value, datetime_.datetime) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, or '
+            'ISO 8601-formatted string, '
+            'but was %s' % (value, type(value))
+        )
+    elif isinstance(value, datetime_.datetime) and coerce_value:
         value = value.date()
-    elif isinstance(value, timestamp_types):
+    elif isinstance(value, timestamp_types) and coerce_value:
         try:
             value = datetime_.date.fromtimestamp(value)
         except ValueError:
@@ -498,8 +511,21 @@ def date(value,
     elif isinstance(value, str):
         try:
             value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
-            value = value.date()
+            if coerce_value:
+                value = value.date()
+            else:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, '
+                    'ISO 8601-formatted string, '
+                    'or POSIX timestamp, but was %s' % (value, type(value))
+                )
         except ValueError:
+            if len(value) > 10 and not coerce_value:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a date object, or '
+                    'ISO 8601-formatted string, '
+                    'but was %s' % (value, type(value))
+                )
             if ' ' in value:
                 value = value.split(' ')[0]
             if 'T' in value:
@@ -522,6 +548,13 @@ def date(value,
                     'ISO 8601-formatted string, '
                     'or POSIX timestamp, but was %s' % (value, type(value))
                 )
+    elif isinstance(value, numeric_types) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a date object, or '
+            'ISO 8601-formatted string, '
+            'but was %s' % (value, type(value))
+        )
+
 
     if minimum and value and value < minimum:
         raise errors.MinimumValueError(
@@ -542,6 +575,7 @@ def datetime(value,
              allow_empty = False,
              minimum = None,
              maximum = None,
+             coerce_value = True,
              **kwargs):
     """Validate that ``value`` is a valid datetime.
 
@@ -552,9 +586,9 @@ def datetime(value,
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>`
-      / :class:`date <python:datetime.date>` / :class:`None <python:None>`
+      / :class:`date <python:datetime.date>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
@@ -563,21 +597,26 @@ def datetime(value,
     :param minimum: If supplied, will make sure that ``value`` is on or after this value.
     :type minimum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>` /
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>` /
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`datetime <python:datetime.datetime>` / :class:`None <python:None>`
+    :param coerce_value: If ``True``, will coerce dates to
+      :class:`datetime <python:datetime.datetime>` objects with times of 00:00:00. If ``False``, will error
+      if ``value`` is not an unambiguous timestamp. Defaults to ``True``.
+    :type coerce_value: :class:`bool <python:bool>`
+
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`datetime <python:datetime.datetime>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
       :class:`datetime <python:datetime.datetime>` value and is not
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs
       before ``minimum``
     :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs
@@ -600,7 +639,7 @@ def datetime(value,
             'or POSIX timestamp, but was %s' % (value,
                                                 type(value))
         )
-    elif isinstance(value, timestamp_types):
+    elif isinstance(value, timestamp_types) and coerce_value:
         try:
             value = datetime_.datetime.fromtimestamp(value)
         except ValueError:
@@ -637,16 +676,38 @@ def datetime(value,
                             value = datetime_.datetime.strptime(value,
                                                                 '%Y/%m/%d %H:%M:%S')
                     except ValueError:
-                        value = date(value)
+                        if coerce_value:
+                            value = date(value)
+                        else:
+                            raise errors.CannotCoerceError(
+                                'value (%s) must be a datetime object, '
+                                'ISO 8601-formatted string, '
+                                'or POSIX timestamp' % value
+                            )
+    elif isinstance(value, numeric_types) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp' % value
+        )
+
 
     if isinstance(value, datetime_.date) and not isinstance(value, datetime_.datetime):
-        value = datetime_.datetime(value.year,                                  # pylint: disable=R0204
-                                   value.month,
-                                   value.day,
-                                   0,
-                                   0,
-                                   0,
-                                   0)
+        if coerce_value:
+            value = datetime_.datetime(value.year,                                  # pylint: disable=R0204
+                                       value.month,
+                                       value.day,
+                                       0,
+                                       0,
+                                       0,
+                                       0)
+        else:
+            raise errors.CannotCoerceError(
+                'value (%s) must be a datetime object, '
+                'ISO 8601-formatted string, '
+                'or POSIX timestamp' % value
+            )
+
 
     if minimum and value and value < minimum:
         raise errors.MinimumValueError(
@@ -667,6 +728,7 @@ def time(value,
          allow_empty = False,
          minimum = None,
          maximum = None,
+         coerce_value = True,
          **kwargs):
     """Validate that ``value`` is a valid :class:`time <python:datetime.time>`.
 
@@ -680,9 +742,9 @@ def time(value,
     :type value: :func:`datetime <validator_collection.validators.datetime>` or
       :func:`time <validator_collection.validators.time>`-compliant
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
-      :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
+      :class:`time <python:datetime.time> / numeric / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
@@ -692,21 +754,26 @@ def time(value,
     :type minimum: :func:`datetime <validator_collection.validators.datetime>` or
       :func:`time <validator_collection.validators.time>`-compliant
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
-      :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
+      :class:`time <python:datetime.time> / numeric / :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :func:`datetime <validator_collection.validators.datetime>` or
       :func:`time <validator_collection.validators.time>`-compliant
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
-      :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
+      :class:`time <python:datetime.time> / numeric / :obj:`None <python:None>`
 
-    :returns: ``value`` in UTC time / :class:`None <python:None>`
-    :rtype: :class:`time <python:datetime.time>` / :class:`None <python:None>`
+    :param coerce_value: If ``True``, will attempt to coerce/extract a
+      :class:`time <python:datetime.time>` from ``value``. If ``False``, will only
+      respect direct representations of time. Defaults to ``True``.
+    :type coerce_value: :class:`bool <python:bool>`
+
+    :returns: ``value`` in UTC time / :obj:`None <python:None>`
+    :rtype: :class:`time <python:datetime.time>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to a
-      :class:`time <python:datetime.time>` and is not :class:`None <python:None>`
+      :class:`time <python:datetime.time>` and is not :obj:`None <python:None>`
     :raises MinimumValueError: if ``minimum`` is supplied but ``value`` occurs
       before ``minimum``
     :raises MaximumValueError: if ``maximum`` is supplied but ``value`` occurs
@@ -733,12 +800,27 @@ def time(value,
             'or POSIX timestamp, but was %s' % (value,
                                                 type(value))
         )
-    elif isinstance(value, datetime_.datetime):
+    elif isinstance(value, datetime_.datetime) and not coerce_value:
+        raise errors.CannotCoerceError(
+            'value (%s) must be a datetime object, '
+            'ISO 8601-formatted string, '
+            'or POSIX timestamp, but was %s' % (value,
+                                                type(value))
+        )
+    elif isinstance(value, datetime_.datetime) and coerce_value:
         value = value.time()
     elif isinstance(value, timestamp_types):
         try:
             datetime_value = datetime(value, force_run = True)                  # pylint: disable=E1123
-            value = datetime_value.time()
+            if coerce_value:
+                value = datetime_value.time()
+            else:
+                raise errors.CannotCoerceError(
+                    'value (%s) must be a time object, '
+                    'ISO 8601-formatted string, '
+                    'but was %s' % (value,
+                                    type(value))
+                )
         except ValueError:
             raise errors.CannotCoerceError(
                 'value (%s) must be a datetime object, '
@@ -751,7 +833,15 @@ def time(value,
         if len(value) > 10:
             try:
                 datetime_value = datetime(value, force_run = True)              # pylint: disable=E1123
-                value = datetime_value.time()
+                if coerce_value:
+                    value = datetime_value.time()
+                else:
+                    raise errors.CannotCoerceError(
+                        'value (%s) must be a time object, '
+                        'ISO 8601-formatted string, '
+                        'but was %s' % (value,
+                                        type(value))
+                    )
                 is_value_calculated = True
             except ValueError:
                 pass
@@ -836,9 +926,9 @@ def timezone(value,
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :class:`tzinfo <python:datetime.tzinfo>`
-      / numeric / :class:`None <python:None>`
+      / numeric / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
@@ -848,12 +938,12 @@ def timezone(value,
       (only has meaning if ``value`` is a string). Defaults to ``True``.
     :type positive: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`tzinfo <python:datetime.tzinfo>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`tzinfo <python:datetime.tzinfo>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` cannot be coerced to
-      :class:`tzinfo <python:datetime.tzinfo>` and is not :class:`None <python:None>`
+      :class:`tzinfo <python:datetime.tzinfo>` and is not :obj:`None <python:None>`
     :raises PositiveOffsetMismatchError: if ``positive`` is ``True``, but the offset
       indicated by ``value`` is actually negative
     :raises NegativeOffsetMismatchError: if ``positive`` is ``False``, but the offset
@@ -972,10 +1062,10 @@ def numeric(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is :class:`None <python:None>`. If ``False``, raises an
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
+      is :obj:`None <python:None>`. If ``False``, raises an
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`.
+      ``value`` is :obj:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -987,9 +1077,9 @@ def numeric(value,
       equal to this value.
     :type maximum: numeric
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
       than the ``minimum``
@@ -1048,10 +1138,10 @@ def integer(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is :obj:`None <python:None>`. If  ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`.
+      ``value`` is :obj:`None <python:None>`.
       Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
@@ -1075,9 +1165,9 @@ def integer(value,
       an integer literal, so that the actual base is 2, 8, 10, or 16. Defaults to
       ``10``.
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
       than the ``minimum``
@@ -1126,16 +1216,16 @@ def float(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is :obj:`None <python:None>`. If  ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
+      ``value`` is :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`float <python:float>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`float <python:float>` / :obj:`None <python:None>`
 
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
       than the ``minimum``
@@ -1174,16 +1264,16 @@ def fraction(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
+      is :obj:`None <python:None>`. If  ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
+      ``value`` is :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`Fraction <python:fractions.Fraction>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`Fraction <python:fractions.Fraction>` / :obj:`None <python:None>`
 
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less
       than the ``minimum``
@@ -1222,10 +1312,10 @@ def decimal(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if ``value``
-      is :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
+      is :obj:`None <python:None>`. If  ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
+      ``value`` is :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :param minimum: If supplied, will make sure that ``value`` is greater than or
@@ -1236,10 +1326,10 @@ def decimal(value,
       equal to this value.
     :type maximum: numeric
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`Decimal <python:decimal.Decimal>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`Decimal <python:decimal.Decimal>` / :obj:`None <python:None>`
 
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises MinimumValueError: if ``minimum`` is supplied and ``value`` is less than the
       ``minimum``
@@ -1294,17 +1384,17 @@ def _numeric_coercion(value,
       type.
     :type coercion_function: callable
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
-      ``value`` is :class:`None <python:None>`. If  ``False``, raises a
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is :obj:`None <python:None>`. If  ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` if
-      ``value`` is :class:`None <python:None>`. Defaults to ``False``.
+      ``value`` is :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
     :rtype: the type returned by ``coercion_function``
 
     :raises CoercionFunctionEmptyError: if ``coercion_function`` is empty
-    :raises EmptyValueError: if ``value`` is :class:`None <python:None>` and
+    :raises EmptyValueError: if ``value`` is :obj:`None <python:None>` and
       ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``coercion_function`` raises an
       :class:`ValueError <python:ValueError>`, :class:`TypeError <python:TypeError>`,
@@ -1345,14 +1435,14 @@ def bytesIO(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`BytesIO <python:io.BytesIO>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`BytesIO <python:io.BytesIO>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises NotBytesIOError: if ``value`` is not a :class:`BytesIO <python:io.BytesIO>`
@@ -1378,14 +1468,14 @@ def stringIO(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`StringIO <python:io.StringIO>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`StringIO <python:io.StringIO>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises NotStringIOError: if ``value`` is not a :class:`StringIO <python:io.StringIO>`
@@ -1411,14 +1501,14 @@ def path(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The path represented by ``value``.
-    :rtype: Path-like object / :class:`None <python:None>`
+    :rtype: Path-like object / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value`` is empty
     :raises NotPathlikeError: if ``value`` is not a valid path-like object
@@ -1451,14 +1541,14 @@ def path_exists(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
-    :rtype: Path-like object / :class:`None <python:None>`
+    :rtype: Path-like object / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1487,14 +1577,14 @@ def file_exists(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
-    :rtype: Path-like object / :class:`None <python:None>`
+    :rtype: Path-like object / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1525,14 +1615,14 @@ def directory_exists(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
     :returns: The file name represented by ``value``.
-    :rtype: Path-like object / :class:`None <python:None>`
+    :rtype: Path-like object / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1587,14 +1677,14 @@ def readable(value,
       is to be validated.
     :type value: Path-like object
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: Validated path-like object or :class:`None <python:None>`
-    :rtype: Path-like object or :class:`None <python:None>`
+    :returns: Validated path-like object or :obj:`None <python:None>`
+    :rtype: Path-like object or :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1675,14 +1765,14 @@ def writeable(value,
       is to be validated.
     :type value: Path-like object
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: Validated absolute path or :class:`None <python:None>`
-    :rtype: Path-like object or :class:`None <python:None>`
+    :returns: Validated absolute path or :obj:`None <python:None>`
+    :rtype: Path-like object or :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1755,14 +1845,14 @@ def executable(value,
       is to be validated.
     :type value: Path-like object
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: Validated absolute path or :class:`None <python:None>`
-    :rtype: Path-like object or :class:`None <python:None>`
+    :returns: Validated absolute path or :obj:`None <python:None>`
+    :rtype: Path-like object or :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``allow_empty`` is ``False`` and ``value``
       is empty
@@ -1813,20 +1903,20 @@ def email(value,
       still letting us use regular expressions that perform quickly.
 
     :param value: The value to validate.
-    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+    :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     :raises InvalidEmailError: if ``value`` is not a valid email address or
       empty with ``allow_empty`` set to ``True``
     """
@@ -1959,20 +2049,20 @@ def url(value,
     """Validate that ``value`` is a valid URL.
 
     :param value: The value to validate.
-    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+    :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     :raises InvalidURLError: if ``value`` is not a valid URL or
       empty with ``allow_empty`` set to ``True``
 
@@ -2027,20 +2117,20 @@ def domain(value,
       Leading and trailing whitespace will be automatically stripped.
 
     :param value: The value to validate.
-    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+    :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a :class:`str <python:str>` or
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     :raises InvalidDomainError: if ``value`` is not a valid domain name or
       empty with ``allow_empty`` set to ``True``
     :raises SlashInDomainError: if ``value`` contains a slash or backslash
@@ -2102,13 +2192,13 @@ def ip_address(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises InvalidIPAddressError: if ``value`` is not a valid IP address or empty with
@@ -2142,13 +2232,13 @@ def ipv4(value, allow_empty = False):
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises InvalidIPAddressError: if ``value`` is not a valid IP version 4 address or
@@ -2186,13 +2276,13 @@ def ipv6(value,
 
     :param value: The value to validate.
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises InvalidIPAddressError: if ``value`` is not a valid IP version 6 address or
@@ -2224,16 +2314,16 @@ def mac_address(value,
     """Validate that ``value`` is a valid MAC address.
 
     :param value: The value to validate.
-    :type value: :class:`str <python:str>` / :class:`None <python:None>`
+    :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
-    :param allow_empty: If ``True``, returns :class:`None <python:None>` if
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``value`` / :class:`None <python:None>`
-    :rtype: :class:`str <python:str>` / :class:`None <python:None>`
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a valid :class:`str <python:str>`

@@ -252,44 +252,77 @@ def test_variable_name(value, fails, allow_empty):
 
 ## DATE / TIME
 
-@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum', [
-    ('2018-01-01', False, False, None, None),
-    ('2018/01/01', False, False, None, None),
-    ('01/01/2018', True, False, None, None),
-    (date(2018,1,1), False, False, None, None),
-    (datetime.utcnow(), False, False, None, None),
-    ('1/1/2018', True, False, None, None),
-    ('1/1/18', True, False, None, None),
-    (None, True, False, None, None),
-    (None, False, True, None, None),
-    ('', True, False, None, None),
-    ('', False, True, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
-    ('2018-01-01 00:00:00.00000', False, False, None, None),
-    ('01/01/2018 00:00:00.00000', True, False, None, None),
-    ('2018-01-46', True, False, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
+@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum, coerce_value', [
+    ('2018-01-01', False, False, None, None, True),
+    ('2018/01/01', False, False, None, None, True),
+    ('01/01/2018', True, False, None, None, True),
+    (date(2018,1,1), False, False, None, None, True),
+    (datetime.utcnow(), False, False, None, None, True),
+    ('1/1/2018', True, False, None, None, True),
+    ('1/1/18', True, False, None, None, True),
+    (None, True, False, None, None, True),
+    (None, False, True, None, None, True),
+    ('', True, False, None, None, True),
+    ('', False, True, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
+    ('2018-01-01 00:00:00.00000', False, False, None, None, True),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, True),
+    ('2018-01-46', True, False, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
 
-    ('2018-01-01', False, False, '2017-12-01', None),
-    ('2018/01/01', False, False, '2018-01-01', None),
-    ('2018-01-01', True, False, '2018-02-01', None),
+    ('2018-01-01', False, False, '2017-12-01', None, True),
+    ('2018/01/01', False, False, '2018-01-01', None, True),
+    ('2018-01-01', True, False, '2018-02-01', None, True),
 
-    ('2018/01/01', False, False, None, '2018-01-31'),
-    ('2018/01/01', False, False, None, '2018-01-01'),
-    ('2018/01/01', True, False, None, '2017-12-31'),
+    ('2018/01/01', False, False, None, '2018-01-31', True),
+    ('2018/01/01', False, False, None, '2018-01-01', True),
+    ('2018/01/01', True, False, None, '2017-12-31', True),
 
-    (time_.time(), False, False, None, None),
-    (datetime.utcnow().time(), True, False, None, None)
+    (time_.time(), False, False, None, None, True),
+    (datetime.utcnow().time(), True, False, None, None, True),
+
+
+    ('2018-01-01', False, False, None, None, False),
+    ('2018/01/01', False, False, None, None, False),
+    ('01/01/2018', True, False, None, None, False),
+    (date(2018,1,1), False, False, None, None, False),
+    (datetime.utcnow(), True, False, None, None, False),
+    ('1/1/2018', True, False, None, None, False),
+    ('1/1/18', True, False, None, None, False),
+    (None, True, False, None, None, False),
+    (None, False, True, None, None, False),
+    ('', True, False, None, None, False),
+    ('', False, True, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+    ('2018-01-01 00:00:00.00000', True, False, None, None, False),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, False),
+    ('2018-01-46', True, False, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+
+    ('2018-01-01', False, False, '2017-12-01', None, False),
+    ('2018/01/01', False, False, '2018-01-01', None, False),
+    ('2018-01-01', True, False, '2018-02-01', None, False),
+
+    ('2018/01/01', False, False, None, '2018-01-31', False),
+    ('2018/01/01', False, False, None, '2018-01-01', False),
+    ('2018/01/01', True, False, None, '2017-12-31', False),
+
+    (time_.time(), True, False, None, None, False),
+    (datetime.utcnow().time(), True, False, None, None, False),
+
 ])
-def test_date(value, fails, allow_empty, minimum, maximum):
+def test_date(value, fails, allow_empty, minimum, maximum, coerce_value):
     """Test the date validator."""
     if not fails:
         validated = validators.date(value,
                                     allow_empty = allow_empty,
                                     minimum = minimum,
-                                    maximum = maximum)
+                                    maximum = maximum,
+                                    coerce_value = coerce_value)
         if value:
             assert isinstance(validated, date)
         else:
@@ -299,50 +332,85 @@ def test_date(value, fails, allow_empty, minimum, maximum):
             validated = validators.date(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
-                                        maximum = maximum)
+                                        maximum = maximum,
+                                        coerce_value = coerce_value)
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum', [
-    ('2018-01-01', False, False, None, None),
-    ('2018/01/01', False, False, None, None),
-    ('01/01/2018', True, False, None, None),
-    (date(2018,1,1), False, False, None, None),
-    (datetime.utcnow(), False, False, None, None),
-    ('1/1/2018', True, False, None, None),
-    ('1/1/18', True, False, None, None),
-    (None, True, False, None, None),
-    (None, False, True, None, None),
-    ('', True, False, None, None),
-    ('', False, True, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
-    ('2018-01-01T00:00:00.00000', False, False, None, None),
-    ('2018-01-01 00:00:00.00000', False, False, None, None),
-    ('01/01/2018 00:00:00.00000', True, False, None, None),
-    ('2018-01-46', True, False, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
-    ('2018-01-01T00:00:00', False, False, None, None),
+@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum, coerce_value', [
+    ('2018-01-01', False, False, None, None, True),
+    ('2018/01/01', False, False, None, None, True),
+    ('01/01/2018', True, False, None, None, True),
+    (date(2018,1,1), False, False, None, None, True),
+    (datetime.utcnow(), False, False, None, None, True),
+    ('1/1/2018', True, False, None, None, True),
+    ('1/1/18', True, False, None, None, True),
+    (None, True, False, None, None, True),
+    (None, False, True, None, None, True),
+    ('', True, False, None, None, True),
+    ('', False, True, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
+    ('2018-01-01T00:00:00.00000', False, False, None, None, True),
+    ('2018-01-01 00:00:00.00000', False, False, None, None, True),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, True),
+    ('2018-01-46', True, False, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
+    ('2018-01-01T00:00:00', False, False, None, None, True),
 
-    ('2018-01-01', False, False, '2010-01-01', None),
-    ('2018/01/01', False, False, '2018-01-01', None),
-    ('2018/01/01', True, False, '2018-02-01', None),
+    ('2018-01-01', False, False, '2010-01-01', None, True),
+    ('2018/01/01', False, False, '2018-01-01', None, True),
+    ('2018/01/01', True, False, '2018-02-01', None, True),
 
-    ('2018-01-01', False, False, None, '2018-02-01'),
-    ('2018/01/01', False, False, None, '2018-01-01'),
-    ('2018/01/01', True, False, None, '2010-01-01'),
+    ('2018-01-01', False, False, None, '2018-02-01', True),
+    ('2018/01/01', False, False, None, '2018-01-01', True),
+    ('2018/01/01', True, False, None, '2010-01-01', True),
 
-    (time_.time(), False, False, None, None),
-    (datetime.utcnow().time(), True, False, None, None),
+    (time_.time(), False, False, None, None, True),
+    (datetime.utcnow().time(), True, False, None, None, True),
+
+
+    ('2018-01-01', True, False, None, None, False),
+    ('2018/01/01', True, False, None, None, False),
+    ('01/01/2018', True, False, None, None, False),
+    (date(2018,1,1), True, False, None, None, False),
+    (datetime.utcnow(), False, False, None, None, False),
+    ('1/1/2018', True, False, None, None, False),
+    ('1/1/18', True, False, None, None, False),
+    (None, True, False, None, None, False),
+    (None, False, True, None, None, False),
+    ('', True, False, None, None, False),
+    ('', False, True, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+    ('2018-01-01T00:00:00.00000', False, False, None, None, False),
+    ('2018-01-01 00:00:00.00000', False, False, None, None, False),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, False),
+    ('2018-01-46', True, False, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+    ('2018-01-01T00:00:00', False, False, None, None, False),
+
+    ('2018-01-01', True, False, '2010-01-01', None, False),
+    ('2018/01/01', True, False, '2018-01-01', None, False),
+    ('2018/01/01', True, False, '2018-02-01', None, False),
+
+    ('2018-01-01', True, False, None, '2018-02-01', False),
+    ('2018/01/01', True, False, None, '2018-01-01', False),
+    ('2018/01/01', True, False, None, '2010-01-01', False),
+
+    (time_.time(), True, False, None, None, False),
+    (datetime.utcnow().time(), True, False, None, None, False),
 
 ])
-def test_datetime(value, fails, allow_empty, minimum,  maximum):
+def test_datetime(value, fails, allow_empty, minimum, maximum, coerce_value):
     """Test the datetime validator."""
     if not fails:
         validated = validators.datetime(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
-                                        maximum = maximum)
+                                        maximum = maximum,
+                                        coerce_value = coerce_value)
         if value:
             assert isinstance(validated, datetime)
         else:
@@ -352,76 +420,138 @@ def test_datetime(value, fails, allow_empty, minimum,  maximum):
             validated = validators.datetime(value,
                                             allow_empty = allow_empty,
                                             minimum = minimum,
-                                            maximum = maximum)
+                                            maximum = maximum,
+                                            coerce_value = coerce_value)
 
 
-@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum', [
-    ('2018-01-01', True, False, None, None),
-    ('2018/01/01', True, False, None, None),
-    ('01/01/2018', True, False, None, None),
-    (date(2018,1,1), True, False, None, None),
-    (datetime.utcnow(), False, False, None, None),
-    ('1/1/2018', True, False, None, None),
-    ('1/1/18', True, False, None, None),
-    (None, True, False, None, None),
-    (None, False, True, None, None),
-    ('', True, False, None, None),
-    ('', False, True, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
-    ('2018-01-01T00:00:00.00000', False, False, None, None),
-    ('2018-01-01 00:00:00.00000', False, False, None, None),
-    ('01/01/2018 00:00:00.00000', True, False, None, None),
-    ('2018-01-46', True, False, None, None),
-    ('1/46/2018', True, False, None, None),
-    ('not-a-date', True, False, None, None),
-    ('2018-01-01T00:00:00', False, False, None, None),
+@pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum, coerce_value', [
+    ('2018-01-01', True, False, None, None, True),
+    ('2018/01/01', True, False, None, None, True),
+    ('01/01/2018', True, False, None, None, True),
+    (date(2018,1,1), True, False, None, None, True),
+    (datetime.utcnow(), False, False, None, None, True),
+    ('1/1/2018', True, False, None, None, True),
+    ('1/1/18', True, False, None, None, True),
+    (None, True, False, None, None, True),
+    (None, False, True, None, None, True),
+    ('', True, False, None, None, True),
+    ('', False, True, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
+    ('2018-01-01T00:00:00.00000', False, False, None, None, True),
+    ('2018-01-01 00:00:00.00000', False, False, None, None, True),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, True),
+    ('2018-01-46', True, False, None, None, True),
+    ('1/46/2018', True, False, None, None, True),
+    ('not-a-date', True, False, None, None, True),
+    ('2018-01-01T00:00:00', False, False, None, None, True),
 
     ('2018-01-01', True, False, datetime(year = 2017,
                                          month = 1,
-                                         day = 1).time(), None),
+                                         day = 1).time(), None, True),
     ('2018/01/01', True, False, datetime(year = 2018,
                                          month = 1,
-                                         day = 1).time(), None),
+                                         day = 1).time(), None, True),
     ('2018-01-01T00:00:00', False, False, datetime(year = 2017,
                                                    month = 1,
-                                                   day = 1).time(), None),
+                                                   day = 1).time(), None, True),
     ('2018/01/01T00:00:00', False, False, datetime(year = 2018,
                                                    month = 1,
-                                                   day = 1).time(), None),
+                                                   day = 1).time(), None, True),
     ('2018/01/01', True, False, datetime(year = 2018,
                                          month = 2,
                                          day = 1,
-                                         hour = 3).time(), None),
+                                         hour = 3).time(), None, True),
 
     ('2018-01-01', True, False, None, datetime(year = 2019,
                                                month = 1,
-                                               day = 1).time()),
+                                               day = 1).time(), True),
     ('2018/01/01', True, False, None, datetime(year = 2018,
                                                month = 1,
-                                               day = 1).time()),
+                                               day = 1).time(), True),
     ('2018-01-01T00:00:00', False, False, None, datetime(year = 2019,
                                                          month = 1,
-                                                         day = 1).time()),
+                                                         day = 1).time(), True),
     ('2018/01/01T00:00:00', False, False, None, datetime(year = 2018,
                                                          month = 1,
-                                                         day = 1).time()),
+                                                         day = 1).time(), True),
     ('2018/01/01T03:00:00', True, False, None, datetime(year = 2017,
                                                         month = 1,
                                                         day = 1,
-                                                        hour = 0).time()),
+                                                        hour = 0).time(), True),
 
-    (time_.time(), False, False, None, None),
-    (datetime.utcnow().time(), False, False, None, None),
+    (time_.time(), False, False, None, None, True),
+    (datetime.utcnow().time(), False, False, None, None, True),
+
+
+    ('2018-01-01', True, False, None, None, False),
+    ('2018/01/01', True, False, None, None, False),
+    ('01/01/2018', True, False, None, None, False),
+    (date(2018,1,1), True, False, None, None, False),
+    (datetime.utcnow(), True, False, None, None, False),
+    ('1/1/2018', True, False, None, None, False),
+    ('1/1/18', True, False, None, None, False),
+    (None, True, False, None, None, False),
+    (None, False, True, None, None, False),
+    ('', True, False, None, None, False),
+    ('', False, True, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+    ('2018-01-01T00:00:00.00000', True, False, None, None, False),
+    ('2018-01-01 00:00:00.00000', True, False, None, None, False),
+    ('01/01/2018 00:00:00.00000', True, False, None, None, False),
+    ('2018-01-46', True, False, None, None, False),
+    ('1/46/2018', True, False, None, None, False),
+    ('not-a-date', True, False, None, None, False),
+    ('2018-01-01T00:00:00', True, False, None, None, False),
+
+    ('2018-01-01', True, False, datetime(year = 2017,
+                                         month = 1,
+                                         day = 1).time(), None, False),
+    ('2018/01/01', True, False, datetime(year = 2018,
+                                         month = 1,
+                                         day = 1).time(), None, False),
+    ('2018-01-01T00:00:00', True, False, datetime(year = 2017,
+                                                  month = 1,
+                                                  day = 1).time(), None, False),
+    ('2018/01/01T00:00:00', True, False, datetime(year = 2018,
+                                                  month = 1,
+                                                  day = 1).time(), None, False),
+    ('2018/01/01', True, False, datetime(year = 2018,
+                                         month = 2,
+                                         day = 1,
+                                         hour = 3).time(), None, False),
+
+    ('2018-01-01', True, False, None, datetime(year = 2019,
+                                               month = 1,
+                                               day = 1).time(), False),
+    ('2018/01/01', True, False, None, datetime(year = 2018,
+                                               month = 1,
+                                               day = 1).time(), False),
+    ('2018-01-01T00:00:00', True, False, None, datetime(year = 2019,
+                                                        month = 1,
+                                                        day = 1).time(), False),
+    ('2018/01/01T00:00:00', True, False, None, datetime(year = 2018,
+                                                        month = 1,
+                                                        day = 1).time(), False),
+    ('2018/01/01T03:00:00', True, False, None, datetime(year = 2017,
+                                                        month = 1,
+                                                        day = 1,
+                                                        hour = 0).time(), False),
+
+    (time_.time(), True, False, None, None, False),
+    (datetime.utcnow().time(), False, False, None, None, False),
+
 
 ])
-def test_time(value, fails, allow_empty, minimum,  maximum):
+def test_time(value, fails, allow_empty, minimum,  maximum, coerce_value):
     """Test the datetime validator."""
     if not fails:
         validated = validators.time(value,
                                     allow_empty = allow_empty,
                                     minimum = minimum,
-                                    maximum = maximum)
+                                    maximum = maximum,
+                                    coerce_value = coerce_value)
         if value:
             assert isinstance(validated, time)
             if minimum is not None:
@@ -435,7 +565,8 @@ def test_time(value, fails, allow_empty, minimum,  maximum):
             validated = validators.time(value,
                                         allow_empty = allow_empty,
                                         minimum = minimum,
-                                        maximum = maximum)
+                                        maximum = maximum,
+                                        coerce_value = coerce_value)
 
 
 @pytest.mark.parametrize('value, fails, allow_empty', [

@@ -27,7 +27,7 @@ then the validator will raise a
 :class:`EmptyValueError <validator_collection.errors.EmptyValueError>` exception
 (which inherits from the built-in :class:`ValueError <python:ValueError>`). If
 ``allow_empty`` is ``True``, then an empty/falsey input value will be converted to a
-:class:`None <python:None>` value.
+:obj:`None <python:None>` value.
 
 .. caution::
 

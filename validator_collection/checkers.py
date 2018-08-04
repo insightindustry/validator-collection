@@ -168,12 +168,9 @@ def are_dicts_equivalent(*args, **kwargs):
 
         for key in item:
             if key not in first_item:
-                print('key not in first item')
                 return False
 
             if not are_equivalent(item[key], first_item[key]):
-                print(item[key])
-                print(first_item[key])
                 return False
 
         for key in first_item:
@@ -210,12 +207,12 @@ def is_between(value,
     :param minimum: If supplied, will return ``True`` if ``value`` is greater than or
       equal to this value.
     :type minimum: anything that supports comparison operators /
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
 
     :param maximum: If supplied, will return ``True`` if ``value`` is less than or
       equal to this value.
     :type maximum: anything that supports comparison operators /
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
 
     :returns: ``True`` if ``value`` is greater than or equal to a supplied ``minimum``
       and less than or equal to a supplied ``maximum``. Otherwise, returns ``False``.
@@ -224,7 +221,7 @@ def is_between(value,
     :raises NotImplemented: if ``value``, ``minimum``, or ``maximum`` do not
       support comparison operators
     :raises ValueError: if both ``minimum`` and ``maximum`` are
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     """
     if minimum is None and maximum is None:
         raise ValueError('minimum and maximum cannot both be None')
@@ -275,7 +272,7 @@ def has_length(value,
 
     :raises TypeError: if ``value`` does not support length evaluation
     :raises ValueError: if both ``minimum`` and ``maximum`` are
-      :class:`None <python:None>`
+      :obj:`None <python:None>`
     """
     if minimum is None and maximum is None:
         raise ValueError('minimum and maximum cannot both be None')
@@ -433,15 +430,15 @@ def is_not_empty(value, **kwargs):
 
 @disable_checker_on_env
 def is_none(value, allow_empty = False, **kwargs):
-    """Indicate whether ``value`` is :class:`None <python:None>`.
+    """Indicate whether ``value`` is :obj:`None <python:None>`.
 
     :param value: The value to evaluate.
 
     :param allow_empty: If ``True``, accepts falsey values as equivalent to
-      :class:`None <python:None>`. Defaults to ``False``.
+      :obj:`None <python:None>`. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
-    :returns: ``True`` if ``value`` is :class:`None <python:None>`, ``False``
+    :returns: ``True`` if ``value`` is :obj:`None <python:None>`, ``False``
       if it is not.
     :rtype: :class:`bool <python:bool>`
     """
@@ -512,6 +509,7 @@ def is_uuid(value, **kwargs):
 def is_date(value,
             minimum = None,
             maximum = None,
+            coerce_value = False,
             **kwargs):
     """Indicate whether ``value`` is a :class:`date <python:datetime.date>`.
 
@@ -521,13 +519,19 @@ def is_date(value,
       this value.
     :type minimum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
+
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be
+      coerced to a :class:`date <python:datetime.date>`. If ``False``,
+      will only return ``True`` if ``value`` is a date value only. Defaults to
+      ``False``.
+    :type coerce_value: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
@@ -536,6 +540,7 @@ def is_date(value,
         value = validators.date(value,
                                 minimum = minimum,
                                 maximum = maximum,
+                                coerce_value = coerce_value,
                                 **kwargs)
     except Exception:
         return False
@@ -547,6 +552,7 @@ def is_date(value,
 def is_datetime(value,
                 minimum = None,
                 maximum = None,
+                coerce_value = False,
                 **kwargs):
     """Indicate whether ``value`` is a :class:`datetime <python:datetime.datetime>`.
 
@@ -556,13 +562,19 @@ def is_datetime(value,
       this value.
     :type minimum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :class:`datetime <python:datetime.datetime>` /
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
-      / :class:`None <python:None>`
+      / :obj:`None <python:None>`
+
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be
+      coerced to a :class:`datetime <python:datetime.datetime>`. If ``False``,
+      will only return ``True`` if ``value`` is a complete timestamp. Defaults to
+      ``False``.
+    :type coerce_value: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
@@ -571,6 +583,7 @@ def is_datetime(value,
         value = validators.datetime(value,
                                     minimum = minimum,
                                     maximum = maximum,
+                                    coerce_value = coerce_value,
                                     **kwargs)
     except Exception:
         return False
@@ -582,6 +595,7 @@ def is_datetime(value,
 def is_time(value,
             minimum = None,
             maximum = None,
+            coerce_value = False,
             **kwargs):
     """Indicate whether ``value`` is a :class:`time <python:datetime.time>`.
 
@@ -591,14 +605,20 @@ def is_time(value,
     :type minimum: :func:`datetime <validator_collection.validators.datetime>` or
       :func:`time <validator_collection.validators.time>`-compliant
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
-      :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
+      :class:`time <python:datetime.time> / numeric / :obj:`None <python:None>`
 
     :param maximum: If supplied, will make sure that ``value`` is on or before this
       value.
     :type maximum: :func:`datetime <validator_collection.validators.datetime>` or
       :func:`time <validator_collection.validators.time>`-compliant
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
-      :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
+      :class:`time <python:datetime.time> / numeric / :obj:`None <python:None>`
+
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be
+      coerced to a :class:`time <python:datetime.time>`. If ``False``,
+      will only return ``True`` if ``value`` is a valid time. Defaults to
+      ``False``.
+    :type coerce_value: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
@@ -607,6 +627,7 @@ def is_time(value,
         value = validators.time(value,
                                 minimum = minimum,
                                 maximum = maximum,
+                                coerce_value = coerce_value,
                                 **kwargs)
     except Exception:
         return False

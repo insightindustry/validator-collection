@@ -91,12 +91,12 @@ Numbers
 
 .. note::
 
-  Because Python's :class:`None <python:None>` is implemented as an integer
+  Because Python's :obj:`None <python:None>` is implemented as an integer
   value, numeric validators do not check "falsiness". Doing so would find
   false positives if ``value`` were set to ``0``.
 
   Instead, all numeric validators explicitly check for the Python global singleton
-  :class:`None <python:None>`.
+  :obj:`None <python:None>`.
 
 numeric
 ----------

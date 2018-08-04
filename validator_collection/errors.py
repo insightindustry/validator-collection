@@ -13,7 +13,7 @@ class EmptyValueError(ValueError):
 
       While in general, an "empty" value means a value that is falsey, for
       certain specific validators "empty" means explicitly
-      :class:`None <python:None>`.
+      :obj:`None <python:None>`.
 
       Please see: :doc:`Validator Reference <validators>`.
 
@@ -23,7 +23,7 @@ class EmptyValueError(ValueError):
     pass
 
 class NotNoneError(ValueError):
-    """Exception raised when a value of :class:`None <python:None>` is expected,
+    """Exception raised when a value of :obj:`None <python:None>` is expected,
     but a different empty value was detected.
 
     **INHERITS FROM:** :class:`ValueError <python:ValueError>`
