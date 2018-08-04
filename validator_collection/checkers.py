@@ -509,6 +509,7 @@ def is_uuid(value, **kwargs):
 def is_date(value,
             minimum = None,
             maximum = None,
+            coerce_value = False,
             **kwargs):
     """Indicate whether ``value`` is a :class:`date <python:datetime.date>`.
 
@@ -526,6 +527,12 @@ def is_date(value,
       :class:`date <python:datetime.date>` / compliant :class:`str <python:str>`
       / :class:`None <python:None>`
 
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be
+      coerced to a :class:`date <python:datetime.date>`. If ``False``,
+      will only return ``True`` if ``value`` is a date value only. Defaults to
+      ``False``.
+    :type coerce_value: :class:`bool <python:bool>`
+
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
     """
@@ -533,6 +540,7 @@ def is_date(value,
         value = validators.date(value,
                                 minimum = minimum,
                                 maximum = maximum,
+                                coerce_value = coerce_value,
                                 **kwargs)
     except Exception:
         return False
