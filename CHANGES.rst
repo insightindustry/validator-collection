@@ -1,11 +1,20 @@
 -----------
-Release 1.1.1 (forthcoming)
-==============================
+
+Release 1.2.0 (released August 4, 2018)
+==========================================
+
+Features Added
+----------------
+
+* #14: Added ``coerce_value`` argument to ``validators.date()``, ``validators.datetime()``,
+  and ``validators.time()``.
 
 Bugs Fixed
 ------------
 
 * #11: Removed legacy print statements.
+* #13: ``checkers.is_time()``, ``checkers.is_date()``, and ``checkers.is_datetime()``
+  no longer return false positives
 
 Release 1.1.0 (released April 23, 2018)
 ==========================================

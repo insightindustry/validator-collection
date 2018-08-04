@@ -595,6 +595,7 @@ def is_datetime(value,
 def is_time(value,
             minimum = None,
             maximum = None,
+            coerce_value = False,
             **kwargs):
     """Indicate whether ``value`` is a :class:`time <python:datetime.time>`.
 
@@ -613,6 +614,12 @@ def is_time(value,
       :class:`str <python:str>` / :class:`datetime <python:datetime.datetime>` /
       :class:`time <python:datetime.time> / numeric / :class:`None <python:None>`
 
+    :param coerce_value: If ``True``, will return ``True`` if ``value`` can be
+      coerced to a :class:`time <python:datetime.time>`. If ``False``,
+      will only return ``True`` if ``value`` is a valid time. Defaults to
+      ``False``.
+    :type coerce_value: :class:`bool <python:bool>`
+
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
     """
@@ -620,6 +627,7 @@ def is_time(value,
         value = validators.time(value,
                                 minimum = minimum,
                                 maximum = maximum,
+                                coerce_value = coerce_value,
                                 **kwargs)
     except Exception:
         return False
