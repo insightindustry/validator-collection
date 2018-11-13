@@ -314,6 +314,37 @@ def is_dict(value, **kwargs):
 
 
 @disable_checker_on_env
+def is_json(value,
+            schema = None,
+            json_serializer = None,
+            **kwargs):
+    """Indicate whether ``value`` is a valid JSON object.
+
+    .. note::
+
+      This will return ``True`` even if ``value`` is empty.
+
+    :param value: The value to evaluate.
+
+    :param schema: A JSON schema against which ``value`` will be validated.
+    :type schema: :class:`dict <python:dict>` / :class:`str <python:str>` /
+      :obj:`None <python:None>`
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+    """
+    try:
+        value = validators.json(value,
+                                schema = schema,
+                                json_serializer = json_serializer,
+                                **kwargs)
+    except Exception:
+        return False
+
+    return True
+
+
+@disable_checker_on_env
 def is_string(value,
               coerce_value = False,
               minimum_length = None,

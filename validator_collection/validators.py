@@ -17,9 +17,11 @@ import sys
 
 from ast import parse
 
+import jsonschema
+
 from validator_collection._compat import numeric_types, integer_types, datetime_types,\
     date_types, time_types, timestamp_types, tzinfo_types, POSITIVE_INFINITY, \
-    NEGATIVE_INFINITY, TimeZone, json, is_py2, is_py3, dict_, float_, basestring, re
+    NEGATIVE_INFINITY, TimeZone, json_, is_py2, is_py3, dict_, float_, basestring, re
 from validator_collection._decorators import disable_on_env
 from validator_collection import errors
 
@@ -407,7 +409,7 @@ def dict(value,
         return None
 
     if json_serializer is None:
-        json_serializer = json
+        json_serializer = json_
 
     if isinstance(value, str):
         try:
@@ -422,6 +424,95 @@ def dict(value,
 
     if not isinstance(value, dict_):
         raise errors.NotADictError('value (%s) is not a dict' % original_value)
+
+    return value
+
+
+@disable_on_env
+def json(value,
+         schema = None,
+         allow_empty = False,
+         json_serializer = None,
+         **kwargs):
+    """Validate that ``value`` conforms to the supplied JSON Schema.
+
+    .. hint::
+
+      If either ``value`` or ``schema`` is a string, this validator will assume it is a JSON
+      object and try to convert it into a :class:`dict <python:dict>`.
+
+      You can override the JSON serializer used by passing it to the
+      ``json_serializer`` property. By default, will utilize the Python
+      :class:`json <json>` encoder/decoder.
+
+    :param value: The value to validate.
+
+    :param schema: The JSON Schema against which ``value`` will be validated.
+
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :param json_serializer: The JSON encoder/decoder to use to deserialize a
+      string passed in ``value``. If not supplied, will default to the Python
+      :class:`json <python:json>` encoder/decoder.
+    :type json_serializer: callable
+
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`dict <python:dict>` / :class:`list <python:list>` of
+      :class:`dict <python:dict>` / :obj:`None <python:None>`
+
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to a
+      :class:`dict <python:dict>`
+    :raises NotJSONError: if ``value`` cannot be deserialized from JSON
+    :raises NotJSONSchemaError: if ``schema`` is not a valid JSON Schema object
+    :raises JSONValidationError: if ``value`` does not validate against the JSON Schema
+
+    """
+    original_value = value
+    original_schema = schema
+
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    if isinstance(value, str):
+        try:
+            value = json_serializer.loads(value)
+        except Exception:
+            raise errors.CannotCoerceError(
+                'value (%s) cannot be deserialized from JSON' % original_value
+            )
+    if isinstance(schema, str):
+        try:
+            schema = dict(schema,
+                          allow_empty = allow_empty,
+                          json_serializer = json_serializer,
+                          **kwargs)
+        except Exception:
+            raise errors.CannotCoerceError(
+                'schema (%s) cannot be coerced to a dict' % original_schema
+            )
+
+    if not isinstance(value, (list, dict_)):
+        raise errors.NotJSONError('value (%s) is not a JSON object' % original_value)
+
+    if original_schema and not isinstance(schema, dict_):
+        raise errors.NotJSONError('schema (%s) is not a JSON object' % original_schema)
+
+    if not schema:
+        return value
+
+    try:
+        jsonschema.validate(value, schema)
+    except jsonschema.exceptions.ValidationError as error:
+        raise errors.JSONValidationError(error.message)
+    except jsonschema.exceptions.SchemaError as error:
+        raise errors.NotJSONSchemaError(error.message)
 
     return value
 
