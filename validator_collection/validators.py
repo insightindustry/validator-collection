@@ -480,6 +480,9 @@ def json(value,
     elif not value:
         return None
 
+    if not json_serializer:
+        json_serializer = json_
+
     if isinstance(value, str):
         try:
             value = json_serializer.loads(value)
