@@ -126,6 +126,95 @@ def test_is_dict(value, expects):
     assert result == expects
 
 
+@pytest.mark.parametrize('value, schema, expects', [
+    ({ 'key': 'value' }, None, True),
+    ('{"key": "json"}', None, True),
+    (['key', 'value'], None, True),
+    ('[{"key": "json"}]', None, True),
+    ({}, None, False),
+    ('not-a-dict', None, False),
+    ('', None, False),
+    (None, None, False),
+
+    ({ 'key': 'value' },
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'string',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, True),
+    ({ 'key': 'value' },
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'boolean',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, False),
+    ('{"key": "json"}',
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'string',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, True),
+    ('{"key": "json"}',
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'integer',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, False),
+    (['key', 'value'], {"minItems": 0, "maxItems": 2}, True),
+    (['key', 'value'], {"minItems": 3, "maxItems": 3}, False),
+    ('[{"key": "json"}]', {"minItems": 0, "maxItems": 2}, True),
+    ('[{"key": "json"}]', {"minItems": 3, "maxItems": 3}, False),
+])
+def test_is_json(value, schema, expects):
+    result = checkers.is_json(value, schema)
+    assert result == expects
+
+
+
 @pytest.mark.parametrize('value, expects, coerce_value, minimum_length, maximum_length, whitespace_padding', [
     ('test', True, False, None, None, False),
     ('', True, False, None, None, False),

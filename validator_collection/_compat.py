@@ -31,9 +31,9 @@ is_py31 = (_ver[0] == 3 and _ver[1] == 1)
 is_py30 = (_ver[0] == 3 and _ver[1] == 0)
 
 try:
-    import simplejson as json
+    import simplejson as json_
 except ImportError:
-    import json
+    import json as json_
 
 uses_float_infinity = (is_py2 or is_py34 or is_py33 or is_py32 or is_py31 or is_py30)
 

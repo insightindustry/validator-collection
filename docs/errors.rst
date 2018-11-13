@@ -205,6 +205,21 @@ NotADictError (from :class:`ValueError <python:ValueError>`)
 
 .. autoclass:: NotADictError
 
+NotJSONError (from :class:`ValueError <python:ValueError>`)
+------------------------------------------------------------------
+
+.. autoclass:: NotJSONError
+
+NotJSONSchemaError (from :class:`ValueError <python:ValueError>`)
+------------------------------------------------------------------
+
+.. autoclass:: NotJSONSchemaError
+
+JSONValidationError (from :class:`ValueError <python:ValueError>`)
+------------------------------------------------------------------
+
+.. autoclass:: JSONValidationError
+
 NotAnIterableError (from :class:`CannotCoerceError <validator_collection.errors.CannotCoerceError>`)
 ---------------------------------------------------------------------------------------------------------
 

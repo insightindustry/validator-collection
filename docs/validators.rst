@@ -29,6 +29,11 @@ dict
 
 .. autofunction:: dict
 
+json
+-------
+
+.. autofunction:: json
+
 string
 ---------
 

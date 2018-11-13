@@ -53,6 +53,106 @@ def test_dict(value, fails, allow_empty):
             value = validators.dict(value, allow_empty = allow_empty)
 
 
+@pytest.mark.parametrize('value, schema, fails, allow_empty, return_type', [
+    ({ 'key': 'value' }, None, False, False, dict),
+    ('{"key": "json"}', None, False, False, dict),
+    (['key', 'value'], None, False, False, list),
+    ('[{"key": "json"}]', None, False, False, list),
+    ({}, None, False, True, type(None)),
+    ({}, None, True, False, None),
+    ('not-a-dict', None, True, False, None),
+    ('', None, True, False, None),
+    ('', None, False, True, type(None)),
+    (None, None, True, False, None),
+    (None, None, False, True, type(None)),
+
+    ({ 'key': 'value' },
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'string',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, False, False, dict),
+    ({ 'key': 'value' },
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'boolean',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, True, False, dict),
+    ('{"key": "json"}',
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'string',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, False, False, dict),
+    ('{"key": "json"}',
+     {
+         '$schema': "http://json-schema.org/draft-04/schema#",
+         'type': "object",
+         'properties': {
+             'key': {
+                 'type': 'integer',
+                 'title': 'Key',
+                 'description': 'A key property.',
+                 'example': 'Some example goes here.',
+                 'readOnly': True
+             }
+         },
+         'required': [
+             'key'
+         ]
+     }, True, False, dict),
+    (['key', 'value'], {"minItems": 0, "maxItems": 2}, False, False, list),
+    (['key', 'value'], {"minItems": 3, "maxItems": 3}, True, False, list),
+    ('[{"key": "json"}]', {"minItems": 0, "maxItems": 2}, False, False, list),
+    ('[{"key": "json"}]', {"minItems": 3, "maxItems": 3}, True, False, list),
+
+])
+def test_json(value, schema, fails, allow_empty, return_type):
+    """Does json() return a correct value?"""
+    if not fails:
+        validated = validators.json(value, schema, allow_empty = allow_empty)
+        if value:
+            assert isinstance(validated, return_type)
+        else:
+            assert validated is None
+    else:
+        with pytest.raises((ValueError, TypeError)):
+            value = validators.json(value, schema, allow_empty = allow_empty)
+
+
 @pytest.mark.parametrize('value, fails, allow_empty, coerce_value, minimum_length, maximum_length, whitespace_padding, expected_length', [
     ('test', False, False, False, None, None, False, 4),
     ('', False, True, False, None, None, False, 0),
@@ -1111,6 +1211,9 @@ def test_executable(fs, value, fails, allow_empty):
         with pytest.raises((IOError, ValueError, NotImplementedError)):
             validated = validators.executable(value,
                                               allow_empty = allow_empty)
+    elif not fails:
+        validated = validators.executable(value,
+                                          allow_empty = allow_empty)
     else:
         raise NotImplementedError('platform is not supported')
 
