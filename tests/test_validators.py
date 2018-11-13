@@ -1111,6 +1111,9 @@ def test_executable(fs, value, fails, allow_empty):
         with pytest.raises((IOError, ValueError, NotImplementedError)):
             validated = validators.executable(value,
                                               allow_empty = allow_empty)
+    elif not fails:
+        validated = validators.executable(value,
+                                          allow_empty = allow_empty)
     else:
         raise NotImplementedError('platform is not supported')
 
