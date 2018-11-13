@@ -48,6 +48,30 @@ class NotADictError(ValueError):
     """
     pass
 
+class NotJSONError(ValueError):
+    """Exception raised when a value cannot be serialized/de-serialized to a JSON object.
+
+    **INHERITS FROM:** :class:`ValueError <python:ValueError>`
+
+    """
+    pass
+
+class NotJSONSchemaError(ValueError):
+    """Exception raised when a schema supplied is not a valid JSON Schema.
+
+    **INHERITS FROM:** :class:`ValueError <python:ValueError>`
+
+    """
+    pass
+
+class JSONValidationError(ValueError):
+    """Exception raised when a value fails validation against a JSON Schema.
+
+    **INHERITS FROM:** :class:`ValueError <python:ValueError>`
+
+    """
+    pass
+
 class InvalidEmailError(ValueError):
     """Exception raised when an email fails validation.
 
