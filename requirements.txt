@@ -28,7 +28,6 @@ py-cpuinfo==4.0.0
 pycparser==2.18
 pyfakefs==3.5.2
 Pygments==2.2.0
-pylint==2.1.1
 pyparsing==2.3.0
 pytest==3.5.0
 pytest-benchmark==3.1.1
