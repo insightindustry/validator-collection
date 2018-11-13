@@ -322,11 +322,13 @@ def is_json(value,
 
     .. note::
 
-      This will return ``True`` even if ``value`` is empty.
+      ``schema`` supports JSON Schema Drafts 3 - 7. Unless the JSON Schema indicates the
+      meta-schema using a ``$schema`` property, the schema will be assumed to conform to
+      Draft 7.
 
     :param value: The value to evaluate.
 
-    :param schema: A JSON schema against which ``value`` will be validated.
+    :param schema: An optional JSON schema against which ``value`` will be validated.
     :type schema: :class:`dict <python:dict>` / :class:`str <python:str>` /
       :obj:`None <python:None>`
 

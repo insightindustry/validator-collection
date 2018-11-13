@@ -2,14 +2,15 @@
 
   .. tab:: Python 3.x
 
-    None. Uses the standard library.
+    * `jsonschema <https://pypi.org/project/jsonschema/>`_ for JSON Schema validation
 
   .. tab:: Python 2.x
 
-    The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
-    Python's (buggy) standard :class:`re <python:re>` module.
+    * `jsonschema <https://pypi.org/project/jsonschema/>`_ for JSON Schema validation
+    * The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
+      Python's (buggy) standard :class:`re <python:re>` module.
 
-    .. note::
+      .. note::
 
-      This conditional dependency will be automatically installed if you are
-      installing to Python 2.x.
+        This conditional dependency will be automatically installed if you are
+        installing to Python 2.x.

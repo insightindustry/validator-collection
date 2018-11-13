@@ -37,20 +37,25 @@
     -
     - :func:`is_directory <validator_collection.checkers.is_directory>`
     - :func:`is_ipv6 <validator_collection.checkers.is_ipv6>`
-  * - :func:`is_string <validator_collection.checkers.is_string>`
+  * - :func:`is_json <validator_collection.checkers.is_json>`
     -
     -
     - :func:`is_readable <validator_collection.checkers.is_readable>`
     - :func:`is_mac_address <validator_collection.checkers.is_mac_address>`
-  * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
+  * - :func:`is_string <validator_collection.checkers.is_string>`
     -
     -
     - :func:`is_writeable <validator_collection.checkers.is_writeable>`
     -
-  * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
+  * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
     -
     -
     - :func:`is_executable <validator_collection.checkers.is_executable>`
+    -
+  * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
+    -
+    -
+    -
     -
   * - :func:`is_none <validator_collection.checkers.is_none>`
     -

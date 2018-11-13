@@ -436,10 +436,16 @@ def json(value,
          **kwargs):
     """Validate that ``value`` conforms to the supplied JSON Schema.
 
+    .. note::
+
+      ``schema`` supports JSON Schema Drafts 3 - 7. Unless the JSON Schema indicates the
+      meta-schema using a ``$schema`` property, the schema will be assumed to conform to
+      Draft 7.
+
     .. hint::
 
-      If either ``value`` or ``schema`` is a string, this validator will assume it is a JSON
-      object and try to convert it into a :class:`dict <python:dict>`.
+      If either ``value`` or ``schema`` is a string, this validator will assume it is a
+      JSON object and try to convert it into a :class:`dict <python:dict>`.
 
       You can override the JSON serializer used by passing it to the
       ``json_serializer`` property. By default, will utilize the Python
@@ -447,7 +453,7 @@ def json(value,
 
     :param value: The value to validate.
 
-    :param schema: The JSON Schema against which ``value`` will be validated.
+    :param schema: An optional JSON Schema against which ``value`` will be validated.
 
     :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
       ``value`` is empty. If ``False``, raises a

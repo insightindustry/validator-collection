@@ -1,5 +1,15 @@
 -----------
 
+Release 1.3.0 (released November 12, 2018)
+============================================
+
+* #18: Upgraded ``requests`` requirement to 2.20.1
+* #17: Added ``validators.json()`` with support for JSON Schema validation.
+* #17: Added ``checkers.is_json()`` with support for checking against JSON Schema.
+* Added Python 3.7 to the Travis CI Test Matrix.
+
+-----------
+
 Release 1.2.0 (released August 4, 2018)
 ==========================================
 

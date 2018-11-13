@@ -26,6 +26,20 @@ Validator Collection
           :target: http://validator-collection.readthedocs.io/en/latest/?badge=latest
           :alt: Documentation Status (ReadTheDocs)
 
+   * - `v. 1.3 <https://github.com/insightindustry/validator-collection/tree/v.1.3.0>`_
+     -
+       .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=v.1.3.0
+          :target: https://travis-ci.org/insightindustry/validator-collection
+          :alt: Build Status (Travis CI)
+
+       .. image:: https://codecov.io/gh/insightindustry/validator-collection/branch/v.1.3.0/graph/badge.svg
+          :target: https://codecov.io/gh/insightindustry/validator-collection
+          :alt: Code Coverage Status (Codecov)
+
+       .. image:: https://readthedocs.org/projects/validator-collection/badge/?version=v.1.3.0
+          :target: http://validator-collection.readthedocs.io/en/latest/?badge=v.1.3.0
+          :alt: Documentation Status (ReadTheDocs)
+
    * - `v. 1.2 <https://github.com/insightindustry/validator-collection/tree/v.1.2.0>`_
      -
        .. image:: https://travis-ci.org/insightindustry/validator-collection.svg?branch=v.1.2.0
@@ -152,37 +166,37 @@ Validators
     - ``numeric``
     - ``bytesIO``
     - ``email``
-  * - ``string``
+  * - ``json``
     - ``datetime``
     - ``integer``
     - ``stringIO``
     - ``url``
-  * - ``iterable``
+  * - ``string``
     - ``time``
     - ``float``
     - ``path``
     - ``domain``
-  * - ``none``
+  * - ``iterable``
     - ``timezone``
     - ``fraction``
     - ``path_exists``
     - ``ip_address``
-  * - ``not_empty``
+  * - ``none``
     -
     - ``decimal``
     - ``file_exists``
     - ``ipv4``
-  * - ``uuid``
+  * - ``not_empty``
     -
     -
     - ``directory_exists``
     - ``ipv6``
-  * - ``variable_name``
+  * - ``uuid``
     -
     -
     - ``readable``
     - ``mac_address``
-  * -
+  * - ``variable_name``
     -
     -
     - ``writeable``
@@ -237,20 +251,25 @@ Checkers
     -
     - ``is_directory``
     - ``is_ipv6``
-  * - ``is_string``
+  * - ``is_json``
     -
     -
     - ``is_readable``
     - ``is_mac_address``
-  * - ``is_iterable``
+  * - ``is_string``
     -
     -
     - ``is_writeable``
     -
-  * - ``is_not_empty``
+  * - ``is_iterable``
     -
     -
     - ``is_executable``
+    -
+  * - ``is_not_empty``
+    -
+    -
+    -
     -
   * - ``is_none``
     -

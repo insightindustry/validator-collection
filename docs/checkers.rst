@@ -46,6 +46,11 @@ is_dict
 
 .. autofunction:: is_dict
 
+is_json
+---------
+
+.. autofunction:: is_json
+
 is_string
 ---------
 
