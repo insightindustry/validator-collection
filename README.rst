@@ -101,7 +101,7 @@ The **Validator Collection** is a Python library that provides more than 60
 functions that can be used to validate the type and contents of an input value.
 
 Each function has a consistent syntax for easy use, and has been tested on
-Python 2.7, 3.4, 3.5, and 3.6.
+Python 2.7, 3.4, 3.5, 3.6, and 3.7.
 
 For a list of validators available, please see the lists below.
 
@@ -134,8 +134,10 @@ To install the **Validator Collection**, just execute:
 
   * - Python 3.x
     - Python 2.7
-  * - None. Uses the standard library.
-    - The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
+  * - `jsonschema <https://pypi.org/project/jsonschema/>`_ for JSON Schema Validation.
+    - `jsonschema <https://pypi.org/project/jsonschema/>`_ for JSON Schema Validation.
+
+      The `regex <https://pypi.python.org/pypi/regex>`_ drop-in replacement for
       Python's (buggy) standard ``re`` module.
 
       Conditional dependencies will be automatically installed if you are
