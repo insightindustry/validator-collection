@@ -466,6 +466,13 @@ def test_date(value, fails, allow_empty, minimum, maximum, coerce_value):
     ('2018/01/01', False, False, None, '2018-01-01', True),
     ('2018/01/01', True, False, None, '2010-01-01', True),
 
+    ('2018-01-01T00:00:00.000000', False, False, None, None, True),
+    ('2018-01-01T00:00:00.000000Z', False, False, None, None, True),
+    ('2018-01-01T00:00:00.000000+01:00', False, False, None, None, True),
+    ('2018-01-01T00:00:00.000000Z-05:00', False, False, None, None, True),
+
+    ('2018-01-01T00:00:00.000000Z-05:00', True, False, None, None, False),
+
     (time_.time(), False, False, None, None, True),
     (datetime.utcnow().time(), True, False, None, None, True),
 

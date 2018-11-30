@@ -1,5 +1,12 @@
 -----------
 
+Release 1.3.1 (released November 30, 2018)
+============================================
+
+* #21: Fixed `validators.datetime()` handling of timezone offsets to conform to ISO-8601.
+
+-----------
+
 Release 1.3.0 (released November 12, 2018)
 ============================================
 

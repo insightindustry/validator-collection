@@ -750,46 +750,76 @@ def datetime(value,
                                                     type(value))
             )
     elif isinstance(value, str):
+        # pylint: disable=line-too-long
         try:
             if 'T' in value:
-                value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+                value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f%z')
             else:
-                value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
+                value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f%z')
         except ValueError:
             try:
                 if 'T' in value:
-                    value = datetime_.datetime.strptime(value, '%Y/%m/%dT%H:%M:%S')
+                    value = datetime_.datetime.strptime(value, '%Y/%m/%dT%H:%M:%S%z')
                 else:
-                    value = datetime_.datetime.strptime(value, '%Y/%m/%d %H:%M:%S')
+                    value = datetime_.datetime.strptime(value, '%Y/%m/%d %H:%M:%S%z')
             except ValueError:
                 try:
                     if 'T' in value:
-                        value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+                        value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S%z')
                     else:
-                        value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                        value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S%z')
                 except ValueError:
                     try:
                         if 'T' in value:
                             value = datetime_.datetime.strptime(value,
-                                                                '%Y/%m/%dT%H:%M:%S')
+                                                                '%Y/%m/%dT%H:%M:%S%z')
                         else:
                             value = datetime_.datetime.strptime(value,
-                                                                '%Y/%m/%d %H:%M:%S')
+                                                                '%Y/%m/%d %H:%M:%S%z')
                     except ValueError:
-                        if coerce_value:
-                            value = date(value)
-                        else:
-                            raise errors.CannotCoerceError(
-                                'value (%s) must be a datetime object, '
-                                'ISO 8601-formatted string, '
-                                'or POSIX timestamp' % value
-                            )
+                        try:
+                            if 'T' in value:
+                                value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+                            else:
+                                value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
+                        except ValueError:
+                            try:
+                                if 'T' in value:
+                                    value = datetime_.datetime.strptime(value, '%Y/%m/%dT%H:%M:%S')
+                                else:
+                                    value = datetime_.datetime.strptime(value, '%Y/%m/%d %H:%M:%S')
+                            except ValueError:
+                                try:
+                                    if 'T' in value:
+                                        value = datetime_.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+                                    else:
+                                        value = datetime_.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                                except ValueError:
+                                    try:
+                                        if 'T' in value:
+                                            value = datetime_.datetime.strptime(value,
+                                                                                '%Y/%m/%dT%H:%M:%S')
+                                        else:
+                                            value = datetime_.datetime.strptime(value,
+                                                                                '%Y/%m/%d %H:%M:%S')
+                                    except ValueError:
+                                        if coerce_value:
+                                            value = date(value)
+                                        else:
+                                            raise errors.CannotCoerceError(
+                                                'value (%s) must be a datetime object, '
+                                                'ISO 8601-formatted string, '
+                                                'or POSIX timestamp' % value
+                                            )
+    # pylint: enable=line-too-long
     elif isinstance(value, numeric_types) and not coerce_value:
         raise errors.CannotCoerceError(
             'value (%s) must be a datetime object, '
             'ISO 8601-formatted string, '
             'or POSIX timestamp' % value
         )
+
+    print(value)
 
 
     if isinstance(value, datetime_.date) and not isinstance(value, datetime_.datetime):
