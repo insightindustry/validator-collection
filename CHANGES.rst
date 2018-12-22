@@ -1,5 +1,13 @@
 -----------
 
+Release 1.3.2
+============================================
+
+* #24: Fixed bug where checkers returned false-negatives when the underlying validator
+  raised a `SyntaxError`.
+
+-----------
+
 Release 1.3.1 (released November 30, 2018)
 ============================================
 
