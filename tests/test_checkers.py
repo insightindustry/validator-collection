@@ -28,30 +28,41 @@ from validator_collection._compat import TimeZone
 
 ## CORE
 
-@pytest.mark.parametrize('value, expects', [
-    (['test', 123], True),
-    ([], True),
-    (None, False),
-    (None, False),
-    ('not-a-list', False),
-    (set([1, 2, 3]), True),
-    ((1, 2, 3), True),
-    (set(), True),
-    (tuple(), True),
-    (123, False),
+@pytest.mark.parametrize('value, kwargs, expects', [
+    (['test', 123], None, True),
+    ([], None, True),
+    (None, None, False),
+    (None, None, False),
+    ('not-a-list', None, False),
+    (set([1, 2, 3]), None, True),
+    ((1, 2, 3), None, True),
+    (set(), None, True),
+    (tuple(), None, True),
+    (123, None, False),
 
-    (['test', 123], True),
-    ([datetime], True),
-    (datetime, False),
+    (['test', 123], None, True),
+    ([datetime], None, True),
+    (datetime, None, False),
 
-    (str, False),
-    ([str], True)
+    (str, None, False),
+    ([str], None, True),
+
+    ([1, 2, 3, 4], {'allow_empty': True}, SyntaxError),
 
 ])
-def test_is_iterable(value, expects):
-    result = checkers.is_iterable(value)
-    assert result == expects
-
+def test_is_iterable(value, kwargs, expects):
+    if kwargs and isinstance(expects, bool):
+        result = checkers.is_iterable(value, **kwargs)
+    elif not kwargs and isinstance(expects, bool):
+        result = checkers.is_iterable(value)
+    if isinstance(expects, bool):
+        assert result == expects
+    elif kwargs:
+        with pytest.raises(expects):
+            result = checkers.is_iterable(value, **kwargs)
+    elif not kwargs:
+        with pytest.raises(expects):
+            result = checkers.is_iterable(value)
 
 @pytest.mark.parametrize('args, expects', [
     ([{'key': 'value'}, {'key': 'value'}], True),
