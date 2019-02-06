@@ -1253,6 +1253,7 @@ def test_executable(fs, value, fails, allow_empty):
     (u"http://foo.com/unicode_(✪)_in_parens", False, False),
     (u"http://foo.com/(something)?after=parens", False, False),
     (u"http://☺.damowmow.com/", False, False),
+    (u"http://jurnalsda_pusair.pu.go.id", False, False),
     (u"http://code.google.com/events/#&product=browser", False, False),
     (u"http://j.mp", False, False),
     (u"ftp://foo.bar/baz", False, False),
