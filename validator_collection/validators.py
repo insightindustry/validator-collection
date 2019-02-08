@@ -2447,6 +2447,9 @@ def ip_address(value,
     elif not value:
         return None
 
+    if is_py2 and value and isinstance(value, unicode):
+        value = value.encode('utf-8')
+
     try:
         value = ipv6(value, force_run = True)                                   # pylint: disable=E1123
         ipv6_failed = False
