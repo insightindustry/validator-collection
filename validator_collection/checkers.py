@@ -1366,7 +1366,24 @@ def is_email(value, **kwargs):
 def is_url(value, **kwargs):
     """Indicate whether ``value`` is a URL.
 
+    .. note::
+
+      URL validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 1738 <https://tools.ietf.org/html/rfc1738>`_,
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_,
+      `RFC 2181 <https://tools.ietf.org/html/rfc2181>`_  and uses a combination of
+      string parsing and regular expressions,
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
+
     :param value: The value to evaluate.
+
+    :param allow_special_ips: If ``True``, will succeed when validating special IP
+      addresses, such as loopback IPs like ``127.0.0.1`` or ``0.0.0.0``. If ``False``,
+      will fail if ``value`` is a special IP address. Defaults to ``False``.
+    :type allow_special_ips: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
@@ -1389,7 +1406,32 @@ def is_url(value, **kwargs):
 def is_domain(value, **kwargs):
     """Indicate whether ``value`` is a valid domain.
 
+    .. caution::
+
+      This validator does not verify that ``value`` **exists** as a domain. It
+      merely verifies that its contents *might* exist as a domain.
+
+    .. note::
+
+      This validator checks to validate that ``value`` resembles a valid
+      domain name. It is - generally - compliant with
+      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_ and
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_, however it diverges
+      in a number of key ways:
+
+        * Including authentication (e.g. ``username:password@domain.dev``) will
+          fail validation.
+        * Including a path (e.g. ``domain.dev/path/to/file``) will fail validation.
+        * Including a port (e.g. ``domain.dev:8080``) will fail validation.
+
+      If you are hoping to validate a more complete URL, we recommend that you
+      see :func:`url <validator_collection.validators.url>`.
+
     :param value: The value to evaluate.
+
+    :param allow_ips: If ``True``, will succeed when validating IP addresses,
+      If ``False``, will fail if ``value`` is an IP address. Defaults to ``False``.
+    :type allow_ips: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
