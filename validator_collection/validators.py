@@ -2333,11 +2333,6 @@ def domain(value,
 
       Leading and trailing whitespace will be automatically stripped.
 
-    :param allow_ips: If ``True``, will succeed when validating IP addresses,
-      If ``False``, will raise a :class:`InvalidDomainError` if ``value`` is an IP
-      address. Defaults to ``False``.
-    :type allow_ips: :class:`bool <python:bool>`
-
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :obj:`None <python:None>`
 
@@ -2346,6 +2341,11 @@ def domain(value,
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
+
+    :param allow_ips: If ``True``, will succeed when validating IP addresses,
+      If ``False``, will raise a :class:`InvalidDomainError` if ``value`` is an IP
+      address. Defaults to ``False``.
+    :type allow_ips: :class:`bool <python:bool>`
 
     :returns: ``value`` / :obj:`None <python:None>`
     :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
