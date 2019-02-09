@@ -1,5 +1,17 @@
 -----------
 
+Release 1.3.2 (released February 9, 2019)
+============================================
+
+* #25: Fixed an error where an underscore in a host name was not being properly
+  recognized (h/t @mastak) when parsing URLs and domain names.
+* #23: Fixed an error where URL / domain validators and checkers were (incorrectly)
+  failing on valid special names (e.g. `localhost`, etc.) and special IPs (e.g. `10.1.1.1`).
+* #24: Fixed bug where checkers returned false-negatives when the underlying validator
+  raised a `SyntaxError`.
+
+-----------
+
 Release 1.3.1 (released November 30, 2018)
 ============================================
 

@@ -48,6 +48,36 @@ URL_REGEX = re.compile(
     r"(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))"
     r"|"
     # host name
+    r"(?:(?:[a-z\u00a1-\uffff0-9]-*_*)*[a-z\u00a1-\uffff0-9]+)"
+    # domain name
+    r"(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*"
+    # TLD identifier
+    r"(?:\.(?:[a-z\u00a1-\uffff]{2,}))"
+    r")"
+    # port number
+    r"(?::\d{2,5})?"
+    # resource path
+    r"(?:/\S*)?"
+    r"$"
+    , re.UNICODE)
+
+URL_SPECIAL_IP_REGEX = re.compile(
+    r"^"
+    # protocol identifier
+    r"(?:(?:https?|ftp)://)"
+    # user:pass authentication
+    r"(?:\S+(?::\S*)?@)?"
+    r"(?:"
+    # IP address dotted notation octets
+    # excludes loopback network 0.0.0.0
+    # excludes reserved space >= 224.0.0.0
+    # excludes network & broadcast addresses
+    # (first & last IP address of each class)
+    r"(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])"
+    r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}"
+    r"(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))"
+    r"|"
+    # host name
     r"(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)"
     # domain name
     r"(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*"
@@ -61,11 +91,21 @@ URL_REGEX = re.compile(
     r"$"
     , re.UNICODE)
 
+
 DOMAIN_REGEX = re.compile(
     r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+"
     r"(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
     re.UNICODE
 )
+
+URL_PROTOCOLS = ('http://',
+                 'https://',
+                 'ftp://')
+
+SPECIAL_USE_DOMAIN_NAMES = ('localhost',
+                            'invalid',
+                            'test',
+                            'example')
 
 EMAIL_REGEX = re.compile(
     r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\""
@@ -818,9 +858,6 @@ def datetime(value,
             'ISO 8601-formatted string, '
             'or POSIX timestamp' % value
         )
-
-    print(value)
-
 
     if isinstance(value, datetime_.date) and not isinstance(value, datetime_.datetime):
         if coerce_value:
@@ -2143,7 +2180,8 @@ def email(value,
                                            'address' % value)
 
         return value
-    elif not is_domain:
+
+    if not is_domain:
         raise errors.InvalidEmailError('value (%s) is not a valid email address' % value)
     else:
         is_valid = EMAIL_REGEX.search(value)
@@ -2175,8 +2213,21 @@ def email(value,
 @disable_on_env
 def url(value,
         allow_empty = False,
+        allow_special_ips = False,
         **kwargs):
     """Validate that ``value`` is a valid URL.
+
+    .. note::
+
+      URL validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 1738 <https://tools.ietf.org/html/rfc1738>`_,
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_,
+      `RFC 2181 <https://tools.ietf.org/html/rfc2181>`_  and uses a combination of
+      string parsing and regular expressions,
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>` / :obj:`None <python:None>`
@@ -2186,6 +2237,12 @@ def url(value,
       :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
+
+    :param allow_special_ips: If ``True``, will succeed when validating special IP
+      addresses, such as loopback IPs like ``127.0.0.1`` or ``0.0.0.0``. If ``False``,
+      will raise a :class:`InvalidURLError` if ``value`` is a special IP address. Defaults
+      to ``False``.
+    :type allow_special_ips: :class:`bool <python:bool>`
 
     :returns: ``value`` / :obj:`None <python:None>`
     :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
@@ -2197,6 +2254,8 @@ def url(value,
       empty with ``allow_empty`` set to ``True``
 
     """
+    is_recursive = kwargs.pop('is_recursive', False)
+
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
@@ -2208,7 +2267,33 @@ def url(value,
 
     value = value.lower()
 
-    is_valid = URL_REGEX.match(value)
+    is_valid = False
+    stripped_value = None
+    for protocol in URL_PROTOCOLS:
+        if protocol in value:
+            stripped_value = value.replace(protocol, '')
+
+    for special_use_domain in SPECIAL_USE_DOMAIN_NAMES:
+        if special_use_domain in value:
+            if stripped_value:
+                try:
+                    domain(stripped_value,
+                           allow_empty = False,
+                           is_recursive = is_recursive)
+                    is_valid = True
+
+                except (ValueError, TypeError):
+                    pass
+
+    if not is_valid and allow_special_ips:
+        try:
+            ip_address(stripped_value, allow_empty = False)
+            is_valid = True
+        except (ValueError, TypeError):
+            pass
+
+    if not is_valid:
+        is_valid = URL_REGEX.match(value)
 
     if not is_valid:
         raise errors.InvalidURLError('value (%s) is not a valid URL' % value)
@@ -2219,6 +2304,7 @@ def url(value,
 @disable_on_env
 def domain(value,
            allow_empty = False,
+           allow_ips = False,
            **kwargs):
     """Validate that ``value`` is a valid domain name.
 
@@ -2231,7 +2317,8 @@ def domain(value,
 
       This validator checks to validate that ``value`` resembles a valid
       domain name. It is - generally - compliant with
-      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_, however it diverges
+      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_ and
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_, however it diverges
       in a number of key ways:
 
         * Including authentication (e.g. ``username:password@domain.dev``) will
@@ -2255,6 +2342,11 @@ def domain(value,
       if ``value`` is empty. Defaults to ``False``.
     :type allow_empty: :class:`bool <python:bool>`
 
+    :param allow_ips: If ``True``, will succeed when validating IP addresses,
+      If ``False``, will raise a :class:`InvalidDomainError` if ``value`` is an IP
+      address. Defaults to ``False``.
+    :type allow_ips: :class:`bool <python:bool>`
+
     :returns: ``value`` / :obj:`None <python:None>`
     :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
 
@@ -2269,6 +2361,8 @@ def domain(value,
     :raises WhitespaceInDomainError: if ``value`` contains whitespace
 
     """
+    is_recursive = kwargs.pop('is_recursive', False)
+
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
@@ -2294,12 +2388,25 @@ def domain(value,
             raise errors.WhitespaceInDomainError('valid domain name cannot contain '
                                                  'whitespace')
 
+    if value in SPECIAL_USE_DOMAIN_NAMES:
+        return value
+
+    if allow_ips:
+        try:
+            ip_address(value, allow_empty = allow_empty)
+            is_valid = True
+        except (ValueError, TypeError, AttributeError):
+            is_valid = False
+
+        if is_valid:
+            return value
+
     is_valid = DOMAIN_REGEX.match(value)
 
-    if not is_valid:
+    if not is_valid and not is_recursive:
         with_prefix = 'http://' + value
         try:
-            url(with_prefix, force_run = True)                                  # pylint: disable=E1123
+            url(with_prefix, force_run = True, is_recursive = True)                                  # pylint: disable=E1123
         except ValueError:
             raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
 
@@ -2339,6 +2446,9 @@ def ip_address(value,
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
+
+    if is_py2 and value and isinstance(value, unicode):
+        value = value.encode('utf-8')
 
     try:
         value = ipv6(value, force_run = True)                                   # pylint: disable=E1123

@@ -46,6 +46,9 @@ def is_type(obj,
     :returns: ``True`` if ``obj`` is a type in ``type_``. Otherwise, ``False``.
     :rtype: :class:`bool <python:bool>`
 
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if not is_iterable(type_):
         type_ = [type_]
@@ -113,6 +116,10 @@ def are_equivalent(*args, **kwargs):
 
     :returns: ``True`` if ``args`` are equivalent, and ``False`` if not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if len(args) == 1:
         return True
@@ -150,6 +157,10 @@ def are_dicts_equivalent(*args, **kwargs):
 
     :returns: ``True`` if ``args`` have identical keys/values, and ``False`` if not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     # pylint: disable=too-many-return-statements
     if not args:
@@ -218,6 +229,9 @@ def is_between(value,
       and less than or equal to a supplied ``maximum``. Otherwise, returns ``False``.
     :rtype: :class:`bool <python:bool>`
 
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
     :raises NotImplemented: if ``value``, ``minimum``, or ``maximum`` do not
       support comparison operators
     :raises ValueError: if both ``minimum`` and ``maximum`` are
@@ -270,6 +284,9 @@ def has_length(value,
       Otherwise, returns ``False``.
     :rtype: :class:`bool <python:bool>`
 
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
     :raises TypeError: if ``value`` does not support length evaluation
     :raises ValueError: if both ``minimum`` and ``maximum`` are
       :obj:`None <python:None>`
@@ -301,12 +318,18 @@ def is_dict(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if isinstance(value, dict):
         return True
 
     try:
         value = validators.dict(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -334,12 +357,18 @@ def is_json(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.json(value,
                                 schema = schema,
                                 json_serializer = json_serializer,
                                 **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -375,6 +404,10 @@ def is_string(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if value is None:
         return False
@@ -395,6 +428,8 @@ def is_string(value,
                                   maximum_length = maximum_length,
                                   whitespace_padding = whitespace_padding,
                                   **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -424,6 +459,10 @@ def is_iterable(obj,
 
     :returns: ``True`` if ``obj`` is a valid iterable, ``False`` if not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if obj is None:
         return False
@@ -438,6 +477,8 @@ def is_iterable(obj,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length,
                                   **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -452,9 +493,15 @@ def is_not_empty(value, **kwargs):
 
     :returns: ``True`` if ``value`` is empty, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.not_empty(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -474,9 +521,15 @@ def is_none(value, allow_empty = False, **kwargs):
     :returns: ``True`` if ``value`` is :obj:`None <python:None>`, ``False``
       if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         validators.none(value, allow_empty = allow_empty, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -497,9 +550,15 @@ def is_variable_name(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         validators.variable_name(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -514,6 +573,10 @@ def is_callable(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     return hasattr(value, '__call__')
 
@@ -527,9 +590,14 @@ def is_uuid(value, **kwargs):
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
 
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         validators.uuid(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -568,6 +636,10 @@ def is_date(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.date(value,
@@ -575,6 +647,8 @@ def is_date(value,
                                 maximum = maximum,
                                 coerce_value = coerce_value,
                                 **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -611,6 +685,10 @@ def is_datetime(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.datetime(value,
@@ -618,6 +696,8 @@ def is_datetime(value,
                                     maximum = maximum,
                                     coerce_value = coerce_value,
                                     **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -655,6 +735,10 @@ def is_time(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.time(value,
@@ -662,6 +746,8 @@ def is_time(value,
                                 maximum = maximum,
                                 coerce_value = coerce_value,
                                 **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -690,11 +776,17 @@ def is_timezone(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.timezone(value,
                                     positive = positive,
                                     **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -722,12 +814,18 @@ def is_numeric(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.numeric(value,
                                    minimum = minimum,
                                    maximum = maximum,
                                    **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -768,6 +866,10 @@ def is_integer(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.integer(value,
@@ -776,6 +878,8 @@ def is_integer(value,
                                    maximum = maximum,
                                    base = base,
                                    **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -801,12 +905,18 @@ def is_float(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.float(value,
                                  minimum = minimum,
                                  maximum = maximum,
                                  **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -832,12 +942,18 @@ def is_fraction(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.fraction(value,
                                     minimum = minimum,
                                     maximum = maximum,
                                     **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -863,12 +979,18 @@ def is_decimal(value,
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.decimal(value,
                                    minimum = minimum,
                                    maximum = maximum,
                                    **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -890,6 +1012,10 @@ def is_bytesIO(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     return isinstance(value, io.BytesIO)
 
@@ -907,6 +1033,10 @@ def is_stringIO(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     return isinstance(value, io.StringIO)
 
@@ -919,9 +1049,15 @@ def is_pathlike(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.path(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -937,9 +1073,15 @@ def is_on_filesystem(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.path_exists(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -954,9 +1096,15 @@ def is_file(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.file_exists(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -971,9 +1119,15 @@ def is_directory(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.directory_exists(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1012,9 +1166,15 @@ def is_readable(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         validators.readable(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1078,6 +1238,9 @@ def is_writeable(value,
     :rtype: :class:`bool <python:bool>`
 
     :raises NotImplementedError: if called on a Windows system
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if sys.platform in ['win32', 'cygwin']:
         raise NotImplementedError('not supported on Windows')
@@ -1086,6 +1249,8 @@ def is_writeable(value,
         validators.writeable(value,
                              allow_empty = False,
                              **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1140,6 +1305,9 @@ def is_executable(value,
     :rtype: :class:`bool <python:bool>`
 
     :raises NotImplementedError: if called on a Windows system
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     if sys.platform in ['win32', 'cygwin']:
         raise NotImplementedError('not supported on Windows')
@@ -1147,6 +1315,8 @@ def is_executable(value,
     try:
         validators.executable(value,
                               **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1177,9 +1347,15 @@ def is_email(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.email(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1190,13 +1366,36 @@ def is_email(value, **kwargs):
 def is_url(value, **kwargs):
     """Indicate whether ``value`` is a URL.
 
+    .. note::
+
+      URL validation is...complicated. The methodology that we have
+      adopted here is *generally* compliant with
+      `RFC 1738 <https://tools.ietf.org/html/rfc1738>`_,
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_,
+      `RFC 2181 <https://tools.ietf.org/html/rfc2181>`_  and uses a combination of
+      string parsing and regular expressions,
+
+      This approach ensures more complete coverage for unusual edge cases, while
+      still letting us use regular expressions that perform quickly.
+
     :param value: The value to evaluate.
+
+    :param allow_special_ips: If ``True``, will succeed when validating special IP
+      addresses, such as loopback IPs like ``127.0.0.1`` or ``0.0.0.0``. If ``False``,
+      will fail if ``value`` is a special IP address. Defaults to ``False``.
+    :type allow_special_ips: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.url(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1207,13 +1406,44 @@ def is_url(value, **kwargs):
 def is_domain(value, **kwargs):
     """Indicate whether ``value`` is a valid domain.
 
+    .. caution::
+
+      This validator does not verify that ``value`` **exists** as a domain. It
+      merely verifies that its contents *might* exist as a domain.
+
+    .. note::
+
+      This validator checks to validate that ``value`` resembles a valid
+      domain name. It is - generally - compliant with
+      `RFC 1035 <https://tools.ietf.org/html/rfc1035>`_ and
+      `RFC 6761 <https://tools.ietf.org/html/rfc6761>`_, however it diverges
+      in a number of key ways:
+
+        * Including authentication (e.g. ``username:password@domain.dev``) will
+          fail validation.
+        * Including a path (e.g. ``domain.dev/path/to/file``) will fail validation.
+        * Including a port (e.g. ``domain.dev:8080``) will fail validation.
+
+      If you are hoping to validate a more complete URL, we recommend that you
+      see :func:`url <validator_collection.validators.url>`.
+
     :param value: The value to evaluate.
+
+    :param allow_ips: If ``True``, will succeed when validating IP addresses,
+      If ``False``, will fail if ``value`` is an IP address. Defaults to ``False``.
+    :type allow_ips: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.domain(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1228,9 +1458,15 @@ def is_ip_address(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.ip_address(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1245,9 +1481,15 @@ def is_ipv4(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
     """
     try:
         value = validators.ipv4(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1262,9 +1504,14 @@ def is_ipv6(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
     """
     try:
         value = validators.ipv6(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
@@ -1279,9 +1526,14 @@ def is_mac_address(value, **kwargs):
 
     :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
     :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
     """
     try:
         value = validators.mac_address(value, **kwargs)
+    except SyntaxError as error:
+        raise error
     except Exception:
         return False
 
