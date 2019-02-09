@@ -1,6 +1,6 @@
 -----------
 
-Release 1.3.2 (released February 28, 2019)
+Release 1.3.2 (released February 9, 2019)
 ============================================
 
 * #25: Fixed an error where an underscore in a host name was not being properly
