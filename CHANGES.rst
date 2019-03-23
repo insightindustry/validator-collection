@@ -1,5 +1,13 @@
 -----------
 
+Release 1.3.3 (released March 23, 2019)
+============================================
+
+* #28 and #29: Fixed an error where special URLs (`localhost`) and special IPs (e.g.
+  `10.1.1.1`) failed when used with an explicit port or path.
+
+-----------
+
 Release 1.3.2 (released February 9, 2019)
 ============================================
 
