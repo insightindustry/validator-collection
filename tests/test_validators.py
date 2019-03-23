@@ -1314,6 +1314,11 @@ def test_executable(fs, value, fails, allow_empty):
     (u"abc.invalid.com", True, False, False),
 
     (u"http://localhost", False, False, False),
+    (u"http://localhost:8080", False, False, False),
+    (u"http://localhost/some_path", False, False, False),
+    (u"http://localhost:8080/some_path", False, False, False),
+    (u"http://someuserid:somepass@localhost/some_path/some_path", False, False, False),
+    (u"http://someuserid:somepass@localhost:8080/some_path/some_path", False, False, False),
     (u"http://abc.localhost.com", False, False, False),
     (u"http://invalid", False, False, False),
     (u"http://abc.invalid.com", False, False, False),
@@ -1407,6 +1412,12 @@ def test_executable(fs, value, fails, allow_empty):
     (u"http://abc.localhost.com", False, False, True),
     (u"http://invalid", False, False, True),
     (u"http://abc.invalid.com", False, False, True),
+
+    (u"http://10.1.1.1:8080", False, False, True),
+    (u"http://10.1.1.1:8080/some_path/some_path", False, False, True),
+    (u"http://someuserid:somepassword@10.1.1.1:8080", False, False, True),
+    (u"http://someuserid:somepassword@10.1.1.1:8080/some_path", False, False, True),
+    (u"http://someuserid:somepass@10.1.1.1:8080/some_path/some_path", False, False, True),
 ])
 def test_url(value, fails, allow_empty, allow_special_ips):
     """Test the URL validator."""
