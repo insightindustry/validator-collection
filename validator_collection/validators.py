@@ -47,13 +47,15 @@ URL_REGEX = re.compile(
     r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}"
     r"(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))"
     r"|"
+    r"(?:"
+    r"(?:localhost|invalid|test|example)|("
     # host name
     r"(?:(?:[a-z\u00a1-\uffff0-9]-*_*)*[a-z\u00a1-\uffff0-9]+)"
     # domain name
     r"(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*"
     # TLD identifier
     r"(?:\.(?:[a-z\u00a1-\uffff]{2,}))"
-    r")"
+    r")))"
     # port number
     r"(?::\d{2,5})?"
     # resource path
@@ -2286,6 +2288,7 @@ def url(value,
                     pass
 
     if not is_valid and allow_special_ips:
+        print('not valid and allowing special ips')
         try:
             ip_address(stripped_value, allow_empty = False)
             is_valid = True
@@ -2294,6 +2297,9 @@ def url(value,
 
     if not is_valid:
         is_valid = URL_REGEX.match(value)
+
+    if not is_valid and allow_special_ips:
+        is_valid = URL_SPECIAL_IP_REGEX.match(value)
 
     if not is_valid:
         raise errors.InvalidURLError('value (%s) is not a valid URL' % value)
