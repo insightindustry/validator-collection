@@ -2288,7 +2288,6 @@ def url(value,
                     pass
 
     if not is_valid and allow_special_ips:
-        print('not valid and allowing special ips')
         try:
             ip_address(stripped_value, allow_empty = False)
             is_valid = True
