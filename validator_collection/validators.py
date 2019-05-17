@@ -50,11 +50,11 @@ URL_REGEX = re.compile(
     r"(?:"
     r"(?:localhost|invalid|test|example)|("
     # host name
-    r"(?:(?:[a-z\u00a1-\uffff0-9]-*_*)*[a-z\u00a1-\uffff0-9]+)"
+    r"(?:(?:[A-z\u00a1-\uffff0-9]-*_*)*[A-z\u00a1-\uffff0-9]+)"
     # domain name
-    r"(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*"
+    r"(?:\.(?:[A-z\u00a1-\uffff0-9]-*)*[A-z\u00a1-\uffff0-9]+)*"
     # TLD identifier
-    r"(?:\.(?:[a-z\u00a1-\uffff]{2,}))"
+    r"(?:\.(?:[A-z\u00a1-\uffff]{2,}))"
     r")))"
     # port number
     r"(?::\d{2,5})?"
@@ -97,12 +97,13 @@ URL_SPECIAL_IP_REGEX = re.compile(
 DOMAIN_REGEX = re.compile(
     r"\b((?=[a-z\u00a1-\uffff0-9-]{1,63}\.)(xn--)?[a-z\u00a1-\uffff0-9]+"
     r"(-[a-z\u00a1-\uffff0-9]+)*\.)+[a-z]{2,63}\b",
-    re.UNICODE
+    re.UNICODE|re.IGNORECASE
 )
 
 URL_PROTOCOLS = ('http://',
                  'https://',
                  'ftp://')
+
 
 SPECIAL_USE_DOMAIN_NAMES = ('localhost',
                             'invalid',
@@ -2267,19 +2268,30 @@ def url(value,
         raise errors.CannotCoerceError('value must be a valid string, '
                                        'was %s' % type(value))
 
-    value = value.lower()
-
     is_valid = False
+    lowercase_value = value.lower()
     stripped_value = None
+    lowercase_stripped_value = None
     for protocol in URL_PROTOCOLS:
         if protocol in value:
             stripped_value = value.replace(protocol, '')
+            lowercase_stripped_value = stripped_value.lower()
 
     for special_use_domain in SPECIAL_USE_DOMAIN_NAMES:
-        if special_use_domain in value:
-            if stripped_value:
+        if special_use_domain in lowercase_stripped_value:
+            has_port = False
+            port_index = lowercase_stripped_value.find(':')
+            if port_index > -1:
+                has_port = True
+                lowercase_stripped_value = lowercase_stripped_value[:port_index]
+            if not has_port:
+                path_index = lowercase_stripped_value.find('/')
+                if path_index > -1:
+                    lowercase_stripped_value = lowercase_stripped_value[:path_index]
+
+            if lowercase_stripped_value:
                 try:
-                    domain(stripped_value,
+                    domain(lowercase_stripped_value,
                            allow_empty = False,
                            is_recursive = is_recursive)
                     is_valid = True
@@ -2414,6 +2426,8 @@ def domain(value,
             url(with_prefix, force_run = True, is_recursive = True)                                  # pylint: disable=E1123
         except ValueError:
             raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
+    elif not is_valid:
+        raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
 
     return value
 
