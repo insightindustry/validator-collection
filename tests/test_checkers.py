@@ -1321,6 +1321,14 @@ def test_is_email(value, fails, allow_empty):
     (u"http://someuserid:somepassword@10.1.1.1:8080", False, False, True),
     (u"http://someuserid:somepassword@10.1.1.1:8080/some_path", False, False, True),
     (u"http://someuserid:somepass@10.1.1.1:8080/some_path/some_path", False, False, True),
+
+
+    (u"https://www.myDOMAIN.co.uk/THIS_IS_IN_UPPER", False, False, True),
+    (u"https://LOCALHOST", False, False, True),
+    (u"http://localHOST", False, False, True),
+    (u"http://LOCALHOST/test_is_lowercase", False, False, True),
+    (u"http://LocalHost/test_is_MIXED", False, False, True),
+
 ])
 def test_is_url(value, fails, allow_empty, allow_special_ips):
     expects = not fails
@@ -1349,8 +1357,8 @@ def test_is_url(value, fails, allow_empty, allow_special_ips):
     (u"223.255.255.254", False, False, False),
     (u" shouldfail.com", False, False, False),
     (u"jurnalsda_pusair.pu.go.id", False, False, False),
-    (u"-example.com", False, False, False),
 
+    (u"-example.com", True, False, False),
     (u"127.0.0.1", True, False, False),
     (u"foo.com/blah_blah", True, False, False),
     (u"foo.com/blah_blah/", True, False, False),
