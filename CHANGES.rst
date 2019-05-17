@@ -1,5 +1,12 @@
 -----------
 
+Release 1.3.5 (released May 17, 2019)
+============================================
+
+* #32: Removed a `print` statement left over from debugging.
+
+-----------
+
 Release 1.3.4 (released April 3, 2019)
 ============================================
 
