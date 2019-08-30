@@ -332,7 +332,8 @@ def test_none(value, fails, allow_empty):
     ('', True, False),
     ('my variable', True, False),
     ('123_variable', True, False),
-    (None, True, False)
+    (None, True, False),
+    ('raise Exception("Foo")\nxyz', True, False),
 ])
 def test_variable_name(value, fails, allow_empty):
     """Test the variable name validator."""

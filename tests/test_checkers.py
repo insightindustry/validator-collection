@@ -370,7 +370,8 @@ def test_is_none(value, fails, allow_empty):
     ('', True, False),
     ('my variable', True, False),
     ('123_variable', True, False),
-    (None, True, False)
+    (None, True, False),
+    ('raise Exception("Foo")\nxyz', True, False),
 ])
 def test_is_variable_name(value, fails, allow_empty):
     expects = not fails

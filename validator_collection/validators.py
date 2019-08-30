@@ -119,6 +119,10 @@ EMAIL_REGEX = re.compile(
     r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
 )
 
+VARIABLE_NAME_REGEX = re.compile(
+    r"(^[a-zA-Z_])([a-zA-Z0-9_]*)"
+)
+
 
 MAC_ADDRESS_REGEX = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
 
@@ -396,6 +400,14 @@ def variable_name(value,
         raise errors.EmptyValueError('value (%s) was empty' % value)
     elif not value:
         return None
+
+    is_valid = VARIABLE_NAME_REGEX.fullmatch(value)
+
+    print('is_valid: %s' % is_valid)
+    if not is_valid:
+        raise errors.InvalidVariableNameError(
+            'value (%s) is not a valid variable name' % value
+        )
 
     try:
         parse('%s = None' % value)
