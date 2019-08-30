@@ -1,9 +1,17 @@
 -----------
 
+Release 1.3.6 (released August 29, 2019)
+============================================
+
+* #37: Added regex matching to variable name validation. Still checks compilation
+  but first must pass regex validation.
+
+-----------
+
 Release 1.3.5 (released May 17, 2019)
 ============================================
 
-* #32: Removed a `print` statement left over from debugging.
+* #34: Fixed case sensitivity bugs in URL validator.
 
 -----------
 
