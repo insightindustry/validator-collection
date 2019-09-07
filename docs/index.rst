@@ -275,7 +275,10 @@ Contributing
 *********************
 
 We welcome contributions and pull requests! For more information, please see the
-:doc:`Contributor Guide <contributing>`
+:doc:`Contributor Guide <contributing>`. And thanks to all those who've already
+contributed:
+
+.. include:: _contributors.rst
 
 *********************
 Testing

@@ -719,7 +719,9 @@ Contributing
 *********************
 
 We welcome contributions and pull requests! For more information, please see the
-`Contributor Guide <http://validator-collection.readthedocs.io/en/latest/contributing.html>`_
+`Contributor Guide <http://validator-collection.readthedocs.io/en/latest/contributing.html>`_.
+
+And thanks to `all those who have contributed <https://github.com/insightindustry/validator-collection/graphs/contributors>`_!
 
 *********************
 Testing
