@@ -1,5 +1,12 @@
 -----------
 
+Release 1.3.7 (released September 7, 2019)
+============================================
+
+* #39: Removed artifact ``print()`` statement in variable name validator.
+
+-----------
+
 Release 1.3.6 (released August 29, 2019)
 ============================================
 
