@@ -403,7 +403,6 @@ def variable_name(value,
 
     is_valid = VARIABLE_NAME_REGEX.fullmatch(value)
 
-    print('is_valid: %s' % is_valid)
     if not is_valid:
         raise errors.InvalidVariableNameError(
             'value (%s) is not a valid variable name' % value
