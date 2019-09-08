@@ -57,11 +57,21 @@ def is_type(obj,
     for check_for_type in type_:
         if isinstance(check_for_type, type):
             return_value = isinstance(obj, check_for_type)
+            if not return_value:
+                try:
+                    return_value = issubclass(obj, check_for_type)
+                except TypeError:
+                    pass
         elif obj.__class__.__name__ == check_for_type:
             return_value = True
         else:
             return_value = _check_base_classes(obj.__class__.__bases__,
                                                check_for_type)
+            if not return_value:
+                try:
+                    return_value = issubclass(obj, check_for_type)
+                except TypeError:
+                    pass
 
         if return_value is True:
             break
