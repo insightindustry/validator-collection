@@ -1,5 +1,15 @@
 -----------
 
+Release 1.3.7 (released September 7, 2019)
+============================================
+
+* #39: Removed artifact ``print()`` statement in variable name validator.
+* #40: Fixed bug in ``checkers.is_type()`` that would return false negatives when
+  evaluating an ``abc.ABCMeta`` object (an Abstract Base Class ``type``-equivalent
+  object) as opposed to an instance that inherits from ``abc.ABCMeta``.
+
+-----------
+
 Release 1.3.6 (released August 29, 2019)
 ============================================
 

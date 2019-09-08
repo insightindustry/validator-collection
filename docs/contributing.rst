@@ -252,6 +252,13 @@ available at:
   Built documentation (the HTML) is **not** included in the project's Git
   repository. If you need local documentation, you'll need to build it.
 
+Contributors
+================
+
+Thanks to everyone who helps make the **Validator Collection** useful:
+
+.. include:: _contributors.rst
+
 References
 =============
 

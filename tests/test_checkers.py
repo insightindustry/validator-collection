@@ -9,6 +9,7 @@ Tests for :term:`checkers <checker>`.
 
 """
 
+import abc
 import decimal
 import fractions
 import io
@@ -24,6 +25,8 @@ import pytest
 import validator_collection.checkers as checkers
 
 from validator_collection._compat import TimeZone
+
+from tests.conftest import MetaClassParentType, MetaClassType
 
 
 ## CORE
@@ -113,7 +116,9 @@ def test_are_equivalent(args, expects):
     (123, int, True),
     (TimeZone(timedelta(hours = 1)), [int, tzinfo], True),
     (TimeZone(timedelta(hours = 1)), tzinfo, True),
-    (TimeZone(timedelta(hours = 1)), str, False)
+    (TimeZone(timedelta(hours = 1)), str, False),
+    (MetaClassType, MetaClassParentType, True),
+    (MetaClassType, abc.ABCMeta, True),
 ])
 def test_is_type(value, check_type, expects):
     """Test the validators.is_type() function."""
