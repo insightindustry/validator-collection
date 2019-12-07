@@ -26,7 +26,8 @@ import validator_collection.checkers as checkers
 
 from validator_collection._compat import TimeZone
 
-from tests.conftest import MetaClassParentType, MetaClassType
+from tests.conftest import MetaClassParentType, MetaClassType, GetItemIterable, \
+    IterIterable, IterableIterable, FalseIterable
 
 
 ## CORE
@@ -51,6 +52,12 @@ from tests.conftest import MetaClassParentType, MetaClassType
     ([str], None, True),
 
     ([1, 2, 3, 4], {'allow_empty': True}, SyntaxError),
+
+    (GetItemIterable(), None, True),
+    (IterIterable(), None, True),
+    (IterableIterable(), None, True),
+
+    (FalseIterable(), None, True),
 
 ])
 def test_is_iterable(value, kwargs, expects):
@@ -278,9 +285,18 @@ def test_is_string(value, expects, coerce_value, minimum_length, maximum_length,
     (['test', 123], True, False, None, 1),
 
     (str, True, False, None, None),
+
+    (GetItemIterable(), False, False, None, None),
+    (IterIterable(), False, False, None, None),
+    (IterableIterable(), False, False, None, None),
+
+    (FalseIterable(), True, False, None, None),
+
 ])
 def test_is_iterable(value, fails, allow_empty, minimum_length, maximum_length):
     expects = not fails
+    if not fails:
+        iter(value)
     result = checkers.is_iterable(value,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length)
