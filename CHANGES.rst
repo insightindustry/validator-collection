@@ -1,5 +1,13 @@
 -----------
 
+Release 1.3.8 (released December 7, 2019)
+============================================
+
+* #43: Modified how ``__init__.py`` reads version information.
+* #45: Fixed false-positives and false-negatives in iterable validation.
+
+-----------
+
 Release 1.3.7 (released September 7, 2019)
 ============================================
 

@@ -225,6 +225,11 @@ NotAnIterableError (from :class:`CannotCoerceError <validator_collection.errors.
 
 .. autoclass:: NotAnIterableError
 
+IterationFailedError (from :class:`NotAnIterableError <validator_collection.errors.NotAnIterableError>`)
+---------------------------------------------------------------------------------------------------------
+
+.. autoclass:: IterationFailedError
+
 NotCallableError (from :class:`ValueError <python:ValueError>`)
 ------------------------------------------------------------------
 

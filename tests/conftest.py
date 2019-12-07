@@ -10,9 +10,16 @@ Utility functions that are used to configure Py.Test context.
 """
 
 import abc
+import collections
 import os
 
 import pytest
+from validator_collection._compat import is_py2
+
+if is_py2:
+    Iterable = collections.Iterable
+else:
+    Iterable = collections.abc.Iterable
 
 
 def pytest_addoption(parser):
@@ -91,3 +98,45 @@ class MetaClassParentType(object):
 class MetaClassType(MetaClassParentType):
     """The child meta class type."""
     pass
+
+
+class GetItemIterable(object):
+    """A class that does not have a ``__iter__`` method, but does use
+    ``__getitem__``."""
+
+    items = (1, 2, 3, 4)
+
+    def __getitem__(self, key):
+        return self.items[key]
+
+
+class IterIterable(object):
+    """A class that has an ``__iter__`` method."""
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration()
+
+    def next(self):
+        return self.__next__()
+
+class IterableIterable(Iterable):
+    """A class that inherits from ``Iterable``."""
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration()
+
+    def next(self):
+        return self.__next__()
+
+
+class FalseIterable(Iterable):
+    """A class that inherits from ``Iterable``."""
+
+    def __iter__(self):
+        raise AttributeError('this simulates an AttributeError')

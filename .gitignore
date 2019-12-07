@@ -95,6 +95,8 @@ venv/
 .clean
 ENV/
 .activate.ps1
+.pyinstaller27/
+.pyinstaller36/
 
 # Spyder project settings
 .spyderproject

@@ -165,6 +165,16 @@ class NotAnIterableError(CannotCoerceError):
     """
     pass
 
+class IterationFailedError(NotAnIterableError):
+    """Exception raised when a value conforms to one of Python's supported
+    iterable protocols, but iterating across the object produced an unexpected
+    Exception.
+
+    **INHERITS FROM:** :class:`TypeError <python:TypeError>` -> :class:`CannotCoerceError <validator_collection.errors.CannotCoerceError>` -> :class:`NotAnIterableError <validator_collection.errors.NotAnIterableError>`
+
+    """
+    pass
+
 
 class MaximumLengthError(ValueError):
     """Exception raised when a value exceeds a maximum allowed length.
