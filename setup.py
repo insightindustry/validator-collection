@@ -21,7 +21,8 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 # Get the version number from the VERSION file
 version_dict = {}
-with open('./validator_collection/_version.py') as version_file:
+with open(path.join(here, 'validator_collection', '_version.py'),
+          encoding='utf-8') as version_file:
     exec(version_file.read(), version_dict)                                     # pylint: disable=W0122
 
 version = version_dict.get('__version__')
