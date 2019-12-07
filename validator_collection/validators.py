@@ -259,6 +259,18 @@ def iterable(value,
              **kwargs):
     """Validate that ``value`` is a valid iterable.
 
+    .. hint::
+
+      This validator checks to ensure that ``value`` supports iteration using
+      any of Python's three iteration protocols: the ``__getitem__`` protocol,
+      the ``__iter__`` / ``next()`` protocol, or the inheritance from Python's
+      `Iterable` abstract base class.
+
+      If ``value`` supports any of these three iteration protocols, it will be
+      validated. However, if iteration across ``value`` raises an unsupported
+      exception, this function will raise an
+      :exc:`IterationFailedError <validator_collection.errors.IterationFailedError>`
+
     :param value: The value to validate.
 
     :param allow_empty: If ``True``, returns :obj:`None <python:None>` if ``value``
@@ -286,6 +298,8 @@ def iterable(value,
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises NotAnIterableError: if ``value`` is not a valid iterable or
       :obj:`None <python:None>`
+    :raises IterationFailedError: if ``value`` is a valid iterable, but iteration
+      fails for some unexpected exception
     :raises MinimumLengthError: if ``minimum_length`` is supplied and the length of
       ``value`` is less than ``minimum_length`` and ``whitespace_padding`` is
       ``False``
@@ -300,8 +314,15 @@ def iterable(value,
     minimum_length = integer(minimum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
     maximum_length = integer(maximum_length, allow_empty = True, force_run = True) # pylint: disable=E1123
 
-    if isinstance(value, forbid_literals) or not hasattr(value, '__iter__'):
+    if isinstance(value, forbid_literals):
         raise errors.NotAnIterableError('value type (%s) not iterable' % type(value))
+
+    try:
+        iter(value)
+    except TypeError:
+        raise errors.NotAnIterableError('value type (%s) not iterable' % type(value))
+    except Exception as error:
+        raise errors.IterationFailedError('iterating across value raised an unexpected Exception: "%s"' % error)
 
     if value and minimum_length is not None and len(value) < minimum_length:
         raise errors.MinimumLengthError(

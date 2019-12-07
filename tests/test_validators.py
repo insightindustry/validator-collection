@@ -23,6 +23,7 @@ import pytest
 
 import validator_collection.validators as validators
 from validator_collection._compat import numeric_types, basestring
+from tests.conftest import GetItemIterable, IterIterable, IterableIterable, FalseIterable
 
 
 ## CORE
@@ -248,6 +249,12 @@ def test_uuid(value, fails, allow_empty):
     (['test', 123], True, False, 3, None),
     (['test', 123], True, False, None, 1),
 
+    (GetItemIterable(), False, False, None, None),
+    (IterIterable(), False, False, None, None),
+    (IterableIterable(), False, False, None, None),
+
+    (FalseIterable(), True, False, None, None),
+
 ])
 def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
     """Test the string validator."""
@@ -258,7 +265,7 @@ def test_iterable(value, fails, allow_empty, minimum_length, maximum_length):
                                         maximum_length = maximum_length)
         if value is not None:
             assert validated is not None
-            assert hasattr(validated, '__iter__')
+            iter(validated)
         else:
             assert validated is None
     else:

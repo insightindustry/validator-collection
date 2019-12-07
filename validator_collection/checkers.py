@@ -488,7 +488,6 @@ def is_iterable(obj,
                                   minimum_length = minimum_length,
                                   maximum_length = maximum_length,
                                   **kwargs)
-        assert isinstance(obj, Iterable)
     except SyntaxError as error:
         raise error
     except Exception:
