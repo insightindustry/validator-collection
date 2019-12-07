@@ -119,6 +119,9 @@ class IterIterable(object):
     def __next__(self):
         raise StopIteration()
 
+    def next(self):
+        return self.__next__()
+
 class IterableIterable(Iterable):
     """A class that inherits from ``Iterable``."""
 
@@ -127,6 +130,9 @@ class IterableIterable(Iterable):
 
     def __next__(self):
         raise StopIteration()
+
+    def next(self):
+        return self.__next__()
 
 
 class FalseIterable(Iterable):
