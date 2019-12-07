@@ -13,7 +13,6 @@ import sys
 import validator_collection.validators as validators
 from validator_collection._compat import integer_types, basestring
 from validator_collection._decorators import disable_checker_on_env
-from collections.abc import Iterable
 
 # pylint: disable=W0613
 ## CORE
