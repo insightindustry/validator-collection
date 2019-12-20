@@ -803,6 +803,55 @@ def is_timezone(value,
     return True
 
 
+@disable_checker_on_env
+def is_timedelta(value,
+                 resolution = None,
+                 **kwargs):
+    """Indicate whether ``value`` is a :class:`timedelta <python:datetime.timedelta>`.
+
+    .. note::
+
+      Acceptable string formats are:
+
+        * "HH:MM:SS"
+        * "X day, HH:MM:SS"
+        * "X days, HH:MM:SS"
+        * "HH:MM:SS.us"
+        * "X day, HH:MM:SS.us"
+        * "X days, HH:MM:SS.us"
+
+      where "us" refer to microseconds.
+
+      Shout out to Alex Pitchford for sharing the
+      `string-parsing regex <http://kbyanc.blogspot.com/2007/08/python-reconstructing-timedeltas-from.html?showComment=1452111163905#c3907051065256615667>`_.
+
+    :param value: The value to evaluate.
+
+    :param resolution: Indicates the time period resolution represented by ``value``.
+      Accepts ``'years'``, ``'weeks'``, ``'days'``, ``'hours'``, ``'minutes'``,
+      ``'seconds'``, ``'milliseconds'``, or ``'microseconds'``. Defaults to
+      ``'seconds'``.
+    :type resolution: :class:`str <python:str>`
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+
+    """
+    try:
+        value = validators.timedelta(value,
+                                     resolution = resolution,
+                                     **kwargs)
+    except SyntaxError as error:
+        raise error
+    except Exception:
+        return False
+
+    return True
+
+
 ## NUMBERS
 
 @disable_checker_on_env
