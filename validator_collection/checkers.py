@@ -811,18 +811,16 @@ def is_timedelta(value,
 
     .. note::
 
-      Acceptable string formats are:
+      Coerceable string formats are:
 
-        * "HH:MM:SS"
-        * "X day, HH:MM:SS"
-        * "X days, HH:MM:SS"
-        * "HH:MM:SS.us"
-        * "X day, HH:MM:SS.us"
-        * "X days, HH:MM:SS.us"
+        * HH:MM:SS
+        * X day, HH:MM:SS
+        * X days, HH:MM:SS
+        * HH:MM:SS.us
+        * X day, HH:MM:SS.us
+        * X days, HH:MM:SS.us
 
-      where "us" refer to microseconds.
-
-      Shout out to Alex Pitchford for sharing the
+      where "us" refer to microseconds. Shout out to Alex Pitchford for sharing the
       `string-parsing regex <http://kbyanc.blogspot.com/2007/08/python-reconstructing-timedeltas-from.html?showComment=1452111163905#c3907051065256615667>`_.
 
     :param value: The value to evaluate.

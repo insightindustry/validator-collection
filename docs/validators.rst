@@ -89,6 +89,11 @@ timezone
 
 .. autofunction:: timezone
 
+timedelta
+----------
+
+.. autofunction:: timedelta
+
 ---------------
 
 Numbers

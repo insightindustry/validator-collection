@@ -111,6 +111,11 @@ is_timezone
 
 .. autofunction:: is_timezone
 
+is_timedelta
+--------------
+
+.. autofunction:: is_timedelta
+
 -------------
 
 Numbers

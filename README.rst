@@ -184,7 +184,7 @@ Validators
     - ``path_exists``
     - ``ip_address``
   * - ``none``
-    -
+    - ``timedelta``
     - ``decimal``
     - ``file_exists``
     - ``ipv4``
@@ -244,7 +244,7 @@ Checkers
     - ``is_on_filesystem``
     - ``is_ip_address``
   * - ``are_dicts_equivalent``
-    -
+    - ``is_timedelta``
     - ``is_decimal``
     - ``is_file``
     - ``is_ipv4``

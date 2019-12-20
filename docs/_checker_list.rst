@@ -28,7 +28,7 @@
     - :func:`is_on_filesystem <validator_collection.checkers.is_on_filesystem>`
     - :func:`is_ip_address <validator_collection.checkers.is_ip_address>`
   * - :func:`are_dicts_equivalent <validator_collection.checkers.are_dicts_equivalent>`
-    -
+    - :func:`is_timedelta <validator_collection.checkers.is_timedelta>`
     - :func:`is_decimal <validator_collection.checkers.is_decimal>`
     - :func:`is_file <validator_collection.checkers.is_file>`
     - :func:`is_ipv4 <validator_collection.checkers.is_ipv4>`
