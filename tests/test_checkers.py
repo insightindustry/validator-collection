@@ -757,6 +757,31 @@ def test_is_timezone(value, fails, allow_empty):
     result = checkers.is_timezone(value)
     assert result == expects
 
+@pytest.mark.parametrize('value, fails, allow_empty, resolution', [
+    (timedelta(seconds = 123), False, False, 'seconds'),
+    (123, False, False, 'seconds'),
+    (123.5, False, False, 'seconds'),
+    (123, False, False, 'days'),
+    (1, False, False, 'years'),
+    (23.5, False, False, 'weeks'),
+    (123, False, False, None),
+
+    ('00:35:00', False, False, 'seconds'),
+    ('5 day, 12:36:35.333333', False, False, 'seconds'),
+    ('5 days, 12:36:35.333333', False, False, 'seconds'),
+    ('5 day, 36:36:35.333333', False, False, 'seconds'),
+
+    (None, True, False, 'seconds'),
+    ('', True, False, 'seconds'),
+
+    ('not a valid timedelta', True, False, 'seconds'),
+    (123, True, False, 'not-a-valid-resolution'),
+
+])
+def test_is_timedelta(value, fails, allow_empty, resolution):
+    expects = not fails
+    result = checkers.is_timedelta(value, resolution = resolution)
+    assert result == expects
 
 ## NUMBERS
 

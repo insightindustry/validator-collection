@@ -743,6 +743,48 @@ def test_timezone(value, fails, allow_empty):
                                         allow_empty = allow_empty)
 
 
+@pytest.mark.parametrize('value, fails, allow_empty, resolution, expected_value', [
+    (timedelta(seconds = 123), False, False, 'seconds', timedelta(seconds = 123)),
+    (123, False, False, 'seconds', timedelta(seconds = 123)),
+    (123.5, False, False, 'seconds', timedelta(seconds = 123.5)),
+    (123, False, False, 'days', timedelta(days = 123)),
+    (1, False, False, 'years', timedelta(days = 365)),
+    (23.5, False, False, 'weeks', timedelta(days = (23.5 * 7))),
+    (123, False, False, None, timedelta(seconds = 123)),
+
+    ('00:35:00', False, False, 'seconds', timedelta(minutes = 35)),
+    ('5 day, 12:36:35.333333', False, False, 'seconds', timedelta(days = 5, hours = 12, minutes = 36, seconds = 35, microseconds = 333333)),
+    ('5 days, 12:36:35.333333', False, False, 'seconds', timedelta(days = 5, hours = 12, minutes = 36, seconds = 35, microseconds = 333333)),
+    ('5 day, 36:36:35.333333', False, False, 'seconds', timedelta(days = 6, hours = 12, minutes = 36, seconds = 35, microseconds = 333333)),
+
+    (None, True, False, 'seconds', None),
+    ('', True, False, 'seconds', None),
+
+    ('not a valid timedelta', True, False, 'seconds', None),
+    (123, True, False, 'not-a-valid-resolution', None),
+
+])
+def test_timedelta(value, fails, allow_empty, resolution, expected_value):
+    """Test the timedelta validator."""
+    print('value: %s' % value)
+    if not fails:
+        validated = validators.timedelta(value,
+                                         allow_empty = allow_empty,
+                                         resolution = resolution)
+
+        if value:
+            assert isinstance(validated, timedelta)
+            assert validated == expected_value
+        else:
+            assert validated is None
+
+    else:
+        with pytest.raises((ValueError, TypeError)):
+            value = validators.timedelta(value,
+                                         allow_empty = allow_empty,
+                                         resolution = resolution)
+
+
 ## NUMBERS
 
 @pytest.mark.parametrize('value, fails, allow_empty, minimum, maximum', [
@@ -761,6 +803,8 @@ def test_timezone(value, fails, allow_empty):
     (5, False, False, None, 10),
     (5, False, False, None, 5),
     (5, True, False, None, 1),
+
+    ('not-a-number', True, False, None, None),
 
 ])
 def test_numeric(value, fails, allow_empty, minimum, maximum):
