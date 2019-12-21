@@ -22,6 +22,7 @@ matrix:
       before_install:
         - sudo apt-get -y install gcc-8
         - sudo apt-get -y install g++-8
+        - gcc --version
     - python: '3.7'
       env:
         - TOXENV=py37
