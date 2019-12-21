@@ -101,7 +101,7 @@ The **Validator Collection** is a Python library that provides more than 60
 functions that can be used to validate the type and contents of an input value.
 
 Each function has a consistent syntax for easy use, and has been tested on
-Python 2.7, 3.4, 3.5, 3.6, and 3.7.
+Python 2.7, 3.4, 3.5, 3.6, 3.7, and 3.8.
 
 For a list of validators available, please see the lists below.
 
