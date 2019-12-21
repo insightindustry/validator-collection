@@ -10,17 +10,11 @@ env:
 matrix:
   include:
     - python: '3.8'
-      addons:
-        apt:
-          sources:
-            - sourceline: 'ppa:ubuntu-toolchain-r/test'
-          packages:
-            - python-dev
-            - libffi-dev
       env:
         - TOXENV=py38
       dist: bionic
       sudo: true
+      compiler: gcc-8
     - python: '3.7'
       env:
         - TOXENV=py37
