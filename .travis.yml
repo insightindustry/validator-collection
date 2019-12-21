@@ -37,7 +37,6 @@ matrix:
       env: TOXENV=coverage
 
 install:
-  #- if [ "$CXX" = "g++" ]; then export CXX="g++-8" CC="gcc-8"; fi
   - gcc --version
   - pip install -U tox codecov
 
