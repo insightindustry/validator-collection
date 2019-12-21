@@ -10,18 +10,18 @@ env:
 matrix:
   include:
     - python: '3.8'
-      compiler: gcc-8
-      addons:
-        apt:
-          sources:
-            - sourceline: 'ppa:ubuntu-toolchain-r/test'
-          packages:
-            - gcc-8
-            - g++-8
+      #compiler: gcc-8
+      #addons:
+        #apt:
+          #sources:
+          #  - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          #packages:
+          #  - gcc-8
+          #  - g++-8
       env:
         - TOXENV=py38
-        - CXX=g++-8 CC=gcc-8
-      dist: xenial
+        #- CXX=g++-8 CC=gcc-8
+      dist: bionic
       sudo: true
     - python: '3.7'
       env:
