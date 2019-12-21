@@ -28,7 +28,7 @@
     - :func:`path_exists <validator_collection.validators.path_exists>`
     - :func:`ip_address <validator_collection.validators.ip_address>`
   * - :func:`none <validator_collection.validators.none>`
-    -
+    - :func:`timedelta <validator_collection.validators.timedelta>`
     - :func:`decimal <validator_collection.validators.decimal>`
     - :func:`file_exists <validator_collection.validators.file_exists>`
     - :func:`ipv4 <validator_collection.validators.ipv4>`

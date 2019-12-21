@@ -130,6 +130,9 @@ IPV6_REGEX = re.compile(
     '^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)(?:%25(?:[A-Za-z0-9\\-._~]|%[0-9A-Fa-f]{2})+)?$'
 )
 
+TIMEDELTA_REGEX = re.compile(r'((?P<days>\d+) days?, )?(?P<hours>\d+):'
+                             r'(?P<minutes>\d+):(?P<seconds>\d+(\.\d+)?)')
+
 # pylint: disable=W0613
 
 ## CORE
@@ -1250,6 +1253,124 @@ def timezone(value,
             raise NotImplementedError()
 
     return value
+
+@disable_on_env
+def timedelta(value,
+              allow_empty = False,
+              resolution = 'seconds',
+              **kwargs):
+    """Validate that ``value`` is a valid :class:`timedelta <python:datetime.timedelta>`.
+
+    .. note::
+
+      Expects to receive a value that is either a
+      :class:`timedelta <python:datetime.timedelta>`, a numeric value that can
+      be coerced to a :class:`timedelta <python:datetime.timedelta>`, or a
+      string that can be coerced to a :class:`timedelta <python:datetime.timedelta>`.
+      Coerceable string formats are:
+
+        * HH:MM:SS
+        * X day, HH:MM:SS
+        * X days, HH:MM:SS
+        * HH:MM:SS.us
+        * X day, HH:MM:SS.us
+        * X days, HH:MM:SS.us
+
+      where "us" refer to microseconds. Shout out to Alex Pitchford for sharing the
+      `string-parsing regex <http://kbyanc.blogspot.com/2007/08/python-reconstructing-timedeltas-from.html?showComment=1452111163905#c3907051065256615667>`_.
+
+    :param value: The value to validate. Accepts either a numeric value indicating
+      a number of seconds or a string indicating an amount of time.
+    :type value: :class:`str <python:str>` / :class:`timedelta <python:datetime.timedelta>`
+      / numeric / :obj:`None <python:None>`
+
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :param resolution: Indicates the time period resolution represented by ``value``.
+      Accepts ``'years'``, ``'weeks'``, ``'days'``, ``'hours'``, ``'minutes'``,
+      ``'seconds'``, ``'milliseconds'``, or ``'microseconds'``. Defaults to
+      ``'seconds'``.
+    :type resolution: :class:`str <python:str>`
+
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`timedelta <python:datetime.timedelta>` / :obj:`None <python:None>`
+
+    :raises ValueError: if ``resolution`` is not a valid time period resolution
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` cannot be coerced to
+      :class:`timedelta <python:datetime.timedelta>` and is not :obj:`None <python:None>`
+
+    """
+    # pylint: disable=too-many-branches
+    if isinstance(value, datetime_.timedelta):
+        return value
+
+    if not resolution:
+        resolution = 'seconds'
+
+    if resolution not in ['years',
+                          'weeks',
+                          'days',
+                          'hours',
+                          'minutes',
+                          'seconds',
+                          'milliseconds',
+                          'microseconds']:
+        raise ValueError('resolution (%s) not a valid time period resolution' % resolution)
+
+    timedelta_properties = {}
+
+    try:
+        value = numeric(value,
+                        allow_empty = allow_empty,
+                        force_run = True)
+        if resolution == 'years':
+            resolution = 'days'
+            value = value * 365
+        elif resolution == 'weeks':
+            resolution = 'days'
+            value = value * 7
+
+        timedelta_properties[resolution] = value
+        return datetime_.timedelta(**timedelta_properties)
+    except errors.CannotCoerceError:
+        try:
+            value = string(value,
+                           allow_empty = allow_empty,
+                           coerce_value = False,
+                           force_run = True)
+        except errors.CannotCoerceError:
+            raise errors.CannotCoerceError('value (%s) could not be coerced to a'
+                                           ' timedelta' % value)
+
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    value = value.lower().strip()
+
+    is_valid = TIMEDELTA_REGEX.match(value)
+
+    if not is_valid:
+        raise errors.CannotCoerceError('value (%s) could not be coerced to'
+                                       ' a timedelta' % value)
+
+    timedelta_properties = is_valid.groupdict(0)
+    for key, sub_value in timedelta_properties.items():
+        try:
+            timedelta_properties[key] = numeric(sub_value,
+                                                allow_empty = True,
+                                                force_run = True)
+        except errors.CannotCoerceError:
+            raise errors.CannotCoerceError('value (%s) could not be coerced to a'
+                                           ' timedelta' % value)
+
+    return datetime_.timedelta(**timedelta_properties)
 
 
 ## NUMBERS

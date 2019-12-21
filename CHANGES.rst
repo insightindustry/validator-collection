@@ -1,5 +1,13 @@
 -----------
 
+Release 1.4.0 (released December 21, 2019)
+============================================
+
+* #49: Added ``timedelta()`` validator and ``is_timedelta()`` checker.
+* #50: Added Python 3.8 to the test matrix.
+
+-----------
+
 Release 1.3.8 (released December 7, 2019)
 ============================================
 
