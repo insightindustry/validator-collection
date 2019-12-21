@@ -27,7 +27,7 @@ matrix:
       dist: xenial
       sudo: true
     - python: '3.8'
-      compiler: gcc-8
+      compiler: gcc-4
       env:
         - TOXENV=py38
       dist: xenial
