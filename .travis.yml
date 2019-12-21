@@ -10,7 +10,7 @@ env:
 matrix:
   include:
     - python: '3.8'
-      compiler: gcc
+      compiler: gcc-8
       addons:
         apt:
           sources:
@@ -45,10 +45,9 @@ matrix:
     - python: '3.6'
       env: TOXENV=coverage
 
-before_install:
-  - gcc --version
-
 install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-8" CC="gcc-8"; fi
+  - gcc --version
   - pip install -U tox codecov
 
 script:
