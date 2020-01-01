@@ -2430,27 +2430,28 @@ def url(value,
             stripped_value = value.replace(protocol, '')
             lowercase_stripped_value = stripped_value.lower()
 
-    for special_use_domain in SPECIAL_USE_DOMAIN_NAMES:
-        if special_use_domain in lowercase_stripped_value:
-            has_port = False
-            port_index = lowercase_stripped_value.find(':')
-            if port_index > -1:
-                has_port = True
-                lowercase_stripped_value = lowercase_stripped_value[:port_index]
-            if not has_port:
-                path_index = lowercase_stripped_value.find('/')
-                if path_index > -1:
-                    lowercase_stripped_value = lowercase_stripped_value[:path_index]
+    if lowercase_stripped_value:
+        for special_use_domain in SPECIAL_USE_DOMAIN_NAMES:
+            if special_use_domain in lowercase_stripped_value:
+                has_port = False
+                port_index = lowercase_stripped_value.find(':')
+                if port_index > -1:
+                    has_port = True
+                    lowercase_stripped_value = lowercase_stripped_value[:port_index]
+                if not has_port:
+                    path_index = lowercase_stripped_value.find('/')
+                    if path_index > -1:
+                        lowercase_stripped_value = lowercase_stripped_value[:path_index]
 
-            if lowercase_stripped_value:
-                try:
-                    domain(lowercase_stripped_value,
-                           allow_empty = False,
-                           is_recursive = is_recursive)
-                    is_valid = True
+                if lowercase_stripped_value:
+                    try:
+                        domain(lowercase_stripped_value,
+                               allow_empty = False,
+                               is_recursive = is_recursive)
+                        is_valid = True
 
-                except (ValueError, TypeError):
-                    pass
+                    except (ValueError, TypeError):
+                        pass
 
     if not is_valid and allow_special_ips:
         try:

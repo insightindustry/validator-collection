@@ -1476,6 +1476,8 @@ def test_executable(fs, value, fails, allow_empty):
     (u"http://localHOST", False, False, True),
     (u"http://LOCALHOST/test_is_lowercase", False, False, True),
     (u"http://LocalHost/test_is_MIXED", False, False, True),
+
+    (u"invalid-url", True, False, True),
 ])
 def test_url(value, fails, allow_empty, allow_special_ips):
     """Test the URL validator."""
