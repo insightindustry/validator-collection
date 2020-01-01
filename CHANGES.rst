@@ -1,5 +1,12 @@
 -----------
 
+Release 1.4.1 (released January 1, 2020)
+============================================
+
+* #54: Fixed the incorrect raising of a ``TypeError`` by ``validators.url()``.
+
+-----------
+
 Release 1.4.0 (released December 21, 2019)
 ============================================
 
