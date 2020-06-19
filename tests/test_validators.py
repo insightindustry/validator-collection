@@ -1478,6 +1478,16 @@ def test_executable(fs, value, fails, allow_empty):
     (u"http://LocalHost/test_is_MIXED", False, False, True),
 
     (u"invalid-url", True, False, True),
+
+    # Issue #59
+    (u"http://www.foo.bar]", True, False, False),
+    (u"http://www.foo.bar]]]]", True, False, False),
+    (u"http://www.test.com]", True, False, True),
+    (u"http://www.test.com]]]]]", True, False, True),
+    (u"https://www.foo.bar[]]", True, False, False),
+    (u"https://www.test.com]", True, False, False),
+    (u"https://www.test.com]", True, False, True),
+
 ])
 def test_url(value, fails, allow_empty, allow_special_ips):
     """Test the URL validator."""
@@ -1578,6 +1588,13 @@ def test_url(value, fails, allow_empty, allow_special_ips):
     (u"abc.localhost.com", False, False, False),
     (u"invalid", False, False, False),
     (u"abc.invalid.com", False, False, False),
+
+    # Issue 59
+    (u"www.foo.bar]", True, False, False),
+    (u"www.foo.bar]]]]", True, False, False),
+    (u"www.foo.bar[]]", True, False, False),
+    (u"www.test.com]", True, False, False),
+    (u"www.test.com]", True, False, True),
 ])
 def test_domain(value, fails, allow_empty, allow_ips):
     """Test the domain validator."""
