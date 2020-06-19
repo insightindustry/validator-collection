@@ -25,6 +25,7 @@ from validator_collection._compat import numeric_types, integer_types, datetime_
 from validator_collection._decorators import disable_on_env
 from validator_collection import errors
 
+URL_UNSAFE_CHARACTERS = ('[', ']', '{', '}', '|', '^', '%', '~')
 
 URL_REGEX = re.compile(
     r"^"
@@ -2424,11 +2425,14 @@ def url(value,
     is_valid = False
     lowercase_value = value.lower()
     stripped_value = None
+    has_protocol = False
     lowercase_stripped_value = None
     for protocol in URL_PROTOCOLS:
         if protocol in value:
+            has_protocol = True
             stripped_value = value.replace(protocol, '')
             lowercase_stripped_value = stripped_value.lower()
+            break
 
     if lowercase_stripped_value:
         for special_use_domain in SPECIAL_USE_DOMAIN_NAMES:
@@ -2462,6 +2466,37 @@ def url(value,
 
     if not is_valid:
         is_valid = URL_REGEX.match(value)
+
+    if is_valid:
+        prefix_index = value.find('@')
+        has_prefix = prefix_index > -1
+        stripped_prefix = value
+        if has_prefix:
+            stripped_prefix = stripped_prefix[prefix_index + 1:]
+
+        if has_protocol:
+            protocol_index = stripped_prefix.find('://')
+            has_protocol = protocol_index > -1
+            if has_protocol:
+                stripped_prefix = stripped_prefix[protocol_index + 3:]
+
+        port_index = stripped_prefix.find(':')
+        has_port = port_index > -1
+        if has_port:
+            stripped_prefix = stripped_prefix[:port_index]
+        else:
+            path_index = stripped_prefix.find('/')
+            if path_index > -1:
+                stripped_prefix = stripped_prefix[:path_index]
+
+        try:
+            domain(stripped_prefix,
+                   allow_empty = False,
+                   is_recursive = is_recursive)
+        except (ValueError, TypeError):
+            for character in URL_UNSAFE_CHARACTERS:
+                if character in stripped_prefix:
+                    raise errors.InvalidURLError('value (%s) is not a valid URL' % value)
 
     if not is_valid and allow_special_ips:
         is_valid = URL_SPECIAL_IP_REGEX.match(value)
@@ -2533,6 +2568,7 @@ def domain(value,
 
     """
     is_recursive = kwargs.pop('is_recursive', False)
+    has_unsafe_characters = False
 
     if not value and not allow_empty:
         raise errors.EmptyValueError('value (%s) was empty' % value)
@@ -2571,6 +2607,10 @@ def domain(value,
 
         if is_valid:
             return value
+
+    for character in URL_UNSAFE_CHARACTERS:
+        if character in value:
+            raise errors.InvalidDomainError('value (%s) is not a valid domain' % value)
 
     is_valid = DOMAIN_REGEX.match(value)
 
