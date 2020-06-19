@@ -1378,6 +1378,15 @@ def test_is_email(value, fails, allow_empty):
 
     (u"invalid-url", True, False, True),
 
+    # Issue #59
+    (u"http://www.foo.bar]", True, False, False),
+    (u"http://www.foo.bar]]]]", True, False, False),
+    (u"http://www.test.com]", True, False, True),
+    (u"http://www.test.com]]]]]", True, False, True),
+    (u"https://www.foo.bar[]]", True, False, False),
+    (u"https://www.test.com]", True, False, False),
+    (u"https://www.test.com]", True, False, True),
+
 ])
 def test_is_url(value, fails, allow_empty, allow_special_ips):
     expects = not fails
@@ -1471,6 +1480,14 @@ def test_is_url(value, fails, allow_empty, allow_special_ips):
     (u"abc.localhost.com", False, False, False),
     (u"invalid", False, False, False),
     (u"abc.invalid.com", False, False, False),
+
+    # Issue 59
+    (u"www.foo.bar]", True, False, False),
+    (u"www.foo.bar]]]]", True, False, False),
+    (u"www.foo.bar[]]", True, False, False),
+    (u"www.test.com]", True, False, False),
+    (u"www.test.com]", True, False, True),
+
 ])
 def test_is_domain(value, fails, allow_empty, allow_ips):
     expects = not fails
