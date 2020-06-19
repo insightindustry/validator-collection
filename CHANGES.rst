@@ -1,5 +1,12 @@
 -----------
 
+Release 1.4.2 (released June 20, 2020)
+============================================
+
+* #59: Fixed URL and domain validation to fail properly on unsafe characters.
+
+-----------
+
 Release 1.4.1 (released January 1, 2020)
 ============================================
 
