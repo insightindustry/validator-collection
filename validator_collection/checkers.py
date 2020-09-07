@@ -124,6 +124,11 @@ def are_equivalent(*args, **kwargs):
 
     :param args: One or more values, passed as positional arguments.
 
+    :param strict_typing: If ``True``, will only identify items as equivalent if they have
+      identical sub-typing. If ``False``, related sub-types will be returned as equivalent.
+      Defaults to ``True``.
+    :type strict_typing: :class:`bool <python:bool>`
+
     :returns: ``True`` if ``args`` are equivalent, and ``False`` if not.
     :rtype: :class:`bool <python:bool>`
 
@@ -131,13 +136,20 @@ def are_equivalent(*args, **kwargs):
       keyword parameters passed to the underlying validator
 
     """
+    strict_typing = kwargs.get('strict_typing', True)
+
     if len(args) == 1:
         return True
 
     first_item = args[0]
     for item in args[1:]:
-        if type(item) != type(first_item):                                      # pylint: disable=C0123
+        if strict_typing and type(item) != type(first_item):                                                    # pylint: disable=C0123
+                return False
+        elif type(item) != type(first_item) and \
+             is_type(item, first_item.__class__) and \
+             is_type(first_item, item.__class__):                                      # pylint: disable=C0123
             return False
+
 
         if isinstance(item, dict):
             if not are_dicts_equivalent(item, first_item):
@@ -165,6 +177,12 @@ def are_dicts_equivalent(*args, **kwargs):
 
     :param args: One or more values, passed as positional arguments.
 
+    :param strict_typing: If ``True``, will only identify items as equivalent if they have
+      identical sub-typing. If ``False``, related sub-types will be returned as equivalent.
+      Defaults to ``True``.
+    :type strict_typing: :class:`bool <python:bool>`
+
+
     :returns: ``True`` if ``args`` have identical keys/values, and ``False`` if not.
     :rtype: :class:`bool <python:bool>`
 
@@ -191,14 +209,14 @@ def are_dicts_equivalent(*args, **kwargs):
             if key not in first_item:
                 return False
 
-            if not are_equivalent(item[key], first_item[key]):
+            if not are_equivalent(item[key], first_item[key], **kwargs):
                 return False
 
         for key in first_item:
             if key not in item:
                 return False
 
-            if not are_equivalent(first_item[key], item[key]):
+            if not are_equivalent(first_item[key], item[key], **kwargs):
                 return False
 
     return True

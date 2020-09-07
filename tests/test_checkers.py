@@ -29,6 +29,11 @@ from validator_collection._compat import TimeZone
 from tests.conftest import MetaClassParentType, MetaClassType, GetItemIterable, \
     IterIterable, IterableIterable, FalseIterable
 
+class str2(str):
+    """Sub-class of string ot check subclass logic when checking is_type."""
+
+    pass
+
 
 ## CORE
 
@@ -91,26 +96,34 @@ def test_are_dicts_equivalent(args, expects):
     assert result == expects
 
 
-@pytest.mark.parametrize('args, expects', [
-    (['test', 'test'], True),
-    ([['test','test'], ['test','test']], True),
-    (['test',123], False),
-    (['not-a-list',123], False),
-    ([123], True),
+@pytest.mark.parametrize('args, kwargs, expects', [
+    (['test', 'test'], None, True),
+    ([['test','test'], ['test','test']], None, True),
+    (['test',123], None, False),
+    (['not-a-list',123], None, False),
+    ([123], None, True),
 
-    ([{'key': 'value'}, {'key': 'value'}], True),
-    ([{'key': ['list']}, {'key': ['list']}], True),
-    ([{'key': {'key': 'value'}}, {'key': {'key': 'value'}}], True),
+    ([{'key': 'value'}, {'key': 'value'}], None, True),
+    ([{'key': ['list']}, {'key': ['list']}], None, True),
+    ([{'key': {'key': 'value'}}, {'key': {'key': 'value'}}], None, True),
 
-    ([{'key': 'value'}, {'key': 'value2'}], False),
-    ([{'key': ['list']}, {'key': ['else']}], False),
-    ([{'key': {'key': 'value'}}, {'key': {'else': 'value'}}], False),
-    ([{'key': {'key': 'value'}}, {'else': {'key': 'value'}}], False),
+    ([{'key': 'value'}, {'key': 'value2'}], None, False),
+    ([{'key': ['list']}, {'key': ['else']}], None, False),
+    ([{'key': {'key': 'value'}}, {'key': {'else': 'value'}}], None, False),
+    ([{'key': {'key': 'value'}}, {'else': {'key': 'value'}}], None, False),
 
-    ([{'key': 'value'}, 123], False)
+    ([{'key': 'value'}, 123], None, False),
+
+    ([str('test'), str2('test')], None, False),
+    ([str('test'), str2('test')], { 'strict_typing': True }, False),
+    ([str('test'), str2('test')], { 'strict_typing': False }, True),
 ])
-def test_are_equivalent(args, expects):
-    result = checkers.are_equivalent(*args)
+def test_are_equivalent(args, kwargs, expects):
+    if not kwargs:
+        result = checkers.are_equivalent(*args)
+    else:
+        result = checkers.are_equivalent(*args, **kwargs)
+
     assert result == expects
 
 
