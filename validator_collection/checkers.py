@@ -152,7 +152,7 @@ def are_equivalent(*args, **kwargs):
 
 
         if isinstance(item, dict):
-            if not are_dicts_equivalent(item, first_item):
+            if not are_dicts_equivalent(item, first_item, **kwargs):
                 return False
         elif hasattr(item, '__iter__') and not isinstance(item, (str, bytes, dict)):
             if len(item) != len(first_item):
@@ -182,6 +182,10 @@ def are_dicts_equivalent(*args, **kwargs):
       Defaults to ``True``.
     :type strict_typing: :class:`bool <python:bool>`
 
+    :param missing_as_none: If ``True``, will treat missing keys in one value and
+      :obj:`None <python:None>` keys in the other as equivalent. If ``False``, missing and
+      :obj:`None <pythoN:None>` keys will fail. Defaults to ``False``.
+    :type missing_as_none: :class:`bool <python:bool>`
 
     :returns: ``True`` if ``args`` have identical keys/values, and ``False`` if not.
     :rtype: :class:`bool <python:bool>`
@@ -191,6 +195,8 @@ def are_dicts_equivalent(*args, **kwargs):
 
     """
     # pylint: disable=too-many-return-statements
+    missing_as_none = kwargs.get('missing_as_none', False)
+
     if not args:
         return False
 
@@ -202,6 +208,14 @@ def are_dicts_equivalent(*args, **kwargs):
 
     first_item = args[0]
     for item in args[1:]:
+        if missing_as_none and len(item) != len(first_item):
+            for key in item:
+                if key not in first_item:
+                    first_item[key] = None
+            for key in first_item:
+                if key not in item:
+                    item[key] = None
+
         if len(item) != len(first_item):
             return False
 

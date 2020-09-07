@@ -79,20 +79,26 @@ def test_is_iterable(value, kwargs, expects):
         with pytest.raises(expects):
             result = checkers.is_iterable(value)
 
-@pytest.mark.parametrize('args, expects', [
-    ([{'key': 'value'}, {'key': 'value'}], True),
-    ([{'key': ['list']}, {'key': ['list']}], True),
-    ([{'key': {'key': 'value'}}, {'key': {'key': 'value'}}], True),
+@pytest.mark.parametrize('args, kwargs, expects', [
+    ([{'key': 'value'}, {'key': 'value'}], None, True),
+    ([{'key': ['list']}, {'key': ['list']}], None, True),
+    ([{'key': {'key': 'value'}}, {'key': {'key': 'value'}}], None, True),
 
-    ([{'key': 'value'}, {'key': 'value2'}], False),
-    ([{'key': ['list']}, {'key': ['else']}], False),
-    ([{'key': {'key': 'value'}}, {'key': {'else': 'value'}}], False),
-    ([{'key': {'key': 'value'}}, {'else': {'key': 'value'}}], False),
+    ([{'key': 'value'}, {'key': 'value2'}], None, False),
+    ([{'key': ['list']}, {'key': ['else']}], None, False),
+    ([{'key': {'key': 'value'}}, {'key': {'else': 'value'}}], None, False),
+    ([{'key': {'key': 'value'}}, {'else': {'key': 'value'}}], None, False),
 
-    ([{'key': 'value'}, 123], False)
+    ([{'key': 'value'}, 123], None, False),
+
+    ([{'key': 'value', 'missing': None }, {'key': 'value' }], None, False),
+    ([{'key': 'value', 'missing': None }, {'key': 'value' }], {'missing_as_none': True}, True),
 ])
-def test_are_dicts_equivalent(args, expects):
-    result = checkers.are_dicts_equivalent(*args)
+def test_are_dicts_equivalent(args, kwargs, expects):
+    if not kwargs:
+        result = checkers.are_dicts_equivalent(*args)
+    else:
+        result = checkers.are_dicts_equivalent(*args, **kwargs)
     assert result == expects
 
 
