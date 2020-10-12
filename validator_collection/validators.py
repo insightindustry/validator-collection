@@ -2829,7 +2829,7 @@ def mimetype(value,
 
     :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
     :raises CannotCoerceError: if ``value`` is not a valid string
-    :raises InvalidMimetypeError: if ``value`` is neither a valid MIME type nor empty
+    :raises InvalidMimeTypeError: if ``value`` is neither a valid MIME type nor empty
       with ``allow_empty`` set to ``True``
 
     """

@@ -46,12 +46,12 @@
     -
     -
     - :func:`is_writeable <validator_collection.checkers.is_writeable>`
-    -
+    - :func:`is_mimetype <validator_collection.checkers.is_mimetype>`
   * - :func:`is_iterable <validator_collection.checkers.is_iterable>`
     -
     -
     - :func:`is_executable <validator_collection.checkers.is_executable>`
-    - :func:`is_mimetype <validator_collection.checkers.is_mimetype>`
+    -
   * - :func:`is_not_empty <validator_collection.checkers.is_not_empty>`
     -
     -
