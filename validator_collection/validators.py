@@ -134,6 +134,8 @@ IPV6_REGEX = re.compile(
 TIMEDELTA_REGEX = re.compile(r'((?P<days>\d+) days?, )?(?P<hours>\d+):'
                              r'(?P<minutes>\d+):(?P<seconds>\d+(\.\d+)?)')
 
+MIME_TYPE_REGEX = re.compile(r"^multipart|[-\w.]+/[-\w.\+]+$")
+
 # pylint: disable=W0613
 
 ## CORE
@@ -2803,5 +2805,50 @@ def mac_address(value,
     if not is_valid:
         raise errors.InvalidMACAddressError('value (%s) is not a valid MAC '
                                             'address' % value)
+
+    return value
+
+
+@disable_on_env
+def mimetype(value,
+             allow_empty = False,
+             **kwargs):
+    """Validate that ``value`` is a valid MIME-type.
+
+    :param value: The value to validate.
+    :type value: :class:`str <python:str>`
+
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: ``value`` / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
+
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a valid string
+    :raises InvalidMimetypeError: if ``value`` is neither a valid MIME type nor empty
+      with ``allow_empty`` set to ``True``
+
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    if not isinstance(value, basestring):
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
+
+    value = value.lower().strip()
+
+    is_valid = MIME_TYPE_REGEX.fullmatch(value)
+
+    if not is_valid:
+        raise errors.InvalidMimeTypeError(
+            'value (%s) is not a valid MIME Type' % value
+        )
 
     return value
