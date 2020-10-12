@@ -1488,6 +1488,15 @@ def test_executable(fs, value, fails, allow_empty):
     (u"https://www.test.com]", True, False, False),
     (u"https://www.test.com]", True, False, True),
 
+    # Issue #64
+    (u"HTTP://www.foo.com", False, False, False),
+    (u"http://www.foo.com", False, False, False),
+    (u"HTTPS://www.foo.com", False, False, False),
+    (u"httPS://www.foo.com", False, False, False),
+    (u"FTP://www.foo.com", False, False, False),
+    (u"FtP://www.foo.com", False, False, False),
+
+
 ])
 def test_url(value, fails, allow_empty, allow_special_ips):
     """Test the URL validator."""
