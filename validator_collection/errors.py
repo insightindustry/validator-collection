@@ -148,6 +148,14 @@ class InvalidMACAddressError(ValueError):
     """
     pass
 
+class InvalidMimeTypeError(ValueError):
+    """Exception raised when a value is not a valid MIME type.
+
+    **INHERITS FROM:** :class:`ValueError <python:ValueError>`
+
+    """
+    pass
+
 
 class CannotCoerceError(TypeError):
     """Exception raised when a value cannot be coerced to an expected type.
