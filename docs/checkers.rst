@@ -235,3 +235,8 @@ is_mac_address
 -------------------
 
 .. autofunction:: is_mac_address
+
+is_mimetype
+-------------------
+
+.. autofunction:: is_mimetype

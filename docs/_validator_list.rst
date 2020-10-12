@@ -46,7 +46,7 @@
     -
     -
     - :func:`writeable <validator_collection.validators.writeable>`
-    -
+    - :func:`mimetype <validator_collection.validators.mimetype>`
   * -
     -
     -
