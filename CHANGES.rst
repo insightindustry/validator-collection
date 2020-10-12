@@ -5,6 +5,8 @@ Release 1.5.0 (released October 12, 2020)
 
 * #64: Fixed URL validator and checker to ensure that protocol is case insensitive.
 * #63: Added a MIME type validator and checker.
+* ENHANCEMENT: Added ``missing_as_none`` option to ``checkers.are_dicts_equivalent()``.
+* ENHANCEMENT: Added ``strict_typing`` option to ``checkers.are_equivalent()``.
 
 -----------
 
