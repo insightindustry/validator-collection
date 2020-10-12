@@ -222,3 +222,8 @@ mac_address
 --------------
 
 .. autofunction:: mac_address
+
+mimetype
+--------------
+
+.. autofunction:: mimetype

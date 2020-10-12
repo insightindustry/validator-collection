@@ -369,3 +369,8 @@ InvalidMACAddressError (from :class:`ValueError <python:ValueError>`)
 -----------------------------------------------------------------------
 
 .. autoclass:: InvalidMACAddressError
+
+InvalidMimeTypeError (from :class:`ValueError <python:ValueError>`)
+-----------------------------------------------------------------------
+
+.. autoclass:: InvalidMimeTypeError
