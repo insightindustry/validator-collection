@@ -2428,9 +2428,9 @@ def url(value,
     has_protocol = False
     lowercase_stripped_value = None
     for protocol in URL_PROTOCOLS:
-        if protocol in value:
+        if protocol in lowercase_value:
             has_protocol = True
-            stripped_value = value.replace(protocol, '')
+            stripped_value = lowercase_value.replace(protocol, '')
             lowercase_stripped_value = stripped_value.lower()
             break
 
@@ -2453,7 +2453,6 @@ def url(value,
                                allow_empty = False,
                                is_recursive = is_recursive)
                         is_valid = True
-
                     except (ValueError, TypeError):
                         pass
 
@@ -2465,7 +2464,7 @@ def url(value,
             pass
 
     if not is_valid:
-        is_valid = URL_REGEX.match(value)
+        is_valid = URL_REGEX.match(lowercase_value)
 
     if is_valid:
         prefix_index = value.find('@')
