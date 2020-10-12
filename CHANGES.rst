@@ -1,5 +1,13 @@
 -----------
 
+Release 1.5.0 (released October 12, 2020)
+============================================
+
+* #64: Fixed URL validator and checker to ensure that protocol is case insensitive.
+* #63: Added a MIME type validator and checker.
+
+-----------
+
 Release 1.4.2 (released June 20, 2020)
 ============================================
 
