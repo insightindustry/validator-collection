@@ -215,7 +215,7 @@ Validators
     -
     -
     - ``writeable``
-    -
+    - ``mimetype``
   * -
     -
     -
@@ -275,7 +275,7 @@ Checkers
     -
     -
     - ``is_writeable``
-    -
+    - ``is_mimetype``
   * - ``is_iterable``
     -
     -
