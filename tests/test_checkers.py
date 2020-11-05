@@ -66,6 +66,13 @@ class str2(str):
 
 ])
 def test_is_iterable(value, kwargs, expects):
+    """
+    Indicate whether value is iterable.
+
+    Args:
+        value: (todo): write your description
+        expects: (todo): write your description
+    """
     if kwargs and isinstance(expects, bool):
         result = checkers.is_iterable(value, **kwargs)
     elif not kwargs and isinstance(expects, bool):
@@ -95,6 +102,12 @@ def test_is_iterable(value, kwargs, expects):
     ([{'key': 'value', 'missing': None }, {'key': 'value' }], {'missing_as_none': True}, True),
 ])
 def test_are_dicts_equivalent(args, kwargs, expects):
+    """
+    Check if two arguments are equal.
+
+    Args:
+        expects: (todo): write your description
+    """
     if not kwargs:
         result = checkers.are_dicts_equivalent(*args)
     else:
@@ -125,6 +138,12 @@ def test_are_dicts_equivalent(args, kwargs, expects):
     ([str('test'), str2('test')], { 'strict_typing': False }, True),
 ])
 def test_are_equivalent(args, kwargs, expects):
+    """
+    Compare two arguments are equivalent to the test_are_equivalent
+
+    Args:
+        expects: (todo): write your description
+    """
     if not kwargs:
         result = checkers.are_equivalent(*args)
     else:
@@ -164,6 +183,13 @@ def test_is_type(value, check_type, expects):
     (None, False),
 ])
 def test_is_dict(value, expects):
+    """
+    Check if the value is a dict.
+
+    Args:
+        value: (todo): write your description
+        expects: (str): write your description
+    """
     result = checkers.is_dict(value)
     assert result == expects
 
@@ -252,6 +278,14 @@ def test_is_dict(value, expects):
     ('[{"key": "json"}]', {"minItems": 3, "maxItems": 3}, False),
 ])
 def test_is_json(value, schema, expects):
+    """
+    Indicate whether the given value is a valid.
+
+    Args:
+        value: (str): write your description
+        schema: (todo): write your description
+        expects: (todo): write your description
+    """
     result = checkers.is_json(value, schema)
     assert result == expects
 
@@ -277,6 +311,17 @@ def test_is_json(value, schema, expects):
 
 ])
 def test_is_string(value, expects, coerce_value, minimum_length, maximum_length, whitespace_padding):
+    """
+    Indicate whether value is a string.
+
+    Args:
+        value: (str): write your description
+        expects: (todo): write your description
+        coerce_value: (str): write your description
+        minimum_length: (int): write your description
+        maximum_length: (int): write your description
+        whitespace_padding: (str): write your description
+    """
     result = checkers.is_string(value,
                                 coerce_value = coerce_value,
                                 minimum_length = minimum_length,
@@ -313,6 +358,16 @@ def test_is_string(value, expects, coerce_value, minimum_length, maximum_length,
 
 ])
 def test_is_iterable(value, fails, allow_empty, minimum_length, maximum_length):
+    """
+    Indicate whether value is iterable.
+
+    Args:
+        value: (todo): write your description
+        fails: (todo): write your description
+        allow_empty: (bool): write your description
+        minimum_length: (int): write your description
+        maximum_length: (int): write your description
+    """
     expects = not fails
     if not fails:
         iter(value)
@@ -331,6 +386,16 @@ def test_is_iterable(value, fails, allow_empty, minimum_length, maximum_length):
     (5, True, None, None, ValueError)
 ])
 def test_is_between(value, fails, minimum, maximum, expects):
+    """
+    Indicate whether the given value is between the specified minimum and maximum.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+        expects: (todo): write your description
+    """
     if not fails:
         result = checkers.is_between(value,
                                      minimum = minimum,
@@ -353,6 +418,16 @@ def test_is_between(value, fails, minimum, maximum, expects):
     (None, True, None, 5, TypeError)
 ])
 def test_has_length(value, fails, minimum, maximum, expects):
+    """
+    Returns the minimum length.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        minimum: (int): write your description
+        maximum: (int): write your description
+        expects: (todo): write your description
+    """
     if not fails:
         result = checkers.has_length(value,
                                      minimum = minimum,
@@ -378,6 +453,14 @@ def test_has_length(value, fails, minimum, maximum, expects):
     (123, False, False)
 ])
 def test_is_not_empty(value, fails, allow_empty):
+    """
+    Indicate whether value is empty.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_not_empty(value)
     assert result == expects
@@ -392,6 +475,14 @@ def test_is_not_empty(value, fails, allow_empty):
     ('', False, True),
 ])
 def test_is_none(value, fails, allow_empty):
+    """
+    Indicate whether value is none.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_none(value, allow_empty = allow_empty)
     assert result == expects
@@ -414,6 +505,14 @@ def test_is_none(value, fails, allow_empty):
     ('raise Exception("Foo")\nxyz', True, False),
 ])
 def test_is_variable_name(value, fails, allow_empty):
+    """
+    Returns true if the value is a variable name.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_variable_name(value)
     assert result == expects
@@ -427,6 +526,14 @@ def test_is_variable_name(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_callable(value, fails, allow_empty):
+    """
+    Indicate whether value is a callable.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_callable(value)
     assert result == expects
@@ -440,6 +547,14 @@ def test_is_callable(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_uuid(value, fails, allow_empty):
+    """
+    Check if a value is a valid uuid.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_uuid(value)
     assert result == expects
@@ -510,6 +625,17 @@ def test_is_uuid(value, fails, allow_empty):
     (datetime.utcnow().time(), True, False, None, None, False),
 ])
 def test_is_date(value, fails, allow_empty, minimum, maximum, coerce_value):
+    """
+    Indicate whether value is a valid.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+        coerce_value: (todo): write your description
+    """
     expects = not fails
     result = checkers.is_date(value,
                               minimum = minimum,
@@ -593,6 +719,17 @@ def test_is_date(value, fails, allow_empty, minimum, maximum, coerce_value):
 
 ])
 def test_is_datetime(value, fails, allow_empty, minimum, maximum, coerce_value):
+    """
+    Indicate whether value is a datetime.
+
+    Args:
+        value: (todo): write your description
+        fails: (todo): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+        coerce_value: (todo): write your description
+    """
     expects = not fails
     result = checkers.is_datetime(value,
                                   minimum = minimum,
@@ -722,6 +859,17 @@ def test_is_datetime(value, fails, allow_empty, minimum, maximum, coerce_value):
 
 ])
 def test_is_time(value, fails, allow_empty, minimum, maximum, coerce_value):
+    """
+    Check if value is_empty ising.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+        coerce_value: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_time(value,
                               minimum = minimum,
@@ -772,6 +920,14 @@ def test_is_time(value, fails, allow_empty, minimum, maximum, coerce_value):
 
 ])
 def test_is_timezone(value, fails, allow_empty):
+    """
+    Check if the given value is a valid timezone.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_timezone(value)
     assert result == expects
@@ -798,6 +954,15 @@ def test_is_timezone(value, fails, allow_empty):
 
 ])
 def test_is_timedelta(value, fails, allow_empty, resolution):
+    """
+    Check if the value is a timedelta.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        resolution: (todo): write your description
+    """
     expects = not fails
     result = checkers.is_timedelta(value, resolution = resolution)
     assert result == expects
@@ -822,6 +987,16 @@ def test_is_timedelta(value, fails, allow_empty, resolution):
 
 ])
 def test_is_numeric(value, fails, allow_empty, minimum, maximum):
+    """
+    Indicate whether value is a numeric numeric number.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+    """
     expects = not fails
     result = checkers.is_numeric(value,
                                  minimum = minimum,
@@ -850,6 +1025,18 @@ def test_is_numeric(value, fails, allow_empty, minimum, maximum):
 
 ])
 def test_is_integer(value, fails, allow_empty, coerce_value, minimum, maximum, expects):
+    """
+    Indicate whether value is a positive integer.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        coerce_value: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+        expects: (todo): write your description
+    """
     expects = not fails
     result = checkers.is_integer(value,
                                  coerce_value = coerce_value,
@@ -876,6 +1063,16 @@ def test_is_integer(value, fails, allow_empty, coerce_value, minimum, maximum, e
 
 ])
 def test_is_float(value, fails, allow_empty, minimum, maximum):
+    """
+    Indicate whether the value is a float.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+    """
     expects = not fails
     result = checkers.is_float(value,
                                minimum = minimum,
@@ -901,6 +1098,16 @@ def test_is_float(value, fails, allow_empty, minimum, maximum):
 
 ])
 def test_is_fraction(value, fails, allow_empty, minimum, maximum):
+    """
+    Indicate whether the value is a fraction of the given value.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (todo): write your description
+        maximum: (int): write your description
+    """
     expects = not fails
     result = checkers.is_fraction(value,
                                   minimum = minimum,
@@ -926,6 +1133,16 @@ def test_is_fraction(value, fails, allow_empty, minimum, maximum):
 
 ])
 def test_is_decimal(value, fails, allow_empty, minimum, maximum):
+    """
+    Indicate whether the given value is a decimal.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        minimum: (int): write your description
+        maximum: (int): write your description
+    """
     expects = not fails
     result = checkers.is_decimal(value,
                                  minimum = minimum,
@@ -941,6 +1158,14 @@ def test_is_decimal(value, fails, allow_empty, minimum, maximum):
     (None, True, False),
 ])
 def test_is_bytesIO(value, fails, allow_empty):
+    """
+    Check if value is a byte string.
+
+    Args:
+        value: (todo): write your description
+        fails: (todo): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_bytesIO(value)
     assert result == expects
@@ -952,6 +1177,14 @@ def test_is_bytesIO(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_stringIO(value, fails, allow_empty):
+    """
+    Indicate whether value is a string.
+
+    Args:
+        value: (str): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_stringIO(value)
     assert result == expects
@@ -968,6 +1201,14 @@ def test_is_stringIO(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_pathlike(value, fails, allow_empty):
+    """
+    Check if value is a valid.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_pathlike(value)
     assert result == expects
@@ -983,6 +1224,14 @@ def test_is_pathlike(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_on_filesystem(value, fails, allow_empty):
+    """
+    Check if the given value is a test.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_on_filesystem(value)
     assert result == expects
@@ -997,6 +1246,14 @@ def test_is_on_filesystem(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_file(value, fails, allow_empty):
+    """
+    Check if a file exists.
+
+    Args:
+        value: (str): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_file(value)
     assert result == expects
@@ -1012,6 +1269,14 @@ def test_is_file(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_directory(value, fails, allow_empty):
+    """
+    Check if the given value is a directory.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_directory(value)
     assert result == expects
@@ -1191,6 +1456,14 @@ def test_is_executable(fs, value, fails, allow_empty):
 
 ])
 def test_is_email(value, fails, allow_empty):
+    """
+    Indicate whether value is a valid email address.
+
+    Args:
+        value: (str): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_email(value)
     assert result == expects
@@ -1416,6 +1689,15 @@ def test_is_email(value, fails, allow_empty):
 
 ])
 def test_is_url(value, fails, allow_empty, allow_special_ips):
+    """
+    Validate that value is a valid url.
+
+    Args:
+        value: (str): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        allow_special_ips: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_url(value,
                              allow_empty = allow_empty,
@@ -1517,6 +1799,15 @@ def test_is_url(value, fails, allow_empty, allow_special_ips):
 
 ])
 def test_is_domain(value, fails, allow_empty, allow_ips):
+    """
+    Indicate whether value is a valid domain.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+        allow_ips: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_domain(value,
                                 allow_empty = allow_empty,
@@ -1562,6 +1853,14 @@ def test_is_domain(value, fails, allow_empty, allow_ips):
     (None, True, False),
 ])
 def test_is_ip_address(value, fails, allow_empty):
+    """
+    Indicate whether value is a valid ip address.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_ip_address(value)
     assert result == expects
@@ -1583,6 +1882,14 @@ def test_is_ip_address(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_ipv4(value, fails, allow_empty):
+    """
+    Indicate if value is a valid ipv4 address.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_ipv4(value)
     assert result == expects
@@ -1612,6 +1919,14 @@ def test_is_ipv4(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_ipv6(value, fails, allow_empty):
+    """
+    Check that value is a valid ipv6 address.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_ipv6(value)
     assert result == expects
@@ -1639,6 +1954,14 @@ def test_is_ipv6(value, fails, allow_empty):
     (None, True, False),
 ])
 def test_is_mac_address(value, fails, allow_empty):
+    """
+    Check if value is a valid mac address.
+
+    Args:
+        value: (todo): write your description
+        fails: (todo): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_mac_address(value)
     assert result == expects
@@ -2342,6 +2665,14 @@ def test_is_mac_address(value, fails, allow_empty):
     ('invalid expression', True, False),
 ])
 def test_mimetype(value, fails, allow_empty):
+    """
+    Assert that the value is a valid test.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     expects = not fails
     result = checkers.is_mimetype(value)
     assert result == expects
