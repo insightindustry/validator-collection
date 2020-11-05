@@ -2549,6 +2549,14 @@ def test_mac_address(value, fails, allow_empty):
     ('invalid expression', True, False),
 ])
 def test_mimetype(value, fails, allow_empty):
+    """
+    Validate that value is a valid test.
+
+    Args:
+        value: (todo): write your description
+        fails: (str): write your description
+        allow_empty: (bool): write your description
+    """
     if not fails:
         validated = validators.mimetype(value, allow_empty = allow_empty)
         if value:

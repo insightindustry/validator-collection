@@ -99,12 +99,33 @@ if is_py2:
             super(TimeZone, self).__init__(**kwargs)
 
         def utcoffset(self, dt):
+            """
+            Convert datetime object to the specified offset.
+
+            Args:
+                self: (todo): write your description
+                dt: (todo): write your description
+            """
             return self._offset
 
         def dst(self, dt):
+            """
+            Returns a datetime.
+
+            Args:
+                self: (todo): write your description
+                dt: (todo): write your description
+            """
             return datetime_.timedelta(0)
 
         def tzname(self, dt):
+            """
+            Return the timezone name for the given datetime.
+
+            Args:
+                self: (todo): write your description
+                dt: (todo): write your description
+            """
             return self._name
 
 elif is_py3:

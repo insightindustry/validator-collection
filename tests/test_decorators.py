@@ -26,6 +26,15 @@ import pytest
 
 ])
 def test_disable_on_env(env_value, input_value, force_run, expects):
+    """
+    The test function for the test.
+
+    Args:
+        env_value: (todo): write your description
+        input_value: (todo): write your description
+        force_run: (bool): write your description
+        expects: (todo): write your description
+    """
     if os.getenv('VALIDATORS_DISABLED', None):
         del os.environ['VALIDATORS_DISABLED']
 
@@ -34,6 +43,13 @@ def test_disable_on_env(env_value, input_value, force_run, expects):
 
     @disable_on_env
     def decorated_function(value, other_value = None):                          # pylint: disable=W0613
+        """
+        Decorator to convert a function.
+
+        Args:
+            value: (todo): write your description
+            other_value: (todo): write your description
+        """
         return 123
 
     result = decorated_function(input_value,                                    # pylint: disable=E1123
@@ -56,6 +72,15 @@ def test_disable_on_env(env_value, input_value, force_run, expects):
 
 ])
 def test_disable_checker_on_env(env_value, input_value, force_run, expects):
+    """
+    Decorator to runer.
+
+    Args:
+        env_value: (todo): write your description
+        input_value: (todo): write your description
+        force_run: (bool): write your description
+        expects: (todo): write your description
+    """
     if os.getenv('CHECKERS_DISABLED', None):
         del os.environ['CHECKERS_DISABLED']
 
@@ -64,6 +89,13 @@ def test_disable_checker_on_env(env_value, input_value, force_run, expects):
 
     @disable_checker_on_env
     def decorated_function(value, other_value = None, **kwargs):                          # pylint: disable=W0613
+        """
+        Decorator for decorator.
+
+        Args:
+            value: (todo): write your description
+            other_value: (todo): write your description
+        """
         return 123
 
     result = decorated_function(input_value,                                    # pylint: disable=E1123

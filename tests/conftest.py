@@ -75,6 +75,12 @@ def state(request):
 def _add_metaclass(metaclass):
     """Class decorator for creating a class with a metaclass."""
     def wrapper(cls):
+        """
+        Decor for a metaclass.
+
+        Args:
+            cls: (todo): write your description
+        """
         orig_vars = cls.__dict__.copy()
         slots = orig_vars.get('__slots__')
         if slots is not None:
@@ -107,6 +113,13 @@ class GetItemIterable(object):
     items = (1, 2, 3, 4)
 
     def __getitem__(self, key):
+        """
+        Returns the value of a given key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         return self.items[key]
 
 
@@ -114,24 +127,60 @@ class IterIterable(object):
     """A class that has an ``__iter__`` method."""
 
     def __iter__(self):
+        """
+        Returns an iterator over the iterable.
+
+        Args:
+            self: (todo): write your description
+        """
         return self
 
     def __next__(self):
+        """
+        Returns the next iteration.
+
+        Args:
+            self: (todo): write your description
+        """
         raise StopIteration()
 
     def next(self):
+        """
+        Returns the next item
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__next__()
 
 class IterableIterable(Iterable):
     """A class that inherits from ``Iterable``."""
 
     def __iter__(self):
+        """
+        Returns an iterator over the iterable.
+
+        Args:
+            self: (todo): write your description
+        """
         return self
 
     def __next__(self):
+        """
+        Returns the next iteration.
+
+        Args:
+            self: (todo): write your description
+        """
         raise StopIteration()
 
     def next(self):
+        """
+        Returns the next item
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__next__()
 
 
@@ -139,4 +188,10 @@ class FalseIterable(Iterable):
     """A class that inherits from ``Iterable``."""
 
     def __iter__(self):
+        """
+        Returns an iterable of iterable.
+
+        Args:
+            self: (todo): write your description
+        """
         raise AttributeError('this simulates an AttributeError')

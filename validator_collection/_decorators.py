@@ -30,6 +30,11 @@ def disable_on_env(func):
     """
     @wraps(func)
     def func_wrapper(*args, **kwargs):
+        """
+        Decorator for a function.
+
+        Args:
+        """
         # pylint: disable=C0111, C0103
         function_name = func.__name__
         VALIDATORS_DISABLED = os.getenv('VALIDATORS_DISABLED', '')
@@ -64,6 +69,11 @@ def disable_checker_on_env(func):
     """
     @wraps(func)
     def func_wrapper(*args, **kwargs):
+        """
+        Decorator to run function.
+
+        Args:
+        """
         # pylint: disable=C0111, C0103
         function_name = func.__name__
         CHECKERS_DISABLED = os.getenv('CHECKERS_DISABLED', '')
