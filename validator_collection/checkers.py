@@ -17,6 +17,7 @@ from validator_collection._decorators import disable_checker_on_env
 # pylint: disable=W0613
 ## CORE
 
+
 @disable_checker_on_env
 def is_type(obj,
             type_,
@@ -1643,6 +1644,33 @@ def is_mimetype(value, **kwargs):
     """
     try:
         value = validators.mimetype(value, **kwargs)
+    except SyntaxError as error:
+        raise error
+    except Exception:
+        return False
+
+    return True
+
+
+@disable_checker_on_env
+def is_charset(value, **kwargs):
+    """Indicate whether ``value`` is a valid encoding character set (charset).
+
+    .. note::
+
+      This validator checks values against the
+      `IANA Charset Registry <http://www.iana.org/assignments/character-sets/character-sets.xhtml>`_
+
+    :param value: The value to evaluate.
+
+    :returns: ``True`` if ``value`` is valid, ``False`` if it is not.
+    :rtype: :class:`bool <python:bool>`
+
+    :raises SyntaxError: if ``kwargs`` contains duplicate keyword parameters or duplicates
+      keyword parameters passed to the underlying validator
+    """
+    try:
+        value = validators.charset(value, **kwargs)
     except SyntaxError as error:
         raise error
     except Exception:
