@@ -47,7 +47,7 @@
     -
     - :func:`writeable <validator_collection.validators.writeable>`
     - :func:`mimetype <validator_collection.validators.mimetype>`
-  * -
+  * - :func:`charset <validator_collection.validators.charset>`
     -
     -
     - :func:`executable <validator_collection.validators.executable>`

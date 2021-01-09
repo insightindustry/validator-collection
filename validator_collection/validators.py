@@ -3131,7 +3131,7 @@ def charset(value,
     .. note::
 
       This validator checks values against the
-      `IANA Charset Registry <http://www.iana.org/assignments/character-sets/character-sets.xhtml>`_
+      `IANA Charset Registry <http://www.iana.org/assignments/character-sets/character-sets.xhtml>`_.
 
     :param value: The value to validate.
     :type value: :class:`str <python:str>`

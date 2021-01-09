@@ -24,6 +24,11 @@ Using Validators
 Core
 =========
 
+charset
+-----------
+
+.. autofunction:: charset
+
 dict
 -------
 

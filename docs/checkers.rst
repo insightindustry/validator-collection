@@ -16,75 +16,80 @@ Using Checkers
 Core
 =======
 
-is_type
----------
+are_dicts_equivalent
+------------------------
 
-.. autofunction:: is_type
+.. autofunction:: are_dicts_equivalent
 
 are_equivalent
 -----------------
 
 .. autofunction:: are_equivalent
 
-are_dicts_equivalent
-------------------------
+has_length
+--------------
 
-.. autofunction:: are_dicts_equivalent
+.. autofunction:: has_length
 
 is_between
 -------------
 
 .. autofunction:: is_between
 
-has_length
+is_callable
+-------------
+
+.. autofunction:: is_callable
+
+is_charset
 --------------
 
-.. autofunction:: has_length
+.. autofunction:: is_charset
 
 is_dict
 ---------
 
 .. autofunction:: is_dict
 
-is_json
----------
-
-.. autofunction:: is_json
-
-is_string
----------
-
-.. autofunction:: is_string
-
 is_iterable
 --------------
 
 .. autofunction:: is_iterable
 
-is_not_empty
---------------
+is_json
+---------
 
-.. autofunction:: is_not_empty
+.. autofunction:: is_json
 
 is_none
 --------------
 
 .. autofunction:: is_none
 
-is_variable_name
---------------------------
+is_not_empty
+--------------
 
-.. autofunction:: is_variable_name
+.. autofunction:: is_not_empty
 
-is_callable
--------------
+is_string
+---------
 
-.. autofunction:: is_callable
+.. autofunction:: is_string
+
+is_type
+---------
+
+.. autofunction:: is_type
 
 is_uuid
 ---------
 
 .. autofunction:: is_uuid
+
+is_variable_name
+--------------------------
+
+.. autofunction:: is_variable_name
 
 ------------
 
