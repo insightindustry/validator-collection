@@ -197,7 +197,7 @@ In order to prepare your local development environment, you should:
 
   .. code-block:: bash
 
-    validator-collection/ $ pip install -r requirements.txt
+    validator-collection/ $ pip install -r requirements.dev.txt
 
 And you should be good to go!
 
