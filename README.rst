@@ -230,7 +230,7 @@ Validators
     -
     - ``writeable``
     - ``mimetype``
-  * -
+  * - ``charset``
     -
     -
     - ``executable``
@@ -316,6 +316,11 @@ Checkers
     -
     -
   * - ``is_variable_name``
+    -
+    -
+    -
+    -
+  * - ``is_charset``
     -
     -
     -

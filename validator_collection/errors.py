@@ -156,6 +156,15 @@ class InvalidMimeTypeError(ValueError):
     """
     pass
 
+class InvalidCharsetError(ValueError):
+    """Exception raised when a value is not a valid charset MIME name, official name,
+    or alias.
+
+    **INHERITS FROM:** :class:`ValueError <python:ValueError>`
+
+    """
+    pass
+
 
 class CannotCoerceError(TypeError):
     """Exception raised when a value cannot be coerced to an expected type.

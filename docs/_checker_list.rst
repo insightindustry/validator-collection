@@ -77,3 +77,8 @@
     -
     -
     -
+  * - :func:`is_charset <validator_collection.checkers.is_charset>`
+    -
+    -
+    -
+    -

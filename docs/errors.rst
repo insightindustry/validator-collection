@@ -240,6 +240,11 @@ InvalidVariableNameError (from :class:`ValueError <python:ValueError>`)
 
 .. autoclass:: InvalidVariableNameError
 
+InvalidCharsetError (from :class:`ValueError <python:Valueerror>`)
+-------------------------------------------------------------------------
+
+.. autoclass:: InvalidCharsetError
+
 -----------
 
 Date / Time

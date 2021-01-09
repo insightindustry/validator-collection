@@ -136,6 +136,273 @@ TIMEDELTA_REGEX = re.compile(r'((?P<days>\d+) days?, )?(?P<hours>\d+):'
 
 MIME_TYPE_REGEX = re.compile(r"^multipart|[-\w.]+/[-\w.\+]+$")
 
+# pylint: disable=E501
+
+# CHARSET_REGISTRY consists of a three-element tuple, where the first element is the
+# Preferred MIME Name, second element is the official Name, and third element is a list
+# of official aliases for the charset.
+CHARSET_REGISTRY = [
+    ("US-ASCII", "US-ASCII", ["iso-ir-6", "ANSI_X3.4-1968", "ANSI_X3.4-1986", "ISO_646.irv:1991", "ISO646-US", "US-ASCII", "us", "IBM367", "cp367", "csASCII"]),  # noqa
+    ("ISO-8859-1", "ISO_8859-1:1987", ["iso-ir-100", "ISO_8859-1", "ISO-8859-1", "latin1", "l1", "IBM819", "CP819", "csISOLatin1"]),  # noqa
+    ("ISO-8859-2", "ISO_8859-2:1987", ["iso-ir-101", "ISO_8859-2", "ISO-8859-2", "latin2", "l2", "csISOLatin2"]),  # noqa
+    ("ISO-8859-3", "ISO_8859-3:1988", ["iso-ir-109", "ISO_8859-3", "ISO-8859-3", "latin3", "l3", "csISOLatin3"]),  # noqa
+    ("ISO-8859-4", "ISO_8859-4:1988", ["iso-ir-110", "ISO_8859-4", "ISO-8859-4", "latin4", "l4", "csISOLatin4"]),  # noqa
+    ("ISO-8859-5", "ISO_8859-5:1988", ["iso-ir-144", "ISO_8859-5", "ISO-8859-5", "cyrillic", "csISOLatinCyrillic"]),  # noqa
+    ("ISO-8859-6", "ISO_8859-6:1987", ["iso-ir-127", "ISO_8859-6", "ISO-8859-6", "ECMA-114", "ASMO-708", "arabic", "csISOLatinArabic"]),  # noqa
+    ("ISO-8859-7", "ISO_8859-7:1987", ["iso-ir-126", "ISO_8859-7", "ISO-8859-7", "ELOT_928", "ECMA-118", "greek", "greek8", "csISOLatinGreek"]),  # noqa
+    ("ISO-8859-8", "ISO_8859-8:1988", ["iso-ir-138", "ISO_8859-8", "ISO-8859-8", "hebrew", "csISOLatinHebrew"]),  # noqa
+    ("ISO-8859-9", "ISO_8859-9:1989", ["iso-ir-148", "ISO_8859-9", "ISO-8859-9", "latin5", "l5", "csISOLatin5"]),  # noqa
+    ("ISO-8859-10", "ISO-8859-10", ["iso-ir-157", "l6", "ISO_8859-10:1992", "csISOLatin6", "latin6"]),  # noqa
+    (None, "ISO_6937-2-add", ["iso-ir-142", "csISOTextComm"]),  # noqa
+    (None, "JIS_X0201", ["X0201", "csHalfWidthKatakana"]),  # noqa
+    (None, "JIS_Encoding", ["csJISEncoding"]),  # noqa
+    ("Shift_JIS", "Shift_JIS", ["MS_Kanji", "csShiftJIS"]),  # noqa
+    ("EUC-JP", "Extended_UNIX_Code_Packed_Format_for_Japanese", ["csEUCPkdFmtJapanese", "EUC-JP"]),  # noqa
+    (None, "Extended_UNIX_Code_Fixed_Width_for_Japanese", ["csEUCFixWidJapanese"]),  # noqa
+    (None, "BS_4730", ["iso-ir-4", "ISO646-GB", "gb", "uk", "csISO4UnitedKingdom"]),  # noqa
+    (None, "SEN_850200_C", ["iso-ir-11", "ISO646-SE2", "se2", "csISO11SwedishForNames"]),  # noqa
+    (None, "IT", ["iso-ir-15", "ISO646-IT", "csISO15Italian"]),  # noqa
+    (None, "ES", ["iso-ir-17", "ISO646-ES", "csISO17Spanish"]),  # noqa
+    (None, "DIN_66003", ["iso-ir-21", "de", "ISO646-DE", "csISO21German"]),  # noqa
+    (None, "NS_4551-1", ["iso-ir-60", "ISO646-NO", "no", "csISO60DanishNorwegian", "csISO60Norwegian1"]),  # noqa
+    (None, "NF_Z_62-010", ["iso-ir-69", "ISO646-FR", "fr", "csISO69French"]),  # noqa
+    (None, "ISO-10646-UTF-1", ["csISO10646UTF1"]),  # noqa
+    (None, "ISO_646.basic:1983", ["ref", "csISO646basic1983"]),  # noqa
+    (None, "INVARIANT", ["csINVARIANT"]),  # noqa
+    (None, "ISO_646.irv:1983", ["iso-ir-2", "irv", "csISO2IntlRefVersion"]),  # noqa
+    (None, "NATS-SEFI", ["iso-ir-8-1", "csNATSSEFI"]),  # noqa
+    (None, "NATS-SEFI-ADD", ["iso-ir-8-2", "csNATSSEFIADD"]),  # noqa
+    (None, "NATS-DANO", ["iso-ir-9-1", "csNATSDANO"]),  # noqa
+    (None, "NATS-DANO-ADD", ["iso-ir-9-2", "csNATSDANOADD"]),  # noqa
+    (None, "SEN_850200_B", ["iso-ir-10", "FI", "ISO646-FI", "ISO646-SE", "se", "csISO10Swedish"]),  # noqa
+    (None, "KS_C_5601-1987", ["iso-ir-149", "KS_C_5601-1989", "KSC_5601", "korean", "csKSC56011987"]),  # noqa
+    ("ISO-2022-KR", "ISO-2022-KR", ["csISO2022KR"]),  # noqa
+    ("EUC-KR", "EUC-KR", ["csEUCKR"]),  # noqa
+    ("ISO-2022-JP", "ISO-2022-JP", ["csISO2022JP"]),  # noqa
+    ("ISO-2022-JP-2", "ISO-2022-JP-2", ["csISO2022JP2"]),  # noqa
+    (None, "JIS_C6220-1969-jp", ["JIS_C6220-1969", "iso-ir-13", "katakana", "x0201-7", "csISO13JISC6220jp"]),  # noqa
+    (None, "JIS_C6220-1969-ro", ["iso-ir-14", "jp", "ISO646-JP", "csISO14JISC6220ro"]),  # noqa
+    (None, "PT", ["iso-ir-16", "ISO646-PT", "csISO16Portuguese"]),  # noqa
+    (None, "greek7-old", ["iso-ir-18", "csISO18Greek7Old"]),  # noqa
+    (None, "latin-greek", ["iso-ir-19", "csISO19LatinGreek"]),  # noqa
+    (None, "NF_Z_62-010_(1973)", ["iso-ir-25", "ISO646-FR1", "csISO25French"]),  # noqa
+    (None, "Latin-greek-1", ["iso-ir-27", "csISO27LatinGreek1"]),  # noqa
+    (None, "ISO_5427", ["iso-ir-37", "csISO5427Cyrillic"]),  # noqa
+    (None, "JIS_C6226-1978", ["iso-ir-42", "csISO42JISC62261978"]),  # noqa
+    (None, "BS_viewdata", ["iso-ir-47", "csISO47BSViewdata"]),  # noqa
+    (None, "INIS", ["iso-ir-49", "csISO49INIS"]),  # noqa
+    (None, "INIS-8", ["iso-ir-50", "csISO50INIS8"]),  # noqa
+    (None, "INIS-cyrillic", ["iso-ir-51", "csISO51INISCyrillic"]),  # noqa
+    (None, "ISO_5427:1981", ["iso-ir-54", "ISO5427Cyrillic1981", "csISO54271981"]),  # noqa
+    (None, "ISO_5428:1980", ["iso-ir-55", "csISO5428Greek"]),  # noqa
+    (None, "GB_1988-80", ["iso-ir-57", "cn", "ISO646-CN", "csISO57GB1988"]),  # noqa
+    (None, "GB_2312-80", ["iso-ir-58", "chinese", "csISO58GB231280"]),  # noqa
+    (None, "NS_4551-2", ["ISO646-NO2", "iso-ir-61", "no2", "csISO61Norwegian2"]),  # noqa
+    (None, "videotex-suppl", ["iso-ir-70", "csISO70VideotexSupp1"]),  # noqa
+    (None, "PT2", ["iso-ir-84", "ISO646-PT2", "csISO84Portuguese2"]),  # noqa
+    (None, "ES2", ["iso-ir-85", "ISO646-ES2", "csISO85Spanish2"]),  # noqa
+    (None, "MSZ_7795.3", ["iso-ir-86", "ISO646-HU", "hu", "csISO86Hungarian"]),  # noqa
+    (None, "JIS_C6226-1983", ["iso-ir-87", "x0208", "JIS_X0208-1983", "csISO87JISX0208"]),  # noqa
+    (None, "greek7", ["iso-ir-88", "csISO88Greek7"]),  # noqa
+    (None, "ASMO_449", ["ISO_9036", "arabic7", "iso-ir-89", "csISO89ASMO449"]),  # noqa
+    (None, "iso-ir-90", ["csISO90"]),  # noqa
+    (None, "JIS_C6229-1984-a", ["iso-ir-91", "jp-ocr-a", "csISO91JISC62291984a"]),  # noqa
+    (None, "JIS_C6229-1984-b", ["iso-ir-92", "ISO646-JP-OCR-B", "jp-ocr-b", "csISO92JISC62991984b"]),  # noqa
+    (None, "JIS_C6229-1984-b-add", ["iso-ir-93", "jp-ocr-b-add", "csISO93JIS62291984badd"]),  # noqa
+    (None, "JIS_C6229-1984-hand", ["iso-ir-94", "jp-ocr-hand", "csISO94JIS62291984hand"]),  # noqa
+    (None, "JIS_C6229-1984-hand-add", ["iso-ir-95", "jp-ocr-hand-add", "csISO95JIS62291984handadd"]),  # noqa
+    (None, "JIS_C6229-1984-kana", ["iso-ir-96", "csISO96JISC62291984kana"]),  # noqa
+    (None, "ISO_2033-1983", ["iso-ir-98", "e13b", "csISO2033"]),  # noqa
+    (None, "ANSI_X3.110-1983", ["iso-ir-99", "CSA_T500-1983", "NAPLPS", "csISO99NAPLPS"]),  # noqa
+    (None, "T.61-7bit", ["iso-ir-102", "csISO102T617bit"]),  # noqa
+    (None, "T.61-8bit", ["T.61", "iso-ir-103", "csISO103T618bit"]),  # noqa
+    (None, "ECMA-cyrillic", ["iso-ir-111", "KOI8-E", "csISO111ECMACyrillic"]),  # noqa
+    (None, "CSA_Z243.4-1985-1", ["iso-ir-121", "ISO646-CA", "csa7-1", "csa71", "ca", "csISO121Canadian1"]),  # noqa
+    (None, "CSA_Z243.4-1985-2", ["iso-ir-122", "ISO646-CA2", "csa7-2", "csa72", "csISO122Canadian2"]),  # noqa
+    (None, "CSA_Z243.4-1985-gr", ["iso-ir-123", "csISO123CSAZ24341985gr"]),  # noqa
+    ("ISO-8859-6-E", "ISO_8859-6-E", ["csISO88596E", "ISO-8859-6-E"]),  # noqa
+    ("ISO-8859-6-I", "ISO_8859-6-I", ["csISO88596I", "ISO-8859-6-I"]),  # noqa
+    (None, "T.101-G2", ["iso-ir-128", "csISO128T101G2"]),  # noqa
+    ("ISO-8859-8-E", "ISO_8859-8-E", ["csISO88598E", "ISO-8859-8-E"]),  # noqa
+    ("ISO-8859-8-I", "ISO_8859-8-I", ["csISO88598I", "ISO-8859-8-I"]),  # noqa
+    (None, "CSN_369103", ["iso-ir-139", "csISO139CSN369103"]),  # noqa
+    (None, "JUS_I.B1.002", ["iso-ir-141", "ISO646-YU", "js", "yu", "csISO141JUSIB1002"]),  # noqa
+    (None, "IEC_P27-1", ["iso-ir-143", "csISO143IECP271"]),  # noqa
+    (None, "JUS_I.B1.003-serb", ["iso-ir-146", "serbian", "csISO146Serbian"]),  # noqa
+    (None, "JUS_I.B1.003-mac", ["macedonian", "iso-ir-147", "csISO147Macedonian"]),  # noqa
+    (None, "greek-ccitt", ["iso-ir-150", "csISO150", "csISO150GreekCCITT"]),  # noqa
+    (None, "NC_NC00-10:81", ["cuba", "iso-ir-151", "ISO646-CU", "csISO151Cuba"]),  # noqa
+    (None, "ISO_6937-2-25", ["iso-ir-152", "csISO6937Add"]),  # noqa
+    (None, "GOST_19768-74", ["ST_SEV_358-88", "iso-ir-153", "csISO153GOST1976874"]),  # noqa
+    (None, "ISO_8859-supp", ["iso-ir-154", "latin1-2-5", "csISO8859Supp"]),  # noqa
+    (None, "ISO_10367-box", ["iso-ir-155", "csISO10367Box"]),  # noqa
+    (None, "latin-lap", ["lap", "iso-ir-158", "csISO158Lap"]),  # noqa
+    (None, "JIS_X0212-1990", ["x0212", "iso-ir-159", "csISO159JISX02121990"]),  # noqa
+    (None, "DS_2089", ["DS2089", "ISO646-DK", "dk", "csISO646Danish"]),  # noqa
+    (None, "us-dk", ["csUSDK"]),  # noqa
+    (None, "dk-us", ["csDKUS"]),  # noqa
+    (None, "KSC5636", ["ISO646-KR", "csKSC5636"]),  # noqa
+    (None, "UNICODE-1-1-UTF-7", ["csUnicode11UTF7"]),  # noqa
+    (None, "ISO-2022-CN", ["csISO2022CN"]),  # noqa
+    (None, "ISO-2022-CN-EXT", ["csISO2022CNEXT"]),  # noqa
+    (None, "UTF-8", ["csUTF8"]),  # noqa
+    (None, "ISO-8859-13", ["csISO885913"]),  # noqa
+    (None, "ISO-8859-14", ["iso-ir-199", "ISO_8859-14:1998", "ISO_8859-14", "latin8", "iso-celtic", "l8", "csISO885914"]),  # noqa
+    (None, "ISO-8859-15", ["ISO_8859-15", "Latin-9", "csISO885915"]),  # noqa
+    (None, "ISO-8859-16", ["iso-ir-226", "ISO_8859-16:2001", "ISO_8859-16", "latin10", "l10", "csISO885916"]),  # noqa
+    (None, "GBK", ["CP936", "MS936", "windows-936", "csGBK"]),  # noqa
+    (None, "GB18030", ["csGB18030"]),  # noqa
+    (None, "OSD_EBCDIC_DF04_15", ["csOSDEBCDICDF0415"]),  # noqa
+    (None, "OSD_EBCDIC_DF03_IRV", ["csOSDEBCDICDF03IRV"]),  # noqa
+    (None, "OSD_EBCDIC_DF04_1", ["csOSDEBCDICDF041"]),  # noqa
+    (None, "ISO-11548-1", ["ISO_11548-1", "ISO_TR_11548-1", "csISO115481"]),  # noqa
+    (None, "KZ-1048", ["STRK1048-2002", "RK1048", "csKZ1048"]),  # noqa
+    (None, "ISO-10646-UCS-2", ["csUnicode"]),  # noqa
+    (None, "ISO-10646-UCS-4", ["csUCS4"]),  # noqa
+    (None, "ISO-10646-UCS-Basic", ["csUnicodeASCII"]),  # noqa
+    (None, "ISO-10646-Unicode-Latin1", ["csUnicodeLatin1", "ISO-10646"]),  # noqa
+    (None, "ISO-10646-J-1", ["csUnicodeJapanese"]),  # noqa
+    (None, "ISO-Unicode-IBM-1261", ["csUnicodeIBM1261"]),  # noqa
+    (None, "ISO-Unicode-IBM-1268", ["csUnicodeIBM1268"]),  # noqa
+    (None, "ISO-Unicode-IBM-1276", ["csUnicodeIBM1276"]),  # noqa
+    (None, "ISO-Unicode-IBM-1264", ["csUnicodeIBM1264"]),  # noqa
+    (None, "ISO-Unicode-IBM-1265", ["csUnicodeIBM1265"]),  # noqa
+    (None, "UNICODE-1-1", ["csUnicode11"]),  # noqa
+    (None, "SCSU", ["csSCSU"]),  # noqa
+    (None, "UTF-7", ["csUTF7"]),  # noqa
+    (None, "UTF-16BE", ["csUTF16BE"]),  # noqa
+    (None, "UTF-16LE", ["csUTF16LE"]),  # noqa
+    (None, "UTF-16", ["csUTF16"]),  # noqa
+    (None, "CESU-8", ["csCESU8", "csCESU-8"]),  # noqa
+    (None, "UTF-32", ["csUTF32"]),  # noqa
+    (None, "UTF-32BE", ["csUTF32BE"]),  # noqa
+    (None, "UTF-32LE", ["csUTF32LE"]),  # noqa
+    (None, "BOCU-1", ["csBOCU1", "csBOCU-1"]),  # noqa
+    (None, "UTF-7-IMAP", ["csUTF7IMAP"]),  # noqa
+    (None, "ISO-8859-1-Windows-3.0-Latin-1", ["csWindows30Latin1"]),  # noqa
+    (None, "ISO-8859-1-Windows-3.1-Latin-1", ["csWindows31Latin1"]),  # noqa
+    (None, "ISO-8859-2-Windows-Latin-2", ["csWindows31Latin2"]),  # noqa
+    (None, "ISO-8859-9-Windows-Latin-5", ["csWindows31Latin5"]),  # noqa
+    (None, "hp-roman8", ["roman8", "r8", "csHPRoman8"]),  # noqa
+    (None, "Adobe-Standard-Encoding", ["csAdobeStandardEncoding"]),  # noqa
+    (None, "Ventura-US", ["csVenturaUS"]),  # noqa
+    (None, "Ventura-International", ["csVenturaInternational"]),  # noqa
+    (None, "DEC-MCS", ["dec", "csDECMCS"]),  # noqa
+    (None, "IBM850", ["cp850", "850", "csPC850Multilingual"]),  # noqa
+    (None, "PC8-Danish-Norwegian", ["csPC8DanishNorwegian"]),  # noqa
+    (None, "IBM862", ["cp862", "862", "csPC862LatinHebrew"]),  # noqa
+    (None, "PC8-Turkish", ["csPC8Turkish"]),  # noqa
+    (None, "IBM-Symbols", ["csIBMSymbols"]),  # noqa
+    (None, "IBM-Thai", ["csIBMThai"]),  # noqa
+    (None, "HP-Legal", ["csHPLegal"]),  # noqa
+    (None, "HP-Pi-font", ["csHPPiFont"]),  # noqa
+    (None, "HP-Math8", ["csHPMath8"]),  # noqa
+    (None, "Adobe-Symbol-Encoding", ["csHPPSMath"]),  # noqa
+    (None, "HP-DeskTop", ["csHPDesktop"]),  # noqa
+    (None, "Ventura-Math", ["csVenturaMath"]),  # noqa
+    (None, "Microsoft-Publishing", ["csMicrosoftPublishing"]),  # noqa
+    (None, "Windows-31J", ["csWindows31J"]),  # noqa
+    ("GB2312", "GB2312", ["csGB2312"]),  # noqa
+    ("Big5", "Big5", ["csBig5"]),  # noqa
+    (None, "macintosh", ["mac", "csMacintosh"]),  # noqa
+    (None, "IBM037", ["cp037", "ebcdic-cp-us", "ebcdic-cp-ca", "ebcdic-cp-wt", "ebcdic-cp-nl", "csIBM037"]),  # noqa
+    (None, "IBM038", ["EBCDIC-INT", "cp038", "csIBM038"]),  # noqa
+    (None, "IBM273", ["CP273", "csIBM273"]),  # noqa
+    (None, "IBM274", ["EBCDIC-BE", "CP274", "csIBM274"]),  # noqa
+    (None, "IBM275", ["EBCDIC-BR", "cp275", "csIBM275"]),  # noqa
+    (None, "IBM277", ["EBCDIC-CP-DK", "EBCDIC-CP-NO", "csIBM277"]),  # noqa
+    (None, "IBM278", ["CP278", "ebcdic-cp-fi", "ebcdic-cp-se", "csIBM278"]),  # noqa
+    (None, "IBM280", ["CP280", "ebcdic-cp-it", "csIBM280"]),  # noqa
+    (None, "IBM281", ["EBCDIC-JP-E", "cp281", "csIBM281"]),  # noqa
+    (None, "IBM284", ["CP284", "ebcdic-cp-es", "csIBM284"]),  # noqa
+    (None, "IBM285", ["CP285", "ebcdic-cp-gb", "csIBM285"]),  # noqa
+    (None, "IBM290", ["cp290", "EBCDIC-JP-kana", "csIBM290"]),  # noqa
+    (None, "IBM297", ["cp297", "ebcdic-cp-fr", "csIBM297"]),  # noqa
+    (None, "IBM420", ["cp420", "ebcdic-cp-ar1", "csIBM420"]),  # noqa
+    (None, "IBM423", ["cp423", "ebcdic-cp-gr", "csIBM423"]),  # noqa
+    (None, "IBM424", ["cp424", "ebcdic-cp-he", "csIBM424"]),  # noqa
+    (None, "IBM437", ["cp437", "437", "csPC8CodePage437"]),  # noqa
+    (None, "IBM500", ["CP500", "ebcdic-cp-be", "ebcdic-cp-ch", "csIBM500"]),  # noqa
+    (None, "IBM851", ["cp851", "851", "csIBM851"]),  # noqa
+    (None, "IBM852", ["cp852", "852", "csPCp852"]),  # noqa
+    (None, "IBM855", ["cp855", "855", "csIBM855"]),  # noqa
+    (None, "IBM857", ["cp857", "857", "csIBM857"]),  # noqa
+    (None, "IBM860", ["cp860", "860", "csIBM860"]),  # noqa
+    (None, "IBM861", ["cp861", "861", "cp-is", "csIBM861"]),  # noqa
+    (None, "IBM863", ["cp863", "863", "csIBM863"]),  # noqa
+    (None, "IBM864", ["cp864", "csIBM864"]),  # noqa
+    (None, "IBM865", ["cp865", "865", "csIBM865"]),  # noqa
+    (None, "IBM868", ["CP868", "cp-ar", "csIBM868"]),  # noqa
+    (None, "IBM869", ["cp869", "869", "cp-gr", "csIBM869"]),  # noqa
+    (None, "IBM870", ["CP870", "ebcdic-cp-roece", "ebcdic-cp-yu", "csIBM870"]),  # noqa
+    (None, "IBM871", ["CP871", "ebcdic-cp-is", "csIBM871"]),  # noqa
+    (None, "IBM880", ["cp880", "EBCDIC-Cyrillic", "csIBM880"]),  # noqa
+    (None, "IBM891", ["cp891", "csIBM891"]),  # noqa
+    (None, "IBM903", ["cp903", "csIBM903"]),  # noqa
+    (None, "IBM904", ["cp904", "904", "csIBBM904"]),  # noqa
+    (None, "IBM905", ["CP905", "ebcdic-cp-tr", "csIBM905"]),  # noqa
+    (None, "IBM918", ["CP918", "ebcdic-cp-ar2", "csIBM918"]),  # noqa
+    (None, "IBM1026", ["CP1026", "csIBM1026"]),  # noqa
+    (None, "EBCDIC-AT-DE", ["csIBMEBCDICATDE"]),  # noqa
+    (None, "EBCDIC-AT-DE-A", ["csEBCDICATDEA"]),  # noqa
+    (None, "EBCDIC-CA-FR", ["csEBCDICCAFR"]),  # noqa
+    (None, "EBCDIC-DK-NO", ["csEBCDICDKNO"]),  # noqa
+    (None, "EBCDIC-DK-NO-A", ["csEBCDICDKNOA"]),  # noqa
+    (None, "EBCDIC-FI-SE", ["csEBCDICFISE"]),  # noqa
+    (None, "EBCDIC-FI-SE-A", ["csEBCDICFISEA"]),  # noqa
+    (None, "EBCDIC-FR", ["csEBCDICFR"]),  # noqa
+    (None, "EBCDIC-IT", ["csEBCDICIT"]),  # noqa
+    (None, "EBCDIC-PT", ["csEBCDICPT"]),  # noqa
+    (None, "EBCDIC-ES", ["csEBCDICES"]),  # noqa
+    (None, "EBCDIC-ES-A", ["csEBCDICESA"]),  # noqa
+    (None, "EBCDIC-ES-S", ["csEBCDICESS"]),  # noqa
+    (None, "EBCDIC-UK", ["csEBCDICUK"]),  # noqa
+    (None, "EBCDIC-US", ["csEBCDICUS"]),  # noqa
+    (None, "UNKNOWN-8BIT", ["csUnknown8BiT"]),  # noqa
+    (None, "MNEMONIC", ["csMnemonic"]),  # noqa
+    (None, "MNEM", ["csMnem"]),  # noqa
+    (None, "VISCII", ["csVISCII"]),  # noqa
+    (None, "VIQR", ["csVIQR"]),  # noqa
+    ("KOI8-R", "KOI8-R", ["csKOI8R"]),  # noqa
+    (None, "HZ-GB-2312", [""]),  # noqa
+    (None, "IBM866", ["cp866", "866", "csIBM866"]),  # noqa
+    (None, "IBM775", ["cp775", "csPC775Baltic"]),  # noqa
+    (None, "KOI8-U", ["csKOI8U"]),  # noqa
+    (None, "IBM00858", ["CCSID00858", "CP00858", "PC-Multilingual-850+euro", "csIBM00858"]),  # noqa
+    (None, "IBM00924", ["CCSID00924", "CP00924", "ebcdic-Latin9--euro", "csIBM00924"]),  # noqa
+    (None, "IBM01140", ["CCSID01140", "CP01140", "ebcdic-us-37+euro", "csIBM01140"]),  # noqa
+    (None, "IBM01141", ["CCSID01141", "CP01141", "ebcdic-de-273+euro", "csIBM01141"]),  # noqa
+    (None, "IBM01142", ["CCSID01142", "CP01142", "ebcdic-dk-277+euro", "ebcdic-no-277+euro", "csIBM01142"]),  # noqa
+    (None, "IBM01143", ["CCSID01143", "CP01143", "ebcdic-fi-278+euro", "ebcdic-se-278+euro", "csIBM01143"]),  # noqa
+    (None, "IBM01144", ["CCSID01144", "CP01144", "ebcdic-it-280+euro", "csIBM01144"]),  # noqa
+    (None, "IBM01145", ["CCSID01145", "CP01145", "ebcdic-es-284+euro", "csIBM01145"]),  # noqa
+    (None, "IBM01146", ["CCSID01146", "CP01146", "ebcdic-gb-285+euro", "csIBM01146"]),  # noqa
+    (None, "IBM01147", ["CCSID01147", "CP01147", "ebcdic-fr-297+euro", "csIBM01147"]),  # noqa
+    (None, "IBM01148", ["CCSID01148", "CP01148", "ebcdic-international-500+euro", "csIBM01148"]),  # noqa
+    (None, "IBM01149", ["CCSID01149", "CP01149", "ebcdic-is-871+euro", "csIBM01149"]),  # noqa
+    (None, "Big5-HKSCS", ["csBig5HKSCS"]),  # noqa
+    (None, "IBM1047", ["IBM-1047", "csIBM1047"]),  # noqa
+    (None, "PTCP154", ["csPTCP154", "PT154", "CP154", "Cyrillic-Asian"]),  # noqa
+    (None, "Amiga-125", ["Ami1251", "Amiga1251", "Ami-1251", "csAmiga1251"]),  # noqa
+    (None, "KOI7-switched", ["csKOI7switched"]),  # noqa
+    (None, "BRF", ["csBRF"]),  # noqa
+    (None, "TSCII", ["csTSCII"]),  # noqa
+    (None, "CP51932", ["csCP51932"]),  # noqa
+    (None, "windows-874", ["cswindows874"]),  # noqa
+    (None, "windows-1250", ["cswindows1250"]),  # noqa
+    (None, "windows-1251", ["cswindows1251"]),  # noqa
+    (None, "windows-1252", ["cswindows1252"]),  # noqa
+    (None, "windows-1253", ["cswindows1253"]),  # noqa
+    (None, "windows-1254", ["cswindows1254"]),  # noqa
+    (None, "windows-1255", ["cswindows1255"]),  # noqa
+    (None, "windows-1256", ["cswindows1256"]),  # noqa
+    (None, "windows-1257", ["cswindows1257"]),  # noqa
+    (None, "windows-1258", ["cswindows1258"]),  # noqa
+    (None, "TIS-620", ["csTIS620", "ISO-8859-11"]),  # noqa
+    (None, "CP50220", ["csCP50220"]),  # noqa
+]
+
+# pylint: enable=E501
 # pylint: disable=W0613
 
 ## CORE
@@ -2852,3 +3119,65 @@ def mimetype(value,
         )
 
     return value
+
+
+@disable_on_env
+def charset(value,
+            allow_empty = False,
+            **kwargs):
+    """Validate that ``value`` is a valid encoding charset MIME name, charset name, or
+    alias.
+
+    .. note::
+
+      This validator checks values against the
+      `IANA Charset Registry <http://www.iana.org/assignments/character-sets/character-sets.xhtml>`_.
+
+    :param value: The value to validate.
+    :type value: :class:`str <python:str>`
+
+    :param allow_empty: If ``True``, returns :obj:`None <python:None>` if
+      ``value`` is empty. If ``False``, raises a
+      :class:`EmptyValueError <validator_collection.errors.EmptyValueError>`
+      if ``value`` is empty. Defaults to ``False``.
+    :type allow_empty: :class:`bool <python:bool>`
+
+    :returns: Preferred MIME Name or Name of the charset / :obj:`None <python:None>`
+    :rtype: :class:`str <python:str>` / :obj:`None <python:None>`
+
+    :raises EmptyValueError: if ``value`` is empty and ``allow_empty`` is ``False``
+    :raises CannotCoerceError: if ``value`` is not a valid string
+    :raises InvalidCharsetError: if ``value`` is neither a valid charset MIME type, name,
+      or alias with ``allow_empty`` set to ``True``
+    """
+    if not value and not allow_empty:
+        raise errors.EmptyValueError('value (%s) was empty' % value)
+    elif not value:
+        return None
+
+    if not isinstance(value, basestring):
+        raise errors.CannotCoerceError('value must be a valid string, '
+                                       'was %s' % type(value))
+
+    original_value = value
+    value = value.lower().strip().replace('-', '').replace('.', '')
+
+    preferred_mime_names = [x[0] or x[1] for x in CHARSET_REGISTRY]
+    lowercase_names = [x.lower().replace('-', '').replace('.', '')
+                       for x in preferred_mime_names]
+    if value in lowercase_names:
+        return preferred_mime_names[lowercase_names.index(value)]
+
+    aliases = [x[2] for x in CHARSET_REGISTRY]
+    lowercase_aliases = [[x.lower().replace('-', '').replace('.', '') for x in y]
+                         for y in aliases]
+    index = 0
+    for item in lowercase_aliases:
+        if value in item:
+            return preferred_mime_names[index]
+
+        index += 1
+
+    raise errors.InvalidCharsetError(
+        'value (%s) not recognized as a valid charset' % original_value
+    )
