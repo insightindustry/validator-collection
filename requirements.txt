@@ -22,7 +22,7 @@ more-itertools==4.3.0
 packaging==18.0
 pkginfo==1.4.2
 pluggy==0.6.0
-py==1.7.0
+py==1.10.0
 py-cpuinfo==4.0.0
 pycparser==2.18
 pyfakefs==3.5.2
