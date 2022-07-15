@@ -4,7 +4,7 @@ Babel==2.5.3
 certifi==2018.1.18
 cffi>=1.11.5
 chardet==3.0.4
-codecov==2.0.15
+codecov==2.0.16
 colorama==0.4.0
 coverage==4.5.2
 docutils==0.14
